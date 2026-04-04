@@ -1,16 +1,16 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import LandingHero from "@/components/LandingHero";
+import PatientDashboard from "@/components/PatientDashboard";
+import HospitalDashboard from "@/components/HospitalDashboard";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
-  return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
-  );
+type View = "landing" | "patient" | "hospital";
+
+const Index = () => {
+  const [view, setView] = useState<View>("landing");
+
+  if (view === "patient") return <PatientDashboard onBack={() => setView("landing")} />;
+  if (view === "hospital") return <HospitalDashboard onBack={() => setView("landing")} />;
+  return <LandingHero onNavigate={(role) => setView(role)} />;
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
