@@ -16,11 +16,10 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-info/5 blur-3xl" />
+        <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-primary/8 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-info/6 blur-3xl" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[800px] w-[800px] rounded-full bg-accent/3 blur-3xl" />
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.04)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.04)_1px,transparent_1px)] bg-[size:60px_60px]" />
       </div>
 
       {/* Navbar */}
@@ -45,7 +44,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
 
       {/* Hero Content */}
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center px-6 pt-16 text-center md:pt-24 lg:px-20">
-        <div className="animate-fade-in-up mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-medium text-primary backdrop-blur-sm">
+        <div className="animate-fade-in-up mb-5 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-primary backdrop-blur-sm">
           <Sparkles className="h-4 w-4" />
           Platform Manajemen Klaim BPJS Bertenaga AI
         </div>
@@ -69,11 +68,11 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
             className="group relative flex flex-col items-center gap-5 rounded-2xl border border-border/60 bg-card p-8 transition-all duration-300 hover:border-primary/40 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1"
             style={{ boxShadow: 'var(--shadow-card)' }}
           >
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:gradient-primary group-hover:text-primary-foreground group-hover:shadow-[var(--shadow-elevated)]">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15 text-primary transition-all duration-300 group-hover:scale-110 group-hover:gradient-primary group-hover:text-primary-foreground group-hover:shadow-[var(--shadow-elevated)]">
               <User className="h-7 w-7" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-card-foreground">Masuk sebagai Pasien</h3>
+              <h3 className="text-lg font-bold text-foreground">Masuk sebagai Pasien</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Pantau klaim, lihat manfaat, dan cek risiko kesehatan
               </p>
@@ -88,11 +87,11 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
             className="group relative flex flex-col items-center gap-5 rounded-2xl border border-border/60 bg-card p-8 transition-all duration-300 hover:border-primary/40 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1"
             style={{ boxShadow: 'var(--shadow-card)' }}
           >
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:gradient-primary group-hover:text-primary-foreground group-hover:shadow-[var(--shadow-elevated)]">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15 text-primary transition-all duration-300 group-hover:scale-110 group-hover:gradient-primary group-hover:text-primary-foreground group-hover:shadow-[var(--shadow-elevated)]">
               <Building2 className="h-7 w-7" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-card-foreground">Masuk sebagai Rumah Sakit</h3>
+              <h3 className="text-lg font-bold text-foreground">Masuk sebagai Rumah Sakit</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Command center klaim dan manajemen risiko penolakan
               </p>
@@ -107,7 +106,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
         <div className="animate-fade-in-up mt-20 grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-3" style={{ animationDelay: '0.4s' }}>
           {FEATURES.map((f) => (
             <div key={f.title} className="flex flex-col items-center gap-3 rounded-xl p-5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/15 text-primary">
                 <f.icon className="h-5 w-5" />
               </div>
               <h4 className="text-sm font-bold text-foreground">{f.title}</h4>

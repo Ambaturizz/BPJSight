@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Shield, ArrowLeft, Heart, AlertTriangle, CheckCircle2, Clock,
   FileText, ChevronRight, Activity, Stethoscope, CreditCard,
-  Sparkles, Bell, LogOut, Inbox
+  Sparkles, Bell, Inbox
 } from "lucide-react";
 
 interface PatientDashboardProps {
@@ -17,7 +17,7 @@ const MOCK_CLAIMS = [
   {
     id: "KLM-2024-001",
     title: "Rawat Jalan - Poli Jantung",
-    hospital: "RS Harapan Kita",
+    hospital: "RS MBG",
     date: "28 Mar 2024",
     amount: "Rp 1.250.000",
     status: "diproses",
@@ -29,7 +29,7 @@ const MOCK_CLAIMS = [
   {
     id: "KLM-2024-002",
     title: "Rawat Inap - Bedah Minor",
-    hospital: "RS Cipto Mangunkusumo",
+    hospital: "RS MBG",
     date: "15 Mar 2024",
     amount: "Rp 8.500.000",
     status: "berisiko",
@@ -41,7 +41,7 @@ const MOCK_CLAIMS = [
   {
     id: "KLM-2024-003",
     title: "Rawat Jalan - Poli Mata",
-    hospital: "RS Mata Cicendo",
+    hospital: "RS MBG",
     date: "5 Mar 2024",
     amount: "Rp 650.000",
     status: "selesai",
@@ -66,9 +66,9 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
   const [isLoading] = useState(false);
 
   const statusColor = (status: string) => {
-    if (status === "selesai") return "bg-success/10 text-success border-success/20";
-    if (status === "berisiko") return "bg-destructive/10 text-destructive border-destructive/20";
-    return "bg-info/10 text-info border-info/20";
+    if (status === "selesai") return "bg-success/15 text-success border-success/25";
+    if (status === "berisiko") return "bg-destructive/15 text-destructive border-destructive/25";
+    return "bg-info/15 text-info border-info/25";
   };
 
   const statusLabel = (status: string) => {
@@ -80,7 +80,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-border/60 bg-card/80 backdrop-blur-xl px-4 py-3 md:px-6 md:py-4">
+      <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <Button variant="ghost" size="icon" onClick={onBack} className="rounded-xl hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
@@ -97,9 +97,9 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
               <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-destructive border-2 border-card" />
             </button>
             <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">A</div>
+              <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">P</div>
               <div className="hidden md:block">
-                <p className="text-sm font-semibold text-foreground leading-none">Ahmad Santoso</p>
+                <p className="text-sm font-semibold text-foreground leading-none">Polisi MBG</p>
                 <p className="text-xs text-muted-foreground">BPJS Kelas 1</p>
               </div>
             </div>
@@ -109,29 +109,29 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
 
       <main className="mx-auto max-w-5xl px-4 py-6 md:px-6 md:py-8">
         {/* Health Risk Card */}
-        <Card className="animate-slide-up mb-8 overflow-hidden border-primary/15" style={{ boxShadow: 'var(--shadow-card)' }}>
+        <Card className="animate-slide-up mb-8 overflow-hidden border-primary/20" style={{ boxShadow: 'var(--shadow-card)' }}>
           <div className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-primary/3 to-transparent" />
-            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
+            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/8 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
             <div className="relative flex flex-col gap-5 p-5 md:flex-row md:items-center md:justify-between md:p-7">
               <div className="flex items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/25">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/30">
                   <Heart className="h-7 w-7 text-primary-foreground" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-card-foreground tracking-tight">Health Risk Card</h2>
+                  <h2 className="text-xl font-bold text-foreground tracking-tight">Health Risk Card</h2>
                   <p className="mt-0.5 text-sm text-muted-foreground">BPJS Kelas 1 • No. 0001234567890</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <Badge className="bg-success/10 text-success border border-success/20 font-medium">
+                    <Badge className="bg-success/15 text-success border border-success/25 font-medium">
                       <CheckCircle2 className="mr-1 h-3 w-3" /> 2 Klaim Aktif
                     </Badge>
-                    <Badge className="bg-warning/10 text-warning border border-warning/20 font-medium">
+                    <Badge className="bg-warning/15 text-warning border border-warning/25 font-medium">
                       <AlertTriangle className="mr-1 h-3 w-3" /> 1 Perlu Tindakan
                     </Badge>
                   </div>
                 </div>
               </div>
-              <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 md:max-w-xs">
+              <div className="rounded-xl border border-destructive/25 bg-destructive/10 p-4 md:max-w-xs">
                 <div className="flex items-center gap-2 text-sm font-semibold text-destructive">
                   <AlertTriangle className="h-4 w-4" />
                   Tindakan Mendesak
@@ -139,7 +139,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                 <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
                   Klaim KLM-2024-002 berisiko ditolak. Lengkapi dokumen segera.
                 </p>
-                <Button variant="outline" size="sm" className="mt-3 h-8 rounded-lg text-xs border-destructive/20 text-destructive hover:bg-destructive/10">
+                <Button variant="outline" size="sm" className="mt-3 h-8 rounded-lg text-xs border-destructive/25 text-destructive hover:bg-destructive/15">
                   Lihat Detail
                 </Button>
               </div>
@@ -159,7 +159,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
               onClick={() => setActiveTab(tab.key)}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
                 activeTab === tab.key
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-card text-foreground shadow-sm border border-border/60"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -209,15 +209,15 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
               MOCK_CLAIMS.filter((c) => c.status !== "selesai").map((claim, idx) => (
                 <Card
                   key={claim.id}
-                  className="animate-slide-up overflow-hidden border-border/60 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)]"
+                  className="animate-slide-up overflow-hidden border-border/60 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:border-primary/20"
                   style={{ animationDelay: `${idx * 0.1}s`, boxShadow: 'var(--shadow-card)' }}
                 >
                   <div className="p-5 md:p-6">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-bold text-card-foreground">{claim.title}</h3>
-                          <Badge className={`${statusColor(claim.status)} text-xs font-semibold`}>
+                          <h3 className="font-bold text-foreground">{claim.title}</h3>
+                          <Badge className={`${statusColor(claim.status)} text-xs font-semibold border`}>
                             {statusLabel(claim.status)}
                           </Badge>
                         </div>
@@ -226,7 +226,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-card-foreground">{claim.amount}</p>
+                        <p className="text-lg font-bold text-foreground">{claim.amount}</p>
                         <p className="text-xs text-muted-foreground">{claim.id}</p>
                       </div>
                     </div>
@@ -239,7 +239,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                             <div
                               className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
                                 i <= claim.currentStep
-                                  ? "gradient-primary text-primary-foreground shadow-md shadow-primary/20"
+                                  ? "gradient-primary text-primary-foreground shadow-md shadow-primary/25"
                                   : "bg-muted text-muted-foreground"
                               }`}
                             >
@@ -262,16 +262,16 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
 
                     {/* AI Risk Warning */}
                     {claim.risk && (
-                      <div className="mt-5 rounded-xl border border-warning/20 bg-gradient-to-r from-warning/5 to-transparent p-4">
+                      <div className="mt-5 rounded-xl border border-warning/25 bg-warning/5 p-4">
                         <div className="flex items-start gap-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-warning/10">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-warning/15">
                             <Sparkles className="h-4 w-4 text-warning" />
                           </div>
                           <div className="flex-1">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="text-sm font-bold text-foreground">Prediksi AI: Risiko Penolakan</span>
                               {claim.aiConfidence && (
-                                <Badge className="bg-destructive/10 text-destructive border border-destructive/20 text-xs font-bold">
+                                <Badge className="bg-destructive/15 text-destructive border border-destructive/25 text-xs font-bold">
                                   {claim.aiConfidence}% Risiko
                                 </Badge>
                               )}
@@ -288,7 +288,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                                 <span className="text-xs font-bold text-destructive">{claim.aiConfidence}%</span>
                               </div>
                             )}
-                            <Button variant="outline" size="sm" className="mt-3 rounded-lg border-warning/30 text-warning hover:bg-warning/10">
+                            <Button variant="outline" size="sm" className="mt-3 rounded-lg border-warning/30 text-warning hover:bg-warning/15">
                               <FileText className="h-4 w-4" /> Lihat Langkah Perbaikan
                             </Button>
                           </div>
@@ -308,16 +308,16 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
             {BENEFITS.map((b, idx) => (
               <Card
                 key={b.title}
-                className="animate-slide-up group flex items-start gap-4 border-border/60 p-5 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5"
+                className="animate-slide-up group flex items-start gap-4 border-border/60 p-5 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5 hover:border-primary/20"
                 style={{ animationDelay: `${idx * 0.08}s`, boxShadow: 'var(--shadow-card)' }}
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:gradient-primary group-hover:text-primary-foreground group-hover:shadow-md group-hover:shadow-primary/20">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary transition-all duration-300 group-hover:gradient-primary group-hover:text-primary-foreground group-hover:shadow-md group-hover:shadow-primary/25">
                   <b.icon className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-card-foreground">{b.title}</h4>
-                    <Badge className="bg-success/10 text-success border border-success/20 text-xs font-semibold">
+                    <h4 className="font-bold text-foreground">{b.title}</h4>
+                    <Badge className="bg-success/15 text-success border border-success/25 text-xs font-semibold">
                       <CheckCircle2 className="mr-1 h-3 w-3" /> Ditanggung
                     </Badge>
                   </div>
@@ -343,20 +343,20 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
               MOCK_CLAIMS.filter((c) => c.status === "selesai").map((claim, idx) => (
                 <Card
                   key={claim.id}
-                  className="animate-slide-up group flex items-center justify-between border-border/60 p-4 md:p-5 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] cursor-pointer"
+                  className="animate-slide-up group flex items-center justify-between border-border/60 p-4 md:p-5 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:border-primary/20 cursor-pointer"
                   style={{ animationDelay: `${idx * 0.08}s`, boxShadow: 'var(--shadow-card)' }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success/10">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success/15">
                       <CheckCircle2 className="h-5 w-5 text-success" />
                     </div>
                     <div>
-                      <p className="font-semibold text-card-foreground">{claim.title}</p>
+                      <p className="font-semibold text-foreground">{claim.title}</p>
                       <p className="text-sm text-muted-foreground">{claim.hospital} • {claim.date}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-card-foreground">{claim.amount}</span>
+                    <span className="text-sm font-bold text-foreground">{claim.amount}</span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
                   </div>
                 </Card>
