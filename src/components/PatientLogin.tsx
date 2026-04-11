@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ArrowLeft, User, Eye, EyeOff, Sparkles } from "lucide-react";
+import { Shield, ArrowLeft, User, Eye, EyeOff } from "lucide-react";
 
 interface PatientLoginProps {
   onBack: () => void;
@@ -25,10 +25,9 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-info/5 blur-3xl" />
-      <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.02)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-primary/8 blur-3xl" />
+      <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-info/6 blur-3xl" />
+      <div className="absolute inset-0 bg-[linear-gradient(hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
       <div className="relative z-10 w-full max-w-md">
         <button onClick={onBack} className="mb-6 flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
@@ -37,7 +36,7 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
 
         <Card className="animate-slide-up border-border/60 p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
           <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/25">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/30">
               <User className="h-8 w-8 text-primary-foreground" />
             </div>
             <div className="flex items-center gap-2 mb-2">
@@ -64,7 +63,7 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="h-11 rounded-xl"
+                  className="h-11 rounded-xl bg-muted/50 border-border/60"
                 />
               </div>
             )}
@@ -78,7 +77,7 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
                 onChange={(e) => setNik(e.target.value.replace(/\D/g, "").slice(0, 16))}
                 maxLength={16}
                 required
-                className="h-11 rounded-xl"
+                className="h-11 rounded-xl bg-muted/50 border-border/60"
               />
             </div>
 
@@ -91,7 +90,7 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
                 onChange={(e) => setBpjsNumber(e.target.value.replace(/\D/g, "").slice(0, 13))}
                 maxLength={13}
                 required
-                className="h-11 rounded-xl"
+                className="h-11 rounded-xl bg-muted/50 border-border/60"
               />
             </div>
 
@@ -105,7 +104,7 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="h-11 rounded-xl pr-10"
+                  className="h-11 rounded-xl pr-10 bg-muted/50 border-border/60"
                 />
                 <button
                   type="button"
@@ -117,7 +116,7 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-11 rounded-xl gradient-primary border-0 text-primary-foreground font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200" size="lg">
+            <Button type="submit" className="w-full h-11 rounded-xl gradient-primary border-0 text-primary-foreground font-bold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all duration-200" size="lg">
               {isRegistering ? "Daftar Sekarang" : "Masuk"}
             </Button>
           </form>
