@@ -4,8 +4,9 @@ import PatientLogin from "@/components/PatientLogin";
 import HospitalLogin from "@/components/HospitalLogin";
 import PatientDashboard from "@/components/PatientDashboard";
 import HospitalDashboard from "@/components/HospitalDashboard";
+import SmartClaimSubmission from "@/components/SmartClaimSubmission";
 
-type View = "landing" | "patient-login" | "hospital-login" | "patient-dashboard" | "hospital-dashboard";
+type View = "landing" | "patient-login" | "hospital-login" | "patient-dashboard" | "hospital-dashboard" | "submit-claim";
 
 const Index = () => {
   const [view, setView] = useState<View>("landing");
@@ -16,9 +17,11 @@ const Index = () => {
     case "hospital-login":
       return <HospitalLogin onBack={() => setView("landing")} onLogin={() => setView("hospital-dashboard")} />;
     case "patient-dashboard":
-      return <PatientDashboard onBack={() => setView("landing")} />;
+      return <PatientDashboard onBack={() => setView("landing")} onSubmitClaim={() => setView("submit-claim")} />;
     case "hospital-dashboard":
       return <HospitalDashboard onBack={() => setView("landing")} />;
+    case "submit-claim":
+      return <SmartClaimSubmission onBack={() => setView("patient-dashboard")} onSuccess={() => setView("patient-dashboard")} />;
     default:
       return <LandingHero onNavigate={(role) => setView(role === "patient" ? "patient-login" : "hospital-login")} />;
   }

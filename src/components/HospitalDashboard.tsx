@@ -1,9 +1,11 @@
+import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Shield, ArrowLeft, TrendingUp, AlertTriangle, CheckCircle2,
-  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Bell
+  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Bell, Search
 } from "lucide-react";
 
 interface HospitalDashboardProps {
