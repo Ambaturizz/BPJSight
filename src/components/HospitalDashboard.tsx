@@ -10,6 +10,7 @@ import {
 
 interface HospitalDashboardProps {
   onBack: () => void;
+  onSubmitClaim?: () => void;
 }
 
 const STATS = [
@@ -32,7 +33,7 @@ const CLAIMS_TABLE = [
   { id: "10", patient: "Zayyan Arkhanza", diagnosis: "Stroke Ringan", amount: "Rp 11.6 jt", risk: 55, confidence: 80, docs: "Sebagian", status: "sedang" },
 ];
 
-const HospitalDashboard = ({ onBack }: HospitalDashboardProps) => {
+const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   
   const filteredClaims = useMemo(() => {
