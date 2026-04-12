@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Shield, ArrowLeft, Heart, AlertTriangle, CheckCircle2, Clock,
   FileText, ChevronRight, Activity, Stethoscope, CreditCard,
-  Sparkles, Bell, Inbox
+  Sparkles, Bell, Inbox, Plus
 } from "lucide-react";
 
 interface PatientDashboardProps {
@@ -93,6 +93,11 @@ const PatientDashboard = ({ onBack, onSubmitClaim }: PatientDashboardProps) => {
             <span className="font-bold text-foreground tracking-tight">BPJSight</span>
           </div>
           <div className="ml-auto flex items-center gap-3">
+            {onSubmitClaim && (
+              <Button onClick={onSubmitClaim} size="sm" className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-md shadow-primary/25 hidden sm:flex">
+                <Plus className="h-4 w-4" /> Ajukan Klaim
+              </Button>
+            )}
             <button className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
               <Bell className="h-4 w-4" />
               <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-destructive border-2 border-card" />
