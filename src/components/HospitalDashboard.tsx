@@ -33,6 +33,15 @@ const CLAIMS_TABLE = [
 ];
 
 const HospitalDashboard = ({ onBack }: HospitalDashboardProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const filteredClaims = useMemo(() => {
+    if (!searchQuery.trim()) return CLAIMS_TABLE;
+    const q = searchQuery.toLowerCase();
+    return CLAIMS_TABLE.filter(c =>
+      c.patient.toLowerCase().includes(q) || c.id.includes(q)
+    );
+  }, [searchQuery]);
   const riskColor = (risk: number) => {
     if (risk >= 70) return "text-destructive";
     if (risk >= 40) return "text-warning";

@@ -11,6 +11,7 @@ import {
 
 interface PatientDashboardProps {
   onBack: () => void;
+  onSubmitClaim?: () => void;
 }
 
 const MOCK_CLAIMS = [
@@ -61,7 +62,7 @@ const BENEFITS = [
 
 type Tab = "klaim" | "manfaat" | "riwayat";
 
-const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
+const PatientDashboard = ({ onBack, onSubmitClaim }: PatientDashboardProps) => {
   const [activeTab, setActiveTab] = useState<Tab>("klaim");
   const [isLoading] = useState(false);
 
