@@ -1,9 +1,11 @@
+import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Shield, ArrowLeft, TrendingUp, AlertTriangle, CheckCircle2,
-  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Bell
+  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Bell, Search
 } from "lucide-react";
 
 interface HospitalDashboardProps {
@@ -31,6 +33,15 @@ const CLAIMS_TABLE = [
 ];
 
 const HospitalDashboard = ({ onBack }: HospitalDashboardProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const filteredClaims = useMemo(() => {
+    if (!searchQuery.trim()) return CLAIMS_TABLE;
+    const q = searchQuery.toLowerCase();
+    return CLAIMS_TABLE.filter(c =>
+      c.patient.toLowerCase().includes(q) || c.id.includes(q)
+    );
+  }, [searchQuery]);
   const riskColor = (risk: number) => {
     if (risk >= 70) return "text-destructive";
     if (risk >= 40) return "text-warning";
@@ -120,7 +131,18 @@ const HospitalDashboard = ({ onBack }: HospitalDashboardProps) => {
               </div>
               <h2 className="font-bold text-foreground">Klaim Terbaru — Skor Risiko AI</h2>
             </div>
-            <Button variant="outline" size="sm" className="rounded-lg">Lihat Semua</Button>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Cari nama pasien..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-56 rounded-xl border-border/60 bg-muted/20 pl-9 text-sm focus:border-primary/50 focus:ring-primary/20"
+                />
+              </div>
+              <Button variant="outline" size="sm" className="rounded-lg">Lihat Semua</Button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -136,7 +158,9 @@ const HospitalDashboard = ({ onBack }: HospitalDashboardProps) => {
                 </tr>
               </thead>
               <tbody>
-                {CLAIMS_TABLE.map((claim) => (
+                {filteredClaims.length === 0 ? (
+                  <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-muted-foreground">Tidak ada klaim yang cocok dengan pencarian.</td></tr>
+                ) : filteredClaims.map((claim) => (
                   <tr
                     key={claim.id}
                     className="border-b border-border/40 last:border-0 hover:bg-muted/20 transition-colors duration-150"
