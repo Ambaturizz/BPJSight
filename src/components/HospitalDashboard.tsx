@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Shield, ArrowLeft, TrendingUp, AlertTriangle, CheckCircle2,
-  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Bell, Search
+  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Bell, Search, Plus
 } from "lucide-react";
 
 interface HospitalDashboardProps {
   onBack: () => void;
+  onSubmitClaim?: () => void;
 }
 
 const STATS = [
@@ -32,7 +33,7 @@ const CLAIMS_TABLE = [
   { id: "10", patient: "Zayyan Arkhanza", diagnosis: "Stroke Ringan", amount: "Rp 11.6 jt", risk: 55, confidence: 80, docs: "Sebagian", status: "sedang" },
 ];
 
-const HospitalDashboard = ({ onBack }: HospitalDashboardProps) => {
+const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   
   const filteredClaims = useMemo(() => {
@@ -94,9 +95,16 @@ const HospitalDashboard = ({ onBack }: HospitalDashboardProps) => {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
-        <div className="animate-fade-in-up">
-          <h1 className="mb-1 text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">Command Center Klaim</h1>
-          <p className="mb-8 text-muted-foreground">Ringkasan kesehatan klaim 7 hari terakhir</p>
+        <div className="animate-fade-in-up flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="mb-1 text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">Command Center Klaim</h1>
+            <p className="text-muted-foreground">Ringkasan kesehatan klaim 7 hari terakhir</p>
+          </div>
+          {onSubmitClaim && (
+            <Button onClick={onSubmitClaim} className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-lg shadow-primary/30 px-6 py-3 text-base font-bold animate-pulse hover:animate-none hover:scale-105 transition-transform">
+              <Plus className="h-5 w-5" /> Ajukan Klaim Baru
+            </Button>
+          )}
         </div>
 
         {/* Stats Grid */}
