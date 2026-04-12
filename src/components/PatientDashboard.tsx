@@ -6,12 +6,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Shield, ArrowLeft, Heart, AlertTriangle, CheckCircle2, Clock,
   FileText, ChevronRight, Activity, Stethoscope, CreditCard,
-  Sparkles, Bell, Inbox, Plus
+  Sparkles, Bell, Inbox
 } from "lucide-react";
 
 interface PatientDashboardProps {
   onBack: () => void;
-  onSubmitClaim?: () => void;
 }
 
 const MOCK_CLAIMS = [
@@ -62,7 +61,7 @@ const BENEFITS = [
 
 type Tab = "klaim" | "manfaat" | "riwayat";
 
-const PatientDashboard = ({ onBack, onSubmitClaim }: PatientDashboardProps) => {
+const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
   const [activeTab, setActiveTab] = useState<Tab>("klaim");
   const [isLoading] = useState(false);
 
