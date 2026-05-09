@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Activity, Building2, User, ChevronRight, Sparkles, TrendingUp, Lock } from "lucide-react";
+import { Shield, Activity, Building2, User, ChevronRight, Sparkles, TrendingUp, Lock, Plug } from "lucide-react";
 
 interface LandingHeroProps {
   onNavigate: (role: "patient" | "hospital") => void;
   onNavPage?: (page: "beranda" | "tentang" | "fitur") => void;
+  onOpenEHR?: () => void;
 }
 
 const FEATURES = [
