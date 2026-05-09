@@ -6,8 +6,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Shield, ArrowLeft, Heart, AlertTriangle, CheckCircle2, Clock,
   FileText, ChevronRight, Activity, Stethoscope, CreditCard,
-  Sparkles, Bell, Inbox
+  Sparkles, Bell, Inbox, MapPin
 } from "lucide-react";
+import NearbyFacilities from "./NearbyFacilities";
 
 interface PatientDashboardProps {
   onBack: () => void;
