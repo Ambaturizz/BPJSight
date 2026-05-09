@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Activity, Building2, User, ChevronRight, Sparkles, TrendingUp, Lock } from "lucide-react";
+import { Shield, Activity, Building2, User, ChevronRight, Sparkles, TrendingUp, Lock, Plug } from "lucide-react";
 
 interface LandingHeroProps {
   onNavigate: (role: "patient" | "hospital") => void;
   onNavPage?: (page: "beranda" | "tentang" | "fitur") => void;
+  onOpenEHR?: () => void;
 }
 
 const FEATURES = [
@@ -12,7 +13,7 @@ const FEATURES = [
   { icon: Lock, title: "Aman & Terpercaya", desc: "Enkripsi data end-to-end" },
 ];
 
-const LandingHero = ({ onNavigate, onNavPage }: LandingHeroProps) => {
+const LandingHero = ({ onNavigate, onNavPage, onOpenEHR }: LandingHeroProps) => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Decorative background elements */}
@@ -40,6 +41,9 @@ const LandingHero = ({ onNavigate, onNavPage }: LandingHeroProps) => {
           </button>
           <button onClick={() => onNavPage?.("fitur")} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
             Fitur
+          </button>
+          <button onClick={() => onOpenEHR?.()} className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
+            <Plug className="h-3.5 w-3.5" /> EHR Partners
           </button>
           <Button variant="outline" size="sm" className="rounded-full">
             Masuk

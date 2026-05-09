@@ -6,8 +6,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Shield, ArrowLeft, Heart, AlertTriangle, CheckCircle2, Clock,
   FileText, ChevronRight, Activity, Stethoscope, CreditCard,
-  Sparkles, Bell, Inbox
+  Sparkles, Bell, Inbox, MapPin
 } from "lucide-react";
+import NearbyFacilities from "./NearbyFacilities";
 
 interface PatientDashboardProps {
   onBack: () => void;
@@ -59,7 +60,7 @@ const BENEFITS = [
   { icon: CreditCard, title: "Obat-obatan", desc: "Obat generik dan formularium nasional", covered: true },
 ];
 
-type Tab = "klaim" | "manfaat" | "riwayat";
+type Tab = "klaim" | "manfaat" | "faskes" | "riwayat";
 
 const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
   const [activeTab, setActiveTab] = useState<Tab>("klaim");
@@ -152,6 +153,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
           {([
             { key: "klaim" as Tab, label: "Klaim Saya", icon: FileText },
             { key: "manfaat" as Tab, label: "Manfaat & Hak", icon: Heart },
+            { key: "faskes" as Tab, label: "Faskes Terdekat", icon: MapPin },
             { key: "riwayat" as Tab, label: "Riwayat", icon: Clock },
           ]).map((tab) => (
             <button
@@ -327,6 +329,9 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
             ))}
           </div>
         )}
+
+        {/* Nearby Facilities Tab */}
+        {!isLoading && activeTab === "faskes" && <NearbyFacilities />}
 
         {/* History Tab */}
         {!isLoading && activeTab === "riwayat" && (

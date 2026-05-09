@@ -8,10 +8,13 @@ import SmartClaimSubmission from "@/components/SmartClaimSubmission";
 import AboutPage from "@/components/AboutPage";
 import FeaturesPage from "@/components/FeaturesPage";
 
+import EHRPartners from "@/components/EHRPartners";
+
 type View =
   | "landing"
   | "tentang"
   | "fitur"
+  | "ehr"
   | "patient-login"
   | "hospital-login"
   | "patient-dashboard"
@@ -40,11 +43,14 @@ const Index = () => {
       return <AboutPage onBack={() => setView("landing")} onNavigate={goPage} />;
     case "fitur":
       return <FeaturesPage onBack={() => setView("landing")} onNavigate={goPage} />;
+    case "ehr":
+      return <EHRPartners onBack={() => setView("landing")} />;
     default:
       return (
         <LandingHero
           onNavigate={(role) => setView(role === "patient" ? "patient-login" : "hospital-login")}
           onNavPage={goPage}
+          onOpenEHR={() => setView("ehr")}
         />
       );
   }
