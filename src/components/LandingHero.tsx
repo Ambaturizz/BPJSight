@@ -3,6 +3,7 @@ import { Shield, Activity, Building2, User, ChevronRight, Sparkles, TrendingUp, 
 
 interface LandingHeroProps {
   onNavigate: (role: "patient" | "hospital") => void;
+  onNavPage?: (page: "beranda" | "tentang" | "fitur") => void;
 }
 
 const FEATURES = [
@@ -11,7 +12,7 @@ const FEATURES = [
   { icon: Lock, title: "Aman & Terpercaya", desc: "Enkripsi data end-to-end" },
 ];
 
-const LandingHero = ({ onNavigate }: LandingHeroProps) => {
+const LandingHero = ({ onNavigate, onNavPage }: LandingHeroProps) => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Decorative background elements */}
@@ -31,11 +32,15 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
           <span className="text-xl font-bold tracking-tight text-foreground">BPJSight</span>
         </div>
         <div className="hidden items-center gap-8 md:flex">
-          {["Tentang", "Fitur", "Kontak"].map((item) => (
-            <span key={item} className="text-sm font-medium text-muted-foreground cursor-pointer hover:text-primary transition-colors duration-200">
-              {item}
-            </span>
-          ))}
+          <button onClick={() => onNavPage?.("beranda")} className="text-sm font-semibold text-primary transition-colors duration-200">
+            Beranda
+          </button>
+          <button onClick={() => onNavPage?.("tentang")} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
+            Tentang
+          </button>
+          <button onClick={() => onNavPage?.("fitur")} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
+            Fitur
+          </button>
           <Button variant="outline" size="sm" className="rounded-full">
             Masuk
           </Button>

@@ -5,11 +5,25 @@ import HospitalLogin from "@/components/HospitalLogin";
 import PatientDashboard from "@/components/PatientDashboard";
 import HospitalDashboard from "@/components/HospitalDashboard";
 import SmartClaimSubmission from "@/components/SmartClaimSubmission";
+import AboutPage from "@/components/AboutPage";
+import FeaturesPage from "@/components/FeaturesPage";
 
-type View = "landing" | "patient-login" | "hospital-login" | "patient-dashboard" | "hospital-dashboard" | "hospital-submit-claim";
+type View =
+  | "landing"
+  | "tentang"
+  | "fitur"
+  | "patient-login"
+  | "hospital-login"
+  | "patient-dashboard"
+  | "hospital-dashboard"
+  | "hospital-submit-claim";
 
 const Index = () => {
   const [view, setView] = useState<View>("landing");
+
+  const goPage = (page: "beranda" | "tentang" | "fitur") => {
+    setView(page === "beranda" ? "landing" : page);
+  };
 
   switch (view) {
     case "patient-login":
@@ -22,8 +36,17 @@ const Index = () => {
       return <HospitalDashboard onBack={() => setView("landing")} onSubmitClaim={() => setView("hospital-submit-claim")} />;
     case "hospital-submit-claim":
       return <SmartClaimSubmission onBack={() => setView("hospital-dashboard")} onSuccess={() => setView("hospital-dashboard")} />;
+    case "tentang":
+      return <AboutPage onBack={() => setView("landing")} onNavigate={goPage} />;
+    case "fitur":
+      return <FeaturesPage onBack={() => setView("landing")} onNavigate={goPage} />;
     default:
-      return <LandingHero onNavigate={(role) => setView(role === "patient" ? "patient-login" : "hospital-login")} />;
+      return (
+        <LandingHero
+          onNavigate={(role) => setView(role === "patient" ? "patient-login" : "hospital-login")}
+          onNavPage={goPage}
+        />
+      );
   }
 };
 
