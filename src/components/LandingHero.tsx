@@ -42,6 +42,9 @@ const LandingHero = ({ onNavigate, onNavPage, onOpenEHR }: LandingHeroProps) => 
           <button onClick={() => onNavPage?.("fitur")} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
             Fitur
           </button>
+          <button onClick={() => onOpenEHR?.()} className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
+            <Plug className="h-3.5 w-3.5" /> EHR Partners
+          </button>
           <Button variant="outline" size="sm" className="rounded-full">
             Masuk
           </Button>
