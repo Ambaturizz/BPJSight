@@ -60,7 +60,7 @@ const BENEFITS = [
   { icon: CreditCard, title: "Obat-obatan", desc: "Obat generik dan formularium nasional", covered: true },
 ];
 
-type Tab = "klaim" | "manfaat" | "riwayat";
+type Tab = "klaim" | "manfaat" | "faskes" | "riwayat";
 
 const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
   const [activeTab, setActiveTab] = useState<Tab>("klaim");
