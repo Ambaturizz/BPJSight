@@ -330,6 +330,9 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
           </div>
         )}
 
+        {/* Nearby Facilities Tab */}
+        {!isLoading && activeTab === "faskes" && <NearbyFacilities />}
+
         {/* History Tab */}
         {!isLoading && activeTab === "riwayat" && (
           <div className="space-y-3">
