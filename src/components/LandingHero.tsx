@@ -13,7 +13,7 @@ const FEATURES = [
   { icon: Lock, title: "Aman & Terpercaya", desc: "Enkripsi data end-to-end" },
 ];
 
-const LandingHero = ({ onNavigate, onNavPage }: LandingHeroProps) => {
+const LandingHero = ({ onNavigate, onNavPage, onOpenEHR }: LandingHeroProps) => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Decorative background elements */}
