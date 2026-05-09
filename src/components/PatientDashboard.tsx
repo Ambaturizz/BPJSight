@@ -153,6 +153,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
           {([
             { key: "klaim" as Tab, label: "Klaim Saya", icon: FileText },
             { key: "manfaat" as Tab, label: "Manfaat & Hak", icon: Heart },
+            { key: "faskes" as Tab, label: "Faskes Terdekat", icon: MapPin },
             { key: "riwayat" as Tab, label: "Riwayat", icon: Clock },
           ]).map((tab) => (
             <button
