@@ -8,10 +8,13 @@ import SmartClaimSubmission from "@/components/SmartClaimSubmission";
 import AboutPage from "@/components/AboutPage";
 import FeaturesPage from "@/components/FeaturesPage";
 
+import EHRPartners from "@/components/EHRPartners";
+
 type View =
   | "landing"
   | "tentang"
   | "fitur"
+  | "ehr"
   | "patient-login"
   | "hospital-login"
   | "patient-dashboard"
