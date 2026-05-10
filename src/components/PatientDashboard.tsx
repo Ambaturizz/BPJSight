@@ -151,11 +151,13 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
         </Card>
 
         {/* Tabs */}
-        <div className="mb-6 flex gap-1 rounded-xl bg-muted/60 p-1.5 backdrop-blur-sm">
+        <div className="mb-6 flex gap-1 rounded-xl bg-muted/60 p-1.5 backdrop-blur-sm overflow-x-auto">
           {([
-            { key: "klaim" as Tab, label: "Klaim Saya", icon: FileText },
-            { key: "manfaat" as Tab, label: "Manfaat & Hak", icon: Heart },
-            { key: "faskes" as Tab, label: "Faskes Terdekat", icon: MapPin },
+            { key: "klaim" as Tab, label: "Klaim", icon: FileText },
+            { key: "manfaat" as Tab, label: "Manfaat", icon: Heart },
+            { key: "faskes" as Tab, label: "Faskes", icon: MapPin },
+            { key: "ai" as Tab, label: "AI Insight", icon: Sparkles },
+            { key: "profil" as Tab, label: "Profil", icon: UserIcon },
             { key: "riwayat" as Tab, label: "Riwayat", icon: Clock },
           ]).map((tab) => (
             <button
