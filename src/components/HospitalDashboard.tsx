@@ -262,6 +262,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
             </div>
           </div>
         </Card>
+        </>)}
       </main>
     </div>
   );
