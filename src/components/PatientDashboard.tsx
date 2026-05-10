@@ -6,9 +6,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Shield, ArrowLeft, Heart, AlertTriangle, CheckCircle2, Clock,
   FileText, ChevronRight, Activity, Stethoscope, CreditCard,
-  Sparkles, Bell, Inbox, MapPin
+  Sparkles, Inbox, MapPin, User as UserIcon
 } from "lucide-react";
 import NearbyFacilities from "./NearbyFacilities";
+import NotificationCenter from "./NotificationCenter";
+import LogoutButton from "./LogoutButton";
+import AIRecommendations from "./AIRecommendations";
+import PatientProfile from "./PatientProfile";
 
 interface PatientDashboardProps {
   onBack: () => void;
@@ -60,7 +64,7 @@ const BENEFITS = [
   { icon: CreditCard, title: "Obat-obatan", desc: "Obat generik dan formularium nasional", covered: true },
 ];
 
-type Tab = "klaim" | "manfaat" | "faskes" | "riwayat";
+type Tab = "klaim" | "manfaat" | "faskes" | "ai" | "profil" | "riwayat";
 
 const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
   const [activeTab, setActiveTab] = useState<Tab>("klaim");
@@ -92,18 +96,16 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
             </div>
             <span className="font-bold text-foreground tracking-tight">BPJSight</span>
           </div>
-          <div className="ml-auto flex items-center gap-3">
-            <button className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-destructive border-2 border-card" />
-            </button>
-            <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2 md:gap-3">
+            <NotificationCenter role="patient" />
+            <LogoutButton compact onLoggedOut={onBack} />
+            <button onClick={() => setActiveTab("profil")} className="flex items-center gap-2 rounded-xl hover:bg-muted/40 px-1.5 py-1 transition-colors">
               <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">P</div>
-              <div className="hidden md:block">
+              <div className="hidden md:block text-left">
                 <p className="text-sm font-semibold text-foreground leading-none">Polisi MBG</p>
                 <p className="text-xs text-muted-foreground">BPJS Kelas 1</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </header>
