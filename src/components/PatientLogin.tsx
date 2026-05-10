@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Shield, ArrowLeft, User, Eye, EyeOff } from "lucide-react";
+import { writeSession } from "@/hooks/useSession";
 
 interface PatientLoginProps {
   onBack: () => void;
@@ -17,9 +18,11 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState("");
+  const [remember, setRemember] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    writeSession({ role: "patient", name: name || "Polisi MBG", loginAt: Date.now(), remember });
     onLogin();
   };
 
@@ -115,6 +118,16 @@ const PatientLogin = ({ onBack, onLogin }: PatientLoginProps) => {
                 </button>
               </div>
             </div>
+
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="h-4 w-4 rounded border-border/60 accent-primary"
+              />
+              Ingat saya di perangkat ini
+            </label>
 
             <Button type="submit" className="w-full h-11 rounded-xl gradient-primary border-0 text-primary-foreground font-bold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all duration-200" size="lg">
               {isRegistering ? "Daftar Sekarang" : "Masuk"}

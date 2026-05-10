@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Shield, ArrowLeft, TrendingUp, AlertTriangle, CheckCircle2,
-  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Bell, Search, Plus
+  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Search, Plus, Building2
 } from "lucide-react";
+import NotificationCenter from "./NotificationCenter";
+import LogoutButton from "./LogoutButton";
+import AIRecommendations from "./AIRecommendations";
+import HospitalProfile from "./HospitalProfile";
 
 interface HospitalDashboardProps {
   onBack: () => void;
@@ -35,6 +39,7 @@ const CLAIMS_TABLE = [
 
 const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [view, setView] = useState<"home" | "ai" | "profil">("home");
   
   const filteredClaims = useMemo(() => {
     if (!searchQuery.trim()) return CLAIMS_TABLE;
@@ -76,25 +81,29 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
             <span className="font-bold text-foreground tracking-tight">BPJSight</span>
           </div>
           <Badge variant="outline" className="ml-1 text-primary border-primary/30 font-semibold text-xs">Portal RS</Badge>
-          <div className="ml-auto flex items-center gap-3">
-            <button className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-destructive border-2 border-card" />
-            </button>
-            <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2 md:gap-3">
+            <button onClick={() => setView("home")} className={`hidden md:inline text-xs font-semibold px-2.5 py-1 rounded-lg ${view === "home" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"}`}>Klaim</button>
+            <button onClick={() => setView("ai")} className={`hidden md:inline text-xs font-semibold px-2.5 py-1 rounded-lg ${view === "ai" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"}`}>AI Insight</button>
+            <button onClick={() => setView("profil")} className={`hidden md:inline text-xs font-semibold px-2.5 py-1 rounded-lg ${view === "profil" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"}`}>Profil</button>
+            <NotificationCenter role="hospital" />
+            <LogoutButton compact onLoggedOut={onBack} />
+            <button onClick={() => setView("profil")} className="flex items-center gap-2 rounded-xl hover:bg-muted/40 px-1.5 py-1 transition-colors">
               <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground">
                 <Users className="h-4 w-4" />
               </div>
-              <div className="hidden md:block">
+              <div className="hidden lg:block text-left">
                 <p className="text-sm font-semibold text-foreground leading-none">RS MBG</p>
                 <p className="text-xs text-muted-foreground">Admin Portal</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
+        {view === "ai" && <AIRecommendations role="hospital" />}
+        {view === "profil" && <HospitalProfile onBack={() => setView("home")} />}
+        {view === "home" && (<>
         <div className="animate-fade-in-up flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="mb-1 text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">Command Center Klaim</h1>
@@ -253,6 +262,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
             </div>
           </div>
         </Card>
+        </>)}
       </main>
     </div>
   );

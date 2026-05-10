@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Shield, ArrowLeft, Building2, Eye, EyeOff } from "lucide-react";
+import { writeSession } from "@/hooks/useSession";
 
 interface HospitalLoginProps {
   onBack: () => void;
@@ -18,9 +19,11 @@ const HospitalLogin = ({ onBack, onLogin }: HospitalLoginProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [hospitalName, setHospitalName] = useState("");
+  const [remember, setRemember] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    writeSession({ role: "hospital", name: hospitalName || "RS MBG", loginAt: Date.now(), remember });
     onLogin();
   };
 
@@ -129,6 +132,16 @@ const HospitalLogin = ({ onBack, onLogin }: HospitalLoginProps) => {
                 </button>
               </div>
             </div>
+
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="h-4 w-4 rounded border-border/60 accent-primary"
+              />
+              Ingat sesi institusi
+            </label>
 
             <Button type="submit" className="w-full h-11 rounded-xl gradient-primary border-0 text-primary-foreground font-bold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all duration-200" size="lg">
               {isRegistering ? "Daftar Rumah Sakit" : "Masuk"}
