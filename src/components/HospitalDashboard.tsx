@@ -101,6 +101,9 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
+        {view === "ai" && <AIRecommendations role="hospital" />}
+        {view === "profil" && <HospitalProfile onBack={() => setView("home")} />}
+        {view === "home" && (<>
         <div className="animate-fade-in-up flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="mb-1 text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">Command Center Klaim</h1>
