@@ -337,6 +337,10 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
         {/* Nearby Facilities Tab */}
         {!isLoading && activeTab === "faskes" && <NearbyFacilities />}
 
+        {!isLoading && activeTab === "ai" && <AIRecommendations role="patient" />}
+
+        {!isLoading && activeTab === "profil" && <PatientProfile onBack={() => setActiveTab("klaim")} />}
+
         {/* History Tab */}
         {!isLoading && activeTab === "riwayat" && (
           <div className="space-y-3">
