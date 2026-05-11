@@ -65,13 +65,10 @@ export function AuthProvider({ children, onTimeout }: { children: ReactNode; onT
 
   const value = useMemo<AuthContextValue>(() => ({
     user,
-    status: !ready ? "loading" : user ? "authenticated" : "unauthenticated",
+    status: user ? "authenticated" : "unauthenticated",
     signIn,
     signOut,
-  }), [user, ready, signIn, signOut]);
-
-  // suppress lint
-  void setReady;
+  }), [user, signIn, signOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
