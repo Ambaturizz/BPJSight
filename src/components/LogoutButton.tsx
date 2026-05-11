@@ -1,25 +1,29 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
   AlertDialogTitle, AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { LogOut, Loader2 } from "lucide-react";
-import { clearSession } from "@/hooks/useSession";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { toast } from "sonner";
 
-interface Props { onLoggedOut: () => void; compact?: boolean }
+interface Props { onLoggedOut?: () => void; compact?: boolean }
 
 const LogoutButton = ({ onLoggedOut, compact }: Props) => {
   const [loading, setLoading] = useState(false);
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   const doLogout = async () => {
     setLoading(true);
-    await new Promise(r => setTimeout(r, 700));
-    clearSession();
+    await new Promise(r => setTimeout(r, 500));
+    signOut();
     setLoading(false);
     toast.success("Berhasil keluar dari akun");
-    onLoggedOut();
+    onLoggedOut?.();
+    navigate("/", { replace: true });
   };
 
   return (
@@ -40,7 +44,6 @@ const LogoutButton = ({ onLoggedOut, compact }: Props) => {
           <AlertDialogTitle>Keluar dari BPJSight?</AlertDialogTitle>
           <AlertDialogDescription>
             Sesi Anda akan diakhiri dan token akses dihapus dari perangkat ini.
-            Anda perlu masuk kembali untuk mengakses dashboard.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

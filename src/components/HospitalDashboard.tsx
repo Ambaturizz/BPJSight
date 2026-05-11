@@ -1,16 +1,20 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Shield, ArrowLeft, TrendingUp, AlertTriangle, CheckCircle2,
-  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Search, Plus, Building2
+  FileWarning, Activity, Users, BarChart3, Eye, Sparkles, Plus
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import LogoutButton from "./LogoutButton";
 import AIRecommendations from "./AIRecommendations";
 import HospitalProfile from "./HospitalProfile";
+import { useClaims } from "@/features/claims/hooks/useClaims";
+import { useFilteredClaims, exportClaimsCsv, downloadCsv } from "@/features/claims/hooks/useClaimFilters";
+import ClaimsToolbar from "@/features/claims/components/ClaimsToolbar";
+import { formatIDRShort } from "@/lib/formatters";
 
 interface HospitalDashboardProps {
   onBack: () => void;
@@ -18,57 +22,29 @@ interface HospitalDashboardProps {
 }
 
 const STATS = [
-  { label: "Total Klaim Aktif", value: "342", icon: Activity, change: "+12 hari ini", trend: "up" },
-  { label: "Tingkat Persetujuan", value: "94.2%", icon: TrendingUp, change: "+1.5% dari bulan lalu", trend: "up" },
-  { label: "Nilai Klaim Diproses", value: "Rp 2.1M", icon: BarChart3, change: "7 hari terakhir", trend: "neutral" },
-  { label: "Prediksi Berisiko", value: "18", icon: FileWarning, change: "Perlu tindakan", trend: "down" },
-];
-
-const CLAIMS_TABLE = [
-  { id: "1", patient: "Aurora Senja", diagnosis: "Jantung Koroner", amount: "Rp 12.5 jt", risk: 85, confidence: 92, docs: "Tidak Lengkap", status: "berisiko" },
-  { id: "2", patient: "Kenzie Althaf", diagnosis: "Diabetes Tipe 2", amount: "Rp 3.2 jt", risk: 25, confidence: 88, docs: "Lengkap", status: "aman" },
-  { id: "3", patient: "Alesha Zefanya", diagnosis: "Fraktur Femur", amount: "Rp 18.7 jt", risk: 72, confidence: 85, docs: "Sebagian", status: "berisiko" },
-  { id: "4", patient: "Kenzo Dirgantara", diagnosis: "Appendisitis", amount: "Rp 5.1 jt", risk: 15, confidence: 95, docs: "Lengkap", status: "aman" },
-  { id: "5", patient: "Clarissa Larasati", diagnosis: "Pneumonia", amount: "Rp 8.9 jt", risk: 60, confidence: 79, docs: "Sebagian", status: "sedang" },
-  { id: "6", patient: "Gibran Bumi", diagnosis: "Demam Berdarah", amount: "Rp 4.3 jt", risk: 30, confidence: 91, docs: "Lengkap", status: "aman" },
-  { id: "7", patient: "Keisya Aurelia", diagnosis: "Asma Akut", amount: "Rp 2.8 jt", risk: 45, confidence: 83, docs: "Sebagian", status: "sedang" },
-  { id: "8", patient: "Naufal Atharrazka", diagnosis: "Hernia Inguinalis", amount: "Rp 15.2 jt", risk: 78, confidence: 87, docs: "Tidak Lengkap", status: "berisiko" },
-  { id: "9", patient: "Freya Aninditha", diagnosis: "Gagal Ginjal", amount: "Rp 22.1 jt", risk: 90, confidence: 94, docs: "Tidak Lengkap", status: "berisiko" },
-  { id: "10", patient: "Zayyan Arkhanza", diagnosis: "Stroke Ringan", amount: "Rp 11.6 jt", risk: 55, confidence: 80, docs: "Sebagian", status: "sedang" },
+  { label: "Total Klaim Aktif", value: "342", icon: Activity, change: "+12 hari ini" },
+  { label: "Tingkat Persetujuan", value: "94.2%", icon: TrendingUp, change: "+1.5% dari bulan lalu" },
+  { label: "Nilai Klaim Diproses", value: "Rp 2.1M", icon: BarChart3, change: "7 hari terakhir" },
+  { label: "Prediksi Berisiko", value: "18", icon: FileWarning, change: "Perlu tindakan" },
 ];
 
 const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
   const [view, setView] = useState<"home" | "ai" | "profil">("home");
-  
-  const filteredClaims = useMemo(() => {
-    if (!searchQuery.trim()) return CLAIMS_TABLE;
-    const q = searchQuery.toLowerCase();
-    return CLAIMS_TABLE.filter(c =>
-      c.patient.toLowerCase().includes(q) || c.id.includes(q)
-    );
-  }, [searchQuery]);
-  const riskColor = (risk: number) => {
-    if (risk >= 70) return "text-destructive";
-    if (risk >= 40) return "text-warning";
-    return "text-success";
-  };
+  const claims = useClaims();
+  const { data: filteredClaims, filters, update } = useFilteredClaims(claims);
 
-  const riskBg = (risk: number) => {
-    if (risk >= 70) return "bg-destructive/15 border-destructive/25";
-    if (risk >= 40) return "bg-warning/15 border-warning/25";
-    return "bg-success/15 border-success/25";
-  };
-
-  const riskGradient = (risk: number) => {
-    if (risk >= 70) return "from-warning to-destructive";
-    if (risk >= 40) return "from-success to-warning";
-    return "from-success to-success";
-  };
+  const riskColor = (risk: number) =>
+    risk >= 70 ? "text-destructive" : risk >= 40 ? "text-warning" : "text-success";
+  const riskBg = (risk: number) =>
+    risk >= 70 ? "bg-destructive/15 border-destructive/25" :
+    risk >= 40 ? "bg-warning/15 border-warning/25" : "bg-success/15 border-success/25";
+  const riskGradient = (risk: number) =>
+    risk >= 70 ? "from-warning to-destructive" :
+    risk >= 40 ? "from-success to-warning" : "from-success to-success";
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
           <Button variant="ghost" size="icon" onClick={onBack} className="rounded-xl hover:bg-muted">
@@ -87,7 +63,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
             <button onClick={() => setView("profil")} className={`hidden md:inline text-xs font-semibold px-2.5 py-1 rounded-lg ${view === "profil" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"}`}>Profil</button>
             <NotificationCenter role="hospital" />
             <LogoutButton compact onLoggedOut={onBack} />
-            <button onClick={() => setView("profil")} className="flex items-center gap-2 rounded-xl hover:bg-muted/40 px-1.5 py-1 transition-colors">
+            <button onClick={() => setView("profil")} className="flex items-center gap-2 rounded-xl hover:bg-muted/40 px-1.5 py-1">
               <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground">
                 <Users className="h-4 w-4" />
               </div>
@@ -104,164 +80,107 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
         {view === "ai" && <AIRecommendations role="hospital" />}
         {view === "profil" && <HospitalProfile onBack={() => setView("home")} />}
         {view === "home" && (<>
-        <div className="animate-fade-in-up flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <div>
-            <h1 className="mb-1 text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">Command Center Klaim</h1>
-            <p className="text-muted-foreground">Ringkasan kesehatan klaim 7 hari terakhir</p>
+          <div className="animate-fade-in-up flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+              <h1 className="mb-1 text-2xl font-extrabold tracking-tight md:text-3xl">Command Center Klaim</h1>
+              <p className="text-muted-foreground">Ringkasan kesehatan klaim 7 hari terakhir</p>
+            </div>
+            {onSubmitClaim && (
+              <Button onClick={onSubmitClaim} className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-lg shadow-primary/30 px-6 py-3 text-base font-bold animate-pulse hover:animate-none hover:scale-105 transition-transform">
+                <Plus className="h-5 w-5" /> Ajukan Klaim Baru
+              </Button>
+            )}
           </div>
-          {onSubmitClaim && (
-            <Button onClick={onSubmitClaim} className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-lg shadow-primary/30 px-6 py-3 text-base font-bold animate-pulse hover:animate-none hover:scale-105 transition-transform">
-              <Plus className="h-5 w-5" /> Ajukan Klaim Baru
-            </Button>
-          )}
-        </div>
 
-        {/* Stats Grid */}
-        <div className="mb-8 grid gap-4 grid-cols-2 lg:grid-cols-4">
-          {STATS.map((stat, idx) => (
-            <Card
-              key={stat.label}
-              className="animate-slide-up group relative overflow-hidden border-border/60 p-5 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5 hover:border-primary/20"
-              style={{ animationDelay: `${idx * 0.08}s`, boxShadow: 'var(--shadow-card)' }}
-            >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 transition-all duration-300 group-hover:scale-150 group-hover:bg-primary/10" />
-              <div className="relative">
+          <div className="mb-8 grid gap-4 grid-cols-2 lg:grid-cols-4">
+            {STATS.map((stat, idx) => (
+              <Card key={stat.label} className="animate-slide-up group relative overflow-hidden border-border/60 p-5 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5 transition-all" style={{ animationDelay: `${idx * 0.08}s`, boxShadow: "var(--shadow-card)" }}>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{stat.label}</span>
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 text-primary transition-all duration-300 group-hover:gradient-primary group-hover:text-primary-foreground group-hover:shadow-md group-hover:shadow-primary/25">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 text-primary">
                     <stat.icon className="h-4 w-4" />
                   </div>
                 </div>
-                <p className="mt-3 text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">{stat.value}</p>
+                <p className="mt-3 text-2xl font-extrabold tracking-tight md:text-3xl">{stat.value}</p>
                 <p className="mt-1 text-xs font-medium text-muted-foreground">{stat.change}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
 
-        {/* Claims Table */}
-        <Card className="animate-slide-up overflow-hidden border-border/60" style={{ animationDelay: '0.3s', boxShadow: 'var(--shadow-card)' }}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border/60 px-5 py-4 md:px-6">
-            <div className="flex items-center gap-2">
+          <Card className="animate-slide-up overflow-hidden border-border/60" style={{ animationDelay: "0.3s", boxShadow: "var(--shadow-card)" }}>
+            <div className="flex items-center gap-2 px-5 py-4 md:px-6">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
                 <Sparkles className="h-4 w-4 text-primary" />
               </div>
               <h2 className="font-bold text-foreground">Klaim Terbaru — Skor Risiko AI</h2>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Cari nama pasien..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-56 rounded-xl border-border/60 bg-muted/20 pl-9 text-sm focus:border-primary/50 focus:ring-primary/20"
-                />
-              </div>
-              <Button variant="outline" size="sm" className="rounded-lg">Lihat Semua</Button>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border/60 bg-muted/30">
-                  <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">No</th>
-                  <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">Pasien</th>
-                  <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6 hidden md:table-cell">Diagnosis</th>
-                  <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6 hidden lg:table-cell">Nilai</th>
-                  <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">Skor Risiko</th>
-                  <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6 hidden md:table-cell">Dokumen</th>
-                  <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredClaims.length === 0 ? (
-                  <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-muted-foreground">Tidak ada klaim yang cocok dengan pencarian.</td></tr>
-                ) : filteredClaims.map((claim) => (
-                  <tr
-                    key={claim.id}
-                    className="border-b border-border/40 last:border-0 hover:bg-muted/20 transition-colors duration-150"
-                  >
-                    <td className="px-5 py-4 text-sm font-bold text-primary md:px-6">{claim.id}</td>
-                    <td className="px-5 py-4 md:px-6">
-                      <p className="text-sm font-semibold text-foreground">{claim.patient}</p>
-                      <p className="text-xs text-muted-foreground md:hidden">{claim.diagnosis}</p>
-                    </td>
-                    <td className="px-5 py-4 text-sm text-muted-foreground md:px-6 hidden md:table-cell">{claim.diagnosis}</td>
-                    <td className="px-5 py-4 text-sm font-semibold text-foreground md:px-6 hidden lg:table-cell">{claim.amount}</td>
-                    <td className="px-5 py-4 md:px-6">
-                      <div className="flex items-center gap-2.5">
-                        <div className={`flex h-9 w-9 items-center justify-center rounded-xl border text-xs font-extrabold ${riskBg(claim.risk)} ${riskColor(claim.risk)}`}>
-                          {claim.risk}
-                        </div>
-                        <div className="hidden sm:block">
-                          <div className="h-1.5 w-16 rounded-full bg-muted overflow-hidden">
-                            <div
-                              className={`h-full rounded-full bg-gradient-to-r ${riskGradient(claim.risk)} transition-all duration-500`}
-                              style={{ width: `${claim.risk}%` }}
-                            />
-                          </div>
-                          <p className="mt-0.5 text-[10px] text-muted-foreground">AI: {claim.confidence}%</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 md:px-6 hidden md:table-cell">
-                      <Badge
-                        className={`font-semibold text-xs ${
-                          claim.docs === "Lengkap"
-                            ? "bg-success/15 text-success border border-success/25"
-                            : claim.docs === "Sebagian"
-                            ? "bg-warning/15 text-warning border border-warning/25"
-                            : "bg-destructive/15 text-destructive border border-destructive/25"
-                        }`}
-                      >
-                        {claim.docs === "Lengkap" && <CheckCircle2 className="mr-1 h-3 w-3" />}
-                        {claim.docs === "Tidak Lengkap" && <AlertTriangle className="mr-1 h-3 w-3" />}
-                        {claim.docs}
-                      </Badge>
-                    </td>
-                    <td className="px-5 py-4 md:px-6">
-                      <Button variant="ghost" size="sm" className="rounded-lg hover:bg-primary/15 hover:text-primary">
-                        <Eye className="h-4 w-4" /> <span className="hidden sm:inline">Detail</span>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+            <ClaimsToolbar
+              filters={filters}
+              onChange={update}
+              total={filteredClaims.length}
+              onExport={() => downloadCsv(`bpjsight-claims-${new Date().toISOString().slice(0,10)}.csv`, exportClaimsCsv(filteredClaims))}
+            />
 
-        {/* Risk Alert */}
-        <Card className="animate-slide-up mt-6 border-warning/25 overflow-hidden" style={{ animationDelay: '0.4s', boxShadow: 'var(--shadow-card)' }}>
-          <div className="bg-gradient-to-r from-warning/10 via-warning/5 to-transparent p-5 md:p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-warning/15 border border-warning/25">
-                <AlertTriangle className="h-5 w-5 text-warning" />
-              </div>
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-bold text-foreground">18 Klaim Berisiko Ditolak</h3>
-                  <Badge className="bg-destructive/15 text-destructive border border-destructive/25 text-xs font-bold">
-                    Prioritas Tinggi
-                  </Badge>
-                </div>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Sistem AI mendeteksi 18 klaim dengan skor risiko tinggi (&gt;70). Periksa kelengkapan dokumen
-                  dan pastikan koding diagnosis sesuai ICD-10 sebelum pengajuan.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button size="sm" className="rounded-lg gradient-primary text-primary-foreground border-0 shadow-md shadow-primary/25">
-                    <FileWarning className="h-4 w-4" /> Lihat Daftar Periksa
-                  </Button>
-                  <Button variant="outline" size="sm" className="rounded-lg">
-                    Abaikan
-                  </Button>
-                </div>
-              </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border/60 bg-muted/30">
+                    <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">No</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">Pasien</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6 hidden md:table-cell">Diagnosis</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6 hidden lg:table-cell">Nilai</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">Skor Risiko</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6 hidden md:table-cell">Dokumen</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredClaims.length === 0 ? (
+                    <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-muted-foreground">Tidak ada klaim yang cocok.</td></tr>
+                  ) : filteredClaims.map((claim) => (
+                    <tr key={claim.id} className="border-b border-border/40 last:border-0 hover:bg-muted/20 transition-colors">
+                      <td className="px-5 py-4 text-sm font-bold text-primary md:px-6">{claim.id}</td>
+                      <td className="px-5 py-4 md:px-6">
+                        <p className="text-sm font-semibold text-foreground">{claim.patient}</p>
+                        <p className="text-xs text-muted-foreground md:hidden">{claim.diagnosis}</p>
+                      </td>
+                      <td className="px-5 py-4 text-sm text-muted-foreground md:px-6 hidden md:table-cell">{claim.diagnosis} <span className="text-[10px] text-muted-foreground/60">({claim.icd10})</span></td>
+                      <td className="px-5 py-4 text-sm font-semibold text-foreground md:px-6 hidden lg:table-cell">{formatIDRShort(claim.amountIDR)}</td>
+                      <td className="px-5 py-4 md:px-6">
+                        <div className="flex items-center gap-2.5">
+                          <div className={`flex h-9 w-9 items-center justify-center rounded-xl border text-xs font-extrabold ${riskBg(claim.risk)} ${riskColor(claim.risk)}`}>
+                            {claim.risk}
+                          </div>
+                          <div className="hidden sm:block">
+                            <div className="h-1.5 w-16 rounded-full bg-muted overflow-hidden">
+                              <div className={`h-full rounded-full bg-gradient-to-r ${riskGradient(claim.risk)} transition-all duration-500`} style={{ width: `${claim.risk}%` }} />
+                            </div>
+                            <p className="mt-0.5 text-[10px] text-muted-foreground">AI: {claim.confidence}%</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 md:px-6 hidden md:table-cell">
+                        <Badge className={`font-semibold text-xs ${
+                          claim.docs === "Lengkap" ? "bg-success/15 text-success border border-success/25" :
+                          claim.docs === "Sebagian" ? "bg-warning/15 text-warning border border-warning/25" :
+                          "bg-destructive/15 text-destructive border border-destructive/25"
+                        }`}>
+                          {claim.docs === "Lengkap" && <CheckCircle2 className="mr-1 h-3 w-3" />}
+                          {claim.docs === "Tidak Lengkap" && <AlertTriangle className="mr-1 h-3 w-3" />}
+                          {claim.docs}
+                        </Badge>
+                      </td>
+                      <td className="px-5 py-4 md:px-6">
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/rs/klaim/${claim.id}`)} className="rounded-lg hover:bg-primary/15 hover:text-primary">
+                          <Eye className="h-4 w-4" /> <span className="hidden sm:inline">Detail</span>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        </Card>
+          </Card>
         </>)}
       </main>
     </div>
