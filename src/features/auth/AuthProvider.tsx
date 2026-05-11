@@ -29,7 +29,6 @@ function clearStoredUser() {
 
 export function AuthProvider({ children, onTimeout }: { children: ReactNode; onTimeout?: () => void }) {
   const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
-  const [ready, setReady] = useState(true);
   const lastActivity = useRef(Date.now());
   const timeoutCb = useRef(onTimeout);
   timeoutCb.current = onTimeout;
