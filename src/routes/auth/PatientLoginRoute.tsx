@@ -31,7 +31,7 @@ export default function PatientLoginRoute() {
       identifier: values.nik,
       remember: values.remember ?? true,
     });
-    const dest = location.state?.from?.pathname || "/pasien";
+    const dest = location.state?.from?.pathname || "/pasien/dashboard";
     navigate(dest, { replace: true });
   };
 
