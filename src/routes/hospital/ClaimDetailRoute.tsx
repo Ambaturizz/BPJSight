@@ -23,7 +23,7 @@ export default function ClaimDetailRoute() {
         <Card className="p-8 max-w-md text-center border-border/60">
           <h2 className="text-xl font-bold mb-2">Klaim tidak ditemukan</h2>
           <p className="text-sm text-muted-foreground mb-4">Klaim #{claimId} tidak tersedia atau telah dihapus.</p>
-          <Button onClick={() => navigate("/rs")}>Kembali ke Dashboard</Button>
+          <Button onClick={() => navigate("/rumah-sakit/dashboard")}>Kembali ke Dashboard</Button>
         </Card>
       </div>
     );
