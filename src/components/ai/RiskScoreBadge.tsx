@@ -75,7 +75,7 @@ export default function RiskScoreBadge({
   const styles = sizeClass[size];
 
   return (
-    <div className={`inline-flex items-center border ${levelTone[resolvedLevel]} ${styles.root} ${className}`} aria-label={`${levelLabel[resolvedLevel]}${safeScore !== null ? `, skor ${safeScore}` : ""}${typeof confidence === "number" ? `, confidence AI ${Math.round(confidence)} persen` : ""}`}>
+    <div className={`inline-flex items-center border ${levelTone[resolvedLevel]} ${styles.root} ${className}`} aria-label={`${levelLabel[resolvedLevel]}${safeScore !== null ? `, skor ${safeScore}` : ""}${typeof confidence === "number" ? `, skor kelengkapan ${Math.round(confidence)} persen` : ""}`}>
       <div className={`flex shrink-0 items-center justify-center rounded-xl border font-extrabold ${scoreBoxTone[resolvedLevel]} ${styles.score}`}>
         {safeScore ?? <Info className={styles.icon} />}
       </div>
@@ -88,12 +88,14 @@ export default function RiskScoreBadge({
 
         {showConfidence && typeof confidence === "number" && (
           <Badge className="mt-1 border border-info/25 bg-info/15 text-[10px] font-bold text-info">
-            Confidence AI {Math.round(confidence)}%
+            Kelengkapan {Math.round(confidence)}%
           </Badge>
         )}
       </div>
     </div>
   );
 }
+
+
 
 

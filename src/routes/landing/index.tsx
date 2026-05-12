@@ -41,3 +41,5 @@ export function EHRRoute() {
   const navigate = useNavigate();
   return <EHRPartners onBack={() => navigate("/")} />;
 }
+
+

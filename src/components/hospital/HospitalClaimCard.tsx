@@ -64,7 +64,7 @@ export default function HospitalClaimCard({ claim, onDetail, onChecklist, onReco
           Dokumen {claim.docs}
         </Badge>
         <Badge variant="outline" className="border-info/25 bg-info/10 text-xs font-bold text-info">
-          Confidence AI {claim.confidence}%
+          Kelengkapan {claim.confidence}%
         </Badge>
       </div>
 
@@ -106,3 +106,5 @@ export default function HospitalClaimCard({ claim, onDetail, onChecklist, onReco
     </Card>
   );
 }
+
+

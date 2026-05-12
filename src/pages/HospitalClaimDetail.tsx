@@ -316,7 +316,7 @@ export default function HospitalClaimDetail() {
               confidence={claim.confidence}
               riskFactors={claim.riskFactors}
               recommendedActions={claim.recommendedActions}
-              title="Skor Risiko AI"
+              title="Skor Risiko Administratif"
               summary="Skor ini membantu admin menentukan prioritas review dokumen sebelum klaim dikirim atau diproses lebih lanjut."
             />
 
@@ -460,3 +460,5 @@ function maskBpjs(bpjs: string) {
   if (bpjs.length <= 4) return "••••";
   return `•••• •••• •${bpjs.slice(-4)}`;
 }
+
+

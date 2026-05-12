@@ -75,3 +75,5 @@ export function useFilteredClaims(claims: Claim[]) {
   const data = useMemo(() => applyFilters(claims, filters), [claims, filters]);
   return { data, filters, update };
 }
+
+

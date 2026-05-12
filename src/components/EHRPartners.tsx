@@ -8,9 +8,9 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  ArrowLeft, Shield, Search, Hospital, Activity, CheckCircle2, Loader2, Plug,
+  ArrowLeft, Shield, Search, Hospital, CheckCircle2, Loader2, Plug,
   User, FileText, FlaskConical, Pill, Receipt, GitBranch, Calendar, MapPin,
-  Wifi, ShieldCheck, Sparkles,
+  ClipboardCheck,
 } from "lucide-react";
 
 interface EHRPartnersProps {
@@ -23,26 +23,22 @@ interface Partner {
   shortName: string;
   type: "Rumah Sakit" | "Klinik" | "Lab";
   city: string;
-  status: "live" | "sandbox";
-  patients: number;
-  uptime: number;
+  status: "demo" | "sandbox";
+  records: number;
   apiVersion: string;
-  color: string;
 }
 
 const PARTNERS: Partner[] = [
-  { id: "p1", name: "RS MBG Pusat", shortName: "MBG", type: "Rumah Sakit", city: "Jakarta", status: "live", patients: 12450, uptime: 99.98, apiVersion: "FHIR R4", color: "from-primary to-info" },
-  { id: "p2", name: "RS Cipto Mangunkusumo", shortName: "RSCM", type: "Rumah Sakit", city: "Jakarta", status: "live", patients: 28900, uptime: 99.92, apiVersion: "FHIR R4", color: "from-info to-primary" },
-  { id: "p3", name: "RS Pondok Indah", shortName: "RSPI", type: "Rumah Sakit", city: "Jakarta", status: "live", patients: 15820, uptime: 99.95, apiVersion: "FHIR R4", color: "from-success to-primary" },
-  { id: "p4", name: "Klinik Mitra Keluarga", shortName: "MK", type: "Klinik", city: "Jakarta", status: "live", patients: 6210, uptime: 99.80, apiVersion: "FHIR R4", color: "from-warning to-destructive" },
-  { id: "p5", name: "Klinik Sehat Sentosa", shortName: "SS", type: "Klinik", city: "Bandung", status: "sandbox", patients: 980, uptime: 99.50, apiVersion: "FHIR R4", color: "from-primary to-success" },
-  { id: "p6", name: "Lab Prodia", shortName: "PRO", type: "Lab", city: "Nasional", status: "live", patients: 41200, uptime: 99.99, apiVersion: "FHIR R4", color: "from-destructive to-warning" },
-  { id: "p7", name: "Puskesmas Menteng", shortName: "PKM", type: "Klinik", city: "Jakarta", status: "live", patients: 3420, uptime: 99.70, apiVersion: "FHIR R4", color: "from-info to-success" },
-  { id: "p8", name: "RS Hermina", shortName: "HER", type: "Rumah Sakit", city: "Bekasi", status: "sandbox", patients: 8900, uptime: 99.60, apiVersion: "FHIR R4", color: "from-warning to-primary" },
+  { id: "p1", name: "RS Demo Jakarta", shortName: "RSDJ", type: "Rumah Sakit", city: "Jakarta", status: "demo", records: 24, apiVersion: "FHIR Preview" },
+  { id: "p2", name: "RS Demo Bandung", shortName: "RSDB", type: "Rumah Sakit", city: "Bandung", status: "demo", records: 18, apiVersion: "FHIR Preview" },
+  { id: "p3", name: "Klinik Demo Sentosa", shortName: "KDS", type: "Klinik", city: "Jakarta", status: "sandbox", records: 12, apiVersion: "FHIR Preview" },
+  { id: "p4", name: "Klinik Sehat Demo", shortName: "KSD", type: "Klinik", city: "Bekasi", status: "sandbox", records: 9, apiVersion: "FHIR Preview" },
+  { id: "p5", name: "Lab Demo Nasional", shortName: "LDN", type: "Lab", city: "Nasional", status: "demo", records: 16, apiVersion: "FHIR Preview" },
+  { id: "p6", name: "Lab Demo Bandung", shortName: "LDB", type: "Lab", city: "Bandung", status: "sandbox", records: 8, apiVersion: "FHIR Preview" },
 ];
 
 const SAMPLE_PATIENT = {
-  name: "Polisi MBG",
+  name: "Budi Santoso",
   nik: "•••• •••• •••• 0001",
   bpjs: "•••• •••• •7890",
   dob: "12 Mei 1990",
@@ -52,10 +48,10 @@ const SAMPLE_PATIENT = {
 };
 
 const MEDICAL_HISTORY = [
-  { date: "2024-03-28", title: "Konsultasi Poli Jantung", facility: "RS MBG", status: "Selesai" },
-  { date: "2024-03-15", title: "Bedah Minor — Kista", facility: "RS MBG", status: "Selesai" },
-  { date: "2024-02-10", title: "Imunisasi Influenza", facility: "Klinik Mitra Keluarga", status: "Selesai" },
-  { date: "2023-11-05", title: "MCU Tahunan", facility: "Lab Prodia", status: "Selesai" },
+  { date: "2024-03-28", title: "Konsultasi Poli Jantung", facility: "RS Demo Jakarta", status: "Selesai" },
+  { date: "2024-03-15", title: "Tindakan Bedah Minor", facility: "RS Demo Jakarta", status: "Selesai" },
+  { date: "2024-02-10", title: "Kontrol Rawat Jalan", facility: "Klinik Demo Sentosa", status: "Selesai" },
+  { date: "2023-11-05", title: "Pemeriksaan Laboratorium", facility: "Lab Demo Nasional", status: "Selesai" },
 ];
 
 const DIAGNOSES = [
@@ -78,14 +74,14 @@ const PRESCRIPTIONS = [
 ];
 
 const CLAIMS = [
-  { id: "1", desc: "Rawat Jalan Poli Jantung", amount: "Rp 1.250.000", status: "Diproses" },
-  { id: "2", desc: "Bedah Minor", amount: "Rp 8.500.000", status: "Berisiko" },
-  { id: "3", desc: "Poli Mata", amount: "Rp 650.000", status: "Selesai" },
+  { id: "KLM-DEMO-001", desc: "Rawat Jalan Poli Jantung", amount: "Rp 1.250.000", status: "Diproses" },
+  { id: "KLM-DEMO-002", desc: "Tindakan Bedah Minor", amount: "Rp 8.500.000", status: "Berisiko" },
+  { id: "KLM-DEMO-003", desc: "Rawat Jalan Poli Mata", amount: "Rp 650.000", status: "Selesai" },
 ];
 
 const REFERRALS = [
-  { from: "Puskesmas Menteng", to: "RS MBG — Sp. Jantung", date: "2024-03-20" },
-  { from: "RS MBG", to: "Lab Prodia — Echocardiogram", date: "2024-03-25" },
+  { from: "Klinik Demo Sentosa", to: "RS Demo Jakarta — Sp. Jantung", date: "2024-03-20" },
+  { from: "RS Demo Jakarta", to: "Lab Demo Nasional — Echocardiogram", date: "2024-03-25" },
 ];
 
 type Tab = "profile" | "history" | "diagnosis" | "lab" | "rx" | "claims" | "referral";
@@ -117,7 +113,7 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
     setTimeout(() => {
       setSyncing(false);
       setSynced(true);
-    }, 1400);
+    }, 900);
   };
 
   const tabs: { k: Tab; label: string; icon: typeof User }[] = [
@@ -132,46 +128,42 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
+      <header className="sticky top-0 z-20 border-b border-border/70 bg-card/95 px-4 py-3 backdrop-blur-md md:px-6 md:py-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Kembali ke beranda" onClick={onBack} className="rounded-xl hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
-              <Shield className="h-4 w-4 text-primary-foreground" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Shield className="h-4 w-4" />
             </div>
-            <span className="font-bold text-foreground tracking-tight">BPJSight</span>
+            <span className="font-bold tracking-tight text-foreground">BPJSight</span>
           </div>
           <div className="ml-auto"><ThemeToggle compact /></div>
-          <Badge className="ml-3 bg-primary/15 text-primary border border-primary/25 text-xs font-semibold">
-            <Plug className="mr-1 h-3 w-3" /> EHR Partners
+          <Badge className="ml-3 border border-primary/25 bg-primary/10 text-xs font-semibold text-primary">
+            <Plug className="mr-1 h-3 w-3" /> EHR Demo
           </Badge>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 md:px-6">
-        {/* Hero */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-            <Sparkles className="h-3.5 w-3.5" /> Integrated EHR Partners
-          </div>
+          <Badge variant="outline" className="border-primary/30 bg-background px-3 py-1.5 text-xs font-semibold text-primary">
+            Data Simulasi · Bukan integrasi produksi
+          </Badge>
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">
-            Partner EHR Terintegrasi
+            Preview EHR Simulatif
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
-            BPJSight terhubung dengan rumah sakit, klinik, dan laboratorium melalui standar HL7 FHIR R4.
-            Klik kartu partner untuk melihat preview EHR dan simulasi sinkronisasi data.
+            Halaman ini menampilkan contoh struktur data berbasis FHIR untuk kebutuhan demonstrasi. Nama fasilitas, pasien, status koneksi, dan isi rekam medis adalah data demo.
           </p>
         </div>
 
-        {/* Search + filters */}
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Cari rumah sakit, klinik, atau lab…"
+              placeholder="Cari fasilitas demo…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="pl-9"
@@ -182,10 +174,10 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
               <button
                 key={t}
                 onClick={() => setTypeFilter(t)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
                   typeFilter === t
-                    ? "gradient-primary border-transparent text-primary-foreground shadow-md shadow-primary/25"
-                    : "border-border/60 bg-muted/40 text-muted-foreground hover:text-foreground"
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border/70 bg-muted/30 text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t === "all" ? "Semua" : t}
@@ -194,49 +186,38 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
           </div>
         </div>
 
-        {/* Partner grid */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((p, idx) => (
             <button
               key={p.id}
               onClick={() => openPartner(p)}
               className="animate-slide-up group text-left"
-              style={{ animationDelay: `${idx * 0.05}s` }}
+              style={{ animationDelay: `${idx * 0.04}s` }}
             >
               <Card
-                className="relative overflow-hidden border-border/60 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-card-hover)]"
+                className="border-border/70 p-5 transition-colors hover:border-primary/40 hover:bg-muted/10"
                 style={{ boxShadow: "var(--shadow-card)" }}
               >
-                <div className={`absolute -top-12 -right-12 h-32 w-32 rounded-full bg-gradient-to-br ${p.color} opacity-20 blur-2xl transition-opacity group-hover:opacity-30`} />
-                <div className="relative flex items-start justify-between">
-                  <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${p.color} text-primary-foreground shadow-md`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
                     <span className="text-sm font-extrabold tracking-tight">{p.shortName}</span>
                   </div>
-                  <Badge className={`text-[10px] font-bold border ${
-                    p.status === "live"
-                      ? "bg-success/15 text-success border-success/25"
-                      : "bg-warning/15 text-warning border-warning/25"
-                  }`}>
-                    <span className={`mr-1 h-1.5 w-1.5 rounded-full ${p.status === "live" ? "bg-success animate-pulse" : "bg-warning"}`} />
-                    {p.status === "live" ? "LIVE" : "SANDBOX"}
+                  <Badge className="border border-info/25 bg-info/10 text-[10px] font-bold text-info">
+                    {p.status === "demo" ? "DEMO" : "SANDBOX"}
                   </Badge>
                 </div>
-                <h3 className="relative mt-4 font-bold text-foreground">{p.name}</h3>
-                <p className="relative mt-0.5 text-xs text-muted-foreground inline-flex items-center gap-1">
+                <h3 className="mt-4 font-bold text-foreground">{p.name}</h3>
+                <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <MapPin className="h-3 w-3" /> {p.city} • {p.type}
                 </p>
 
-                <div className="relative mt-4 grid grid-cols-3 gap-2 border-t border-border/60 pt-3">
+                <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border/60 pt-3">
                   <div>
-                    <p className="text-[10px] font-medium text-muted-foreground">Pasien</p>
-                    <p className="text-sm font-bold text-foreground">{(p.patients / 1000).toFixed(1)}k</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Record contoh</p>
+                    <p className="text-sm font-bold text-foreground">{p.records}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-medium text-muted-foreground">Uptime</p>
-                    <p className="text-sm font-bold text-foreground">{p.uptime}%</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-medium text-muted-foreground">API</p>
+                    <p className="text-[10px] font-medium text-muted-foreground">Struktur</p>
                     <p className="text-sm font-bold text-primary">{p.apiVersion}</p>
                   </div>
                 </div>
@@ -246,55 +227,51 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
         </div>
       </main>
 
-      {/* EHR Preview Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-hidden p-0">
           {active && (
             <div className="flex max-h-[90vh] flex-col">
               <DialogHeader className="border-b border-border/60 bg-muted/30 p-5">
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${active.color} text-primary-foreground shadow-md`}>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
                     <Hospital className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
                     <DialogTitle className="text-base font-bold">{active.name}</DialogTitle>
                     <DialogDescription className="text-xs">
-                      Preview EHR • {active.apiVersion} • {active.city}
+                      Preview EHR simulatif • {active.apiVersion} • {active.city}
                     </DialogDescription>
                   </div>
                   {synced ? (
-                    <Badge className="bg-success/15 text-success border border-success/25 text-xs font-bold">
-                      <CheckCircle2 className="mr-1 h-3 w-3" /> Connected to BPJSight
+                    <Badge className="border border-success/25 bg-success/15 text-xs font-bold text-success">
+                      <CheckCircle2 className="mr-1 h-3 w-3" /> Simulasi koneksi berhasil
                     </Badge>
                   ) : (
-                    <Badge className="bg-info/15 text-info border border-info/25 text-xs font-bold">
-                      <Loader2 className="mr-1 h-3 w-3 animate-spin" /> Syncing…
+                    <Badge className="border border-info/25 bg-info/15 text-xs font-bold text-info">
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" /> Memuat demo…
                     </Badge>
                   )}
                 </div>
 
-                {/* Sync animation bar */}
                 <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted">
                   <div
-                    className={`h-full bg-gradient-to-r from-primary to-info transition-all duration-700 ease-out ${
+                    className={`h-full bg-primary transition-all duration-500 ease-out ${
                       syncing ? "w-1/2 animate-pulse" : "w-full"
                     }`}
                   />
                 </div>
                 <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1"><Wifi className="h-3 w-3 text-success" /> API: 200 OK</span>
-                  <span className="inline-flex items-center gap-1"><Activity className="h-3 w-3 text-primary" /> Latency: 142ms</span>
-                  <span className="inline-flex items-center gap-1"><ShieldCheck className="h-3 w-3 text-success" /> TLS 1.3</span>
+                  <span className="inline-flex items-center gap-1"><ClipboardCheck className="h-3 w-3 text-primary" /> Status simulasi: berhasil</span>
+                  <span className="inline-flex items-center gap-1"><Shield className="h-3 w-3 text-primary" /> Data demo tanpa koneksi produksi</span>
                 </div>
               </DialogHeader>
 
-              {/* Tabs */}
               <div className="flex gap-1 overflow-x-auto border-b border-border/60 bg-card px-3 py-2">
                 {tabs.map((t) => (
                   <button
                     key={t.k}
                     onClick={() => setTab(t.k)}
-                    className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                       tab === t.k
                         ? "bg-primary/15 text-primary"
                         : "text-muted-foreground hover:text-foreground"
@@ -306,13 +283,13 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
                 ))}
               </div>
 
-              {/* Tab content */}
               <div className="flex-1 overflow-y-auto p-5">
+                <Badge variant="outline" className="mb-4 border-primary/25 text-xs text-primary">Data Simulasi</Badge>
                 {syncing ? (
                   <div className="flex flex-col items-center justify-center gap-3 py-16 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm font-semibold">Menyinkronkan data FHIR R4…</p>
-                    <p className="text-xs">Mengambil resource Patient, Encounter, Observation</p>
+                    <p className="text-sm font-semibold">Memuat preview data demo…</p>
+                    <p className="text-xs">Menyiapkan contoh Patient, Encounter, Observation, dan Claim</p>
                   </div>
                 ) : (
                   <>
@@ -324,7 +301,7 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
                         <InfoRow label="Tanggal Lahir" value={SAMPLE_PATIENT.dob} />
                         <InfoRow label="Jenis Kelamin" value={SAMPLE_PATIENT.gender} />
                         <InfoRow label="Gol. Darah" value={SAMPLE_PATIENT.bloodType} />
-                        <div className="sm:col-span-2 rounded-xl border border-destructive/25 bg-destructive/10 p-3">
+                        <div className="rounded-xl border border-destructive/25 bg-destructive/10 p-3 sm:col-span-2">
                           <p className="text-xs font-bold text-destructive">Alergi</p>
                           <p className="mt-1 text-sm text-foreground">{SAMPLE_PATIENT.allergies.join(", ")}</p>
                         </div>
@@ -339,7 +316,7 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
                               <p className="text-sm font-semibold text-foreground">{h.title}</p>
                               <p className="text-xs text-muted-foreground">{h.facility} • {h.date}</p>
                             </div>
-                            <Badge className="bg-success/15 text-success border border-success/25 text-[10px] font-semibold">{h.status}</Badge>
+                            <Badge className="border border-success/25 bg-success/15 text-[10px] font-semibold text-success">{h.status}</Badge>
                           </li>
                         ))}
                       </ul>
@@ -375,10 +352,10 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
                                 <td className="px-4 py-2 text-foreground">{r.value}</td>
                                 <td className="px-4 py-2 text-muted-foreground">{r.unit}</td>
                                 <td className="px-4 py-2">
-                                  <Badge className={`text-[10px] font-semibold border ${
+                                  <Badge className={`border text-[10px] font-semibold ${
                                     r.flag === "high"
-                                      ? "bg-destructive/15 text-destructive border-destructive/25"
-                                      : "bg-success/15 text-success border-success/25"
+                                      ? "border-destructive/25 bg-destructive/15 text-destructive"
+                                      : "border-success/25 bg-success/15 text-success"
                                   }`}>
                                     {r.flag === "high" ? "Tinggi" : "Normal"}
                                   </Badge>
@@ -415,10 +392,10 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-bold text-foreground">{c.amount}</p>
-                              <Badge className={`mt-0.5 text-[10px] font-semibold border ${
-                                c.status === "Selesai" ? "bg-success/15 text-success border-success/25" :
-                                c.status === "Berisiko" ? "bg-destructive/15 text-destructive border-destructive/25" :
-                                "bg-info/15 text-info border-info/25"
+                              <Badge className={`mt-0.5 border text-[10px] font-semibold ${
+                                c.status === "Selesai" ? "border-success/25 bg-success/15 text-success" :
+                                c.status === "Berisiko" ? "border-destructive/25 bg-destructive/15 text-destructive" :
+                                "border-info/25 bg-info/15 text-info"
                               }`}>{c.status}</Badge>
                             </div>
                           </li>

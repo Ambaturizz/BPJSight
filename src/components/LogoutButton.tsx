@@ -85,3 +85,5 @@ const LogoutButton = ({ onLoggedOut, compact = false }: LogoutButtonProps) => {
 };
 
 export default LogoutButton;
+
+

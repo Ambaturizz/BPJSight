@@ -59,3 +59,5 @@ export type PatientLoginInput = z.infer<typeof patientLoginSchema>;
 export type PatientRegisterInput = z.infer<typeof patientRegisterSchema>;
 export type HospitalLoginInput = z.infer<typeof hospitalLoginSchema>;
 export type HospitalRegisterInput = z.infer<typeof hospitalRegisterSchema>;
+
+

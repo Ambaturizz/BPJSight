@@ -241,7 +241,7 @@ export default function PatientClaimDetail() {
               confidence={claim.aiConfidence}
               riskFactors={claim.riskFactors}
               recommendedActions={claim.recommendedActions}
-              title="Risiko AI Klaim"
+              title="Risiko Administratif Klaim"
               summary={
                 claim.risk ??
                 "Tidak ada risiko kritikal yang terdeteksi. Tetap pantau proses klaim sampai verifikasi selesai."
@@ -325,3 +325,5 @@ function formatTimelineDate(value: string) {
     minute: "2-digit",
   });
 }
+
+

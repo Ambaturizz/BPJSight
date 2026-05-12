@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
   Shield, ArrowLeft, Upload, FileText, X, CheckCircle2,
-  AlertTriangle, Sparkles, Bell, Loader2, ChevronRight,
+  AlertTriangle, ClipboardCheck, Bell, Loader2, ChevronRight,
   Building2, Calendar, Stethoscope, Activity, User, CreditCard, Heart
 } from "lucide-react";
 
@@ -37,7 +37,7 @@ interface ClaimForm {
   date: string;
 }
 
-// HL7 FHIR Resource types
+// Preview struktur data berbasis FHIR untuk kebutuhan demo
 interface FHIRPatient {
   resourceType: "Patient";
   id: string;
@@ -78,7 +78,7 @@ const INITIAL_FORM: ClaimForm = {
   nik: "",
   bpjsNumber: "",
   diagnosis: "",
-  hospitalName: "RS MBG",
+  hospitalName: "RS Demo Jakarta",
   treatmentType: "",
   date: new Date().toISOString().split("T")[0],
 };
@@ -160,8 +160,8 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
       resourceType: "Patient",
       id: patientId,
       identifier: [
-        { system: "urn:oid:2.16.840.1.113883.2.2.1.1", value: form.nik },
-        { system: "https://bpjs-kesehatan.go.id/fhir/sid/bpjs-number", value: form.bpjsNumber },
+        { system: "urn:demo:bpjsight:nik", value: form.nik },
+        { system: "https://bpjsight.demo/fhir/sid/bpjs-number", value: form.bpjsNumber },
       ],
       name: [{ use: "official", text: form.patientName }],
       birthDate: "1990-01-01",
@@ -180,7 +180,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
       },
       patient: { reference: `Patient/${patientId}`, display: form.patientName },
       created: form.date,
-      provider: { reference: "Organization/rs-mbg", display: form.hospitalName },
+      provider: { reference: "Organization/rs-demo-jakarta", display: form.hospitalName },
       diagnosis: [{
         sequence: 1,
         diagnosisCodeableConcept: {
@@ -195,7 +195,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
         sequence: i + 1,
         category: {
           coding: [{
-            system: "https://bpjs-kesehatan.go.id/fhir/CodeSystem/claim-document-type",
+            system: "https://bpjsight.demo/fhir/CodeSystem/claim-document-type",
             code: d.key,
             display: d.label,
           }],
@@ -224,15 +224,15 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
   };
 
   const riskLevel = (score: number) => {
-    if (score >= 70) return { label: "Tinggi", color: "text-destructive", bg: "bg-destructive/15 border-destructive/25", gradient: "from-warning to-destructive", desc: "Klaim memiliki risiko tinggi ditolak. Pastikan semua dokumen lengkap dan koding ICD-10 sesuai." };
-    if (score >= 40) return { label: "Sedang", color: "text-warning", bg: "bg-warning/15 border-warning/25", gradient: "from-success to-warning", desc: "Klaim memiliki risiko sedang. Periksa kembali kelengkapan lembar verifikasi casemix dan INA CBG's." };
-    return { label: "Rendah", color: "text-success", bg: "bg-success/15 border-success/25", gradient: "from-success to-success", desc: "Risiko rendah. Semua dokumen terverifikasi dan data FHIR sesuai standar." };
+    if (score >= 70) return { label: "Tinggi", color: "text-destructive", bg: "bg-destructive/15 border-destructive/25", gradient: "from-warning to-destructive", desc: "Risiko administratif tinggi. Pastikan resume medis, bukti tindakan, dan kode ICD-10 konsisten sebelum review lanjutan." };
+    if (score >= 40) return { label: "Sedang", color: "text-warning", bg: "bg-warning/15 border-warning/25", gradient: "from-success to-warning", desc: "Risiko administratif sedang. Periksa kembali lembar verifikasi casemix, INA-CBG, dan dokumen pendukung." };
+    return { label: "Rendah", color: "text-success", bg: "bg-success/15 border-success/25", gradient: "from-success to-success", desc: "Risiko administratif rendah pada data demo. Tetap lakukan verifikasi manual sesuai prosedur rumah sakit." };
   };
 
   const stepLabels: { key: Step; label: string; icon: React.ElementType }[] = [
     { key: "docs", label: "Upload Dokumen", icon: Upload },
     { key: "form", label: "Data Klaim", icon: FileText },
-    { key: "fhir-preview", label: "FHIR & Risiko", icon: Heart },
+    { key: "fhir-preview", label: "Data & Risiko", icon: Heart },
     { key: "review", label: "Kirim", icon: CheckCircle2 },
   ];
   const stepOrder: Step[] = ["docs", "form", "fhir-preview", "review"];
@@ -243,20 +243,20 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="animate-fade-in-up max-w-md w-full p-8 text-center border-border/60" style={{ boxShadow: 'var(--shadow-card)' }}>
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full gradient-primary shadow-lg shadow-primary/30 mb-6">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full gradient-primary  mb-6">
             <CheckCircle2 className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Klaim Berhasil Dikirim!</h2>
+          <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Klaim Demo Berhasil Disimpan</h2>
           <p className="mt-3 text-muted-foreground leading-relaxed">
-            Klaim telah diajukan ke BPJS Kesehatan melalui standar HL7 FHIR. Dokumen verifikasi telah terlampir lengkap.
+            Klaim telah masuk ke alur demo BPJSight. Dokumen verifikasi tercatat sebagai data simulasi untuk kebutuhan demonstrasi.
           </p>
           <div className="mt-6 rounded-xl bg-muted/40 p-4 text-left space-y-2">
             <div className="flex justify-between text-sm"><span className="text-muted-foreground">Pasien</span><span className="font-bold text-foreground">{form.patientName}</span></div>
             <div className="flex justify-between text-sm"><span className="text-muted-foreground">Dokumen</span><span className="font-semibold text-foreground">{documents.filter(d => d.file).length}/10 terlampir</span></div>
-            <div className="flex justify-between text-sm"><span className="text-muted-foreground">Format</span><Badge className="bg-primary/15 text-primary border border-primary/25 text-xs font-semibold">HL7 FHIR R4</Badge></div>
-            <div className="flex justify-between text-sm"><span className="text-muted-foreground">Status</span><Badge className="bg-info/15 text-info border border-info/25 text-xs font-semibold">Diproses</Badge></div>
+            <div className="flex justify-between text-sm"><span className="text-muted-foreground">Format</span><Badge className="bg-primary/15 text-primary border border-primary/25 text-xs font-semibold">Preview FHIR</Badge></div>
+            <div className="flex justify-between text-sm"><span className="text-muted-foreground">Status</span><Badge className="bg-info/15 text-info border border-info/25 text-xs font-semibold">Demo tersimpan</Badge></div>
           </div>
-          <Button onClick={onSuccess} className="mt-6 w-full rounded-xl gradient-primary text-primary-foreground border-0 shadow-md shadow-primary/25">
+          <Button onClick={onSuccess} className="mt-6 w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0 ">
             Kembali ke Dashboard
           </Button>
         </Card>
@@ -278,7 +278,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
             </div>
             <span className="font-bold text-foreground tracking-tight">BPJSight</span>
           </div>
-          <Badge variant="outline" className="ml-1 text-primary border-primary/30 font-semibold text-xs">Pengajuan Klaim RS</Badge>
+          <Badge variant="outline" className="ml-1 text-primary border-primary/30 font-semibold text-xs">Pengajuan Klaim Demo</Badge>
           <div className="ml-auto">
             <button className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
               <Bell className="h-4 w-4" />
@@ -298,7 +298,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
                 <div key={s.key} className="flex flex-1 items-center">
                   <div className="flex flex-col items-center flex-1">
                     <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
-                      isDone ? "gradient-primary text-primary-foreground shadow-md shadow-primary/25" :
+                      isDone ? "bg-primary text-primary-foreground hover:bg-primary/90 " :
                       isActive ? "border-2 border-primary text-primary bg-primary/10" :
                       "bg-muted text-muted-foreground"
                     }`}>
@@ -319,8 +319,8 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
         {step === "docs" && (
           <div className="animate-slide-up space-y-6">
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight text-foreground md:text-2xl">Upload Dokumen Verifikasi</h1>
-              <p className="text-sm text-muted-foreground mt-1">Upload 10 dokumen persyaratan klaim BPJS satu per satu (format PDF)</p>
+              <h1 className="text-xl font-extrabold tracking-tight text-foreground md:text-2xl">Upload Dokumen Klaim</h1>
+              <p className="text-sm text-muted-foreground mt-1">Unggah dokumen klaim satu per satu untuk simulasi validasi administratif (format PDF).</p>
             </div>
 
             {/* Progress overview */}
@@ -359,7 +359,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
               <div className="p-5 md:p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary text-primary-foreground font-bold text-sm">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-sm">
                       {currentDocIndex + 1}
                     </div>
                     <div>
@@ -428,12 +428,12 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
                 <ArrowLeft className="h-4 w-4" /> Dokumen Sebelumnya
               </Button>
               {currentDocIndex < 9 ? (
-                <Button onClick={goNextDoc} disabled={!currentDoc.file || currentDoc.file.status !== "done"} className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-md shadow-primary/25">
+                <Button onClick={goNextDoc} disabled={!currentDoc.file || currentDoc.file.status !== "done"} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0 ">
                   Dokumen Selanjutnya <ChevronRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button onClick={() => setStep("form")} disabled={!allDocsDone} className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-md shadow-primary/25 px-6">
-                  <Sparkles className="h-4 w-4" /> Lanjut ke Data Klaim <ChevronRight className="h-4 w-4" />
+                <Button onClick={() => setStep("form")} disabled={!allDocsDone} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0  px-6">
+                  <ClipboardCheck className="h-4 w-4" /> Lanjut ke Data Klaim <ChevronRight className="h-4 w-4" />
                 </Button>
               )}
             </div>
@@ -515,8 +515,8 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
               <Button variant="outline" onClick={() => setStep("docs")} className="rounded-xl">
                 <ArrowLeft className="h-4 w-4" /> Kembali
               </Button>
-              <Button onClick={proceedToFHIR} disabled={!formComplete} className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-md shadow-primary/25 px-6">
-                <Heart className="h-4 w-4" /> Generate FHIR & Analisis <ChevronRight className="h-4 w-4" />
+              <Button onClick={proceedToFHIR} disabled={!formComplete} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0  px-6">
+                <Heart className="h-4 w-4" /> Buat Preview Data & Analisis <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -526,15 +526,15 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
         {step === "fhir-preview" && fhirBundle && (
           <div className="animate-slide-up space-y-6">
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight text-foreground md:text-2xl">HL7 FHIR & Prediksi Risiko AI</h1>
-              <p className="text-sm text-muted-foreground mt-1">Rekam medis telah dikonversi ke standar HL7 FHIR R4</p>
+              <h1 className="text-xl font-extrabold tracking-tight text-foreground md:text-2xl">Preview Data Klaim & Estimasi Risiko</h1>
+              <p className="text-sm text-muted-foreground mt-1">Data klaim ditampilkan sebagai contoh struktur berbasis FHIR untuk kebutuhan demo</p>
             </div>
 
-            {/* FHIR Patient Resource */}
+            {/* Preview Patient Resource */}
             <Card className="border-primary/20 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
               <div className="flex items-center gap-2 border-b border-border/60 px-5 py-3 bg-primary/5">
                 <Heart className="h-4 w-4 text-primary" />
-                <span className="text-sm font-bold text-foreground">FHIR Patient Resource</span>
+                <span className="text-sm font-bold text-foreground">Preview Patient Resource</span>
                 <Badge className="bg-primary/15 text-primary border border-primary/25 text-[10px] font-bold">R4</Badge>
               </div>
               <div className="p-5">
@@ -544,11 +544,11 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
               </div>
             </Card>
 
-            {/* FHIR Claim Resource */}
+            {/* Preview Claim Resource */}
             <Card className="border-primary/20 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
               <div className="flex items-center gap-2 border-b border-border/60 px-5 py-3 bg-primary/5">
                 <FileText className="h-4 w-4 text-primary" />
-                <span className="text-sm font-bold text-foreground">FHIR Claim Resource</span>
+                <span className="text-sm font-bold text-foreground">Preview Claim Resource</span>
                 <Badge className="bg-primary/15 text-primary border border-primary/25 text-[10px] font-bold">R4</Badge>
               </div>
               <div className="p-5">
@@ -558,7 +558,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
               </div>
             </Card>
 
-            {/* AI Risk */}
+            {/* Risk scoring demo */}
             {riskScore !== null && (
               <Card className={`border ${riskLevel(riskScore).bg} overflow-hidden`} style={{ boxShadow: 'var(--shadow-card)' }}>
                 <div className="p-5">
@@ -568,8 +568,8 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-bold text-foreground">Prediksi Risiko AI</span>
+                        <ClipboardCheck className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-bold text-foreground">Estimasi Risiko Administratif</span>
                         <Badge className={`${riskLevel(riskScore).bg} ${riskLevel(riskScore).color} border text-xs font-bold`}>
                           Risiko {riskLevel(riskScore).label}
                         </Badge>
@@ -590,7 +590,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
               <Button variant="outline" onClick={() => setStep("form")} className="rounded-xl">
                 <ArrowLeft className="h-4 w-4" /> Kembali
               </Button>
-              <Button onClick={() => setStep("review")} className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-md shadow-primary/25 px-6">
+              <Button onClick={() => setStep("review")} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0  px-6">
                 Tinjau & Kirim <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -646,14 +646,14 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
               <Card className="flex-1 border-primary/20 p-4" style={{ boxShadow: 'var(--shadow-card)' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <Heart className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-bold text-foreground">HL7 FHIR</span>
+                  <span className="text-sm font-bold text-foreground">Preview FHIR</span>
                 </div>
-                <p className="text-xs text-muted-foreground">Data telah dikonversi ke format FHIR R4 untuk interoperabilitas sistem kesehatan nasional.</p>
+                <p className="text-xs text-muted-foreground">Data ditampilkan sebagai contoh struktur FHIR untuk menggambarkan format pertukaran data, bukan koneksi produksi.</p>
               </Card>
               {riskScore !== null && (
                 <Card className={`flex-1 border p-4 ${riskLevel(riskScore).bg}`} style={{ boxShadow: 'var(--shadow-card)' }}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className={`h-4 w-4 ${riskLevel(riskScore).color}`} />
+                    <ClipboardCheck className={`h-4 w-4 ${riskLevel(riskScore).color}`} />
                     <span className="text-sm font-bold text-foreground">Skor Risiko: {riskScore}/100</span>
                     <Badge className={`${riskLevel(riskScore).bg} ${riskLevel(riskScore).color} border text-xs font-bold ml-auto`}>
                       {riskLevel(riskScore).label}
@@ -668,8 +668,8 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
               <Button variant="outline" onClick={() => setStep("fhir-preview")} className="rounded-xl">
                 <ArrowLeft className="h-4 w-4" /> Kembali
               </Button>
-              <Button onClick={handleSubmit} disabled={submitting} className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-md shadow-primary/25 px-8">
-                {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Mengirim via FHIR...</> : <><CheckCircle2 className="h-4 w-4" /> Kirim Klaim</>}
+              <Button onClick={handleSubmit} disabled={submitting} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0  px-8">
+                {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Menyimpan demo...</> : <><CheckCircle2 className="h-4 w-4" /> Simpan Klaim Demo</>}
               </Button>
             </div>
           </div>
@@ -710,3 +710,5 @@ function FormField({ icon: Icon, label, value, onChange, placeholder, type = "te
 }
 
 export default SmartClaimSubmission;
+
+

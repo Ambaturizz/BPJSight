@@ -118,3 +118,5 @@ export interface HospitalClaim {
  * Backward compatibility untuk useClaimFilters, scoring, dan ClaimDetailRoute.
  */
 export type Claim = HospitalClaim;
+
+

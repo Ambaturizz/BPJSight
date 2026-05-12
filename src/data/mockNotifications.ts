@@ -1,12 +1,11 @@
-
 import type { Notification } from "@/types/notification";
 
 export const mockPatientNotifications: Notification[] = [
   {
     id: "p1",
     role: "patient",
-    title: "Klaim KLM-2024-002 berisiko ditolak",
-    desc: "AI mendeteksi dokumentasi rekam medis tidak lengkap. Hubungi RS MBG.",
+    title: "Klaim KLM-2024-002 perlu review dokumen",
+    desc: "Sistem demo menandai dokumentasi rekam medis tidak lengkap. Hubungi RS Demo Jakarta.",
     time: "5 menit lalu",
     category: "ai",
     severity: "danger",
@@ -17,7 +16,7 @@ export const mockPatientNotifications: Notification[] = [
     id: "p2",
     role: "patient",
     title: "Status klaim diperbarui",
-    desc: "KLM-2024-001 kini dalam tahap verifikasi BPJS Kesehatan.",
+    desc: "KLM-2024-001 kini berada pada tahap verifikasi dokumen dalam alur demo.",
     time: "1 jam lalu",
     category: "klaim",
     severity: "info",
@@ -28,7 +27,7 @@ export const mockPatientNotifications: Notification[] = [
     id: "p3",
     role: "patient",
     title: "Pengingat janji temu",
-    desc: "Konsultasi Poli Jantung besok pukul 09:00 di RS MBG.",
+    desc: "Konsultasi Poli Jantung besok pukul 09:00 di RS Demo Jakarta.",
     time: "3 jam lalu",
     category: "jadwal",
     severity: "info",
@@ -38,7 +37,7 @@ export const mockPatientNotifications: Notification[] = [
     id: "p4",
     role: "patient",
     title: "Klinik baru di sekitar Anda",
-    desc: "Klinik Pratama Sehat (1.2 km) menerima BPJS — buka 24 jam.",
+    desc: "Klinik Demo Sentosa (1.2 km) tersedia sebagai faskes contoh — buka 24 jam.",
     time: "Kemarin",
     category: "faskes",
     severity: "info",
@@ -48,7 +47,7 @@ export const mockPatientNotifications: Notification[] = [
     id: "p5",
     role: "patient",
     title: "Resep harus segera ditebus",
-    desc: "Resep dr. Andini berlaku 3 hari lagi di Apotek Kimia Farma.",
+    desc: "Resep demo berlaku 3 hari lagi di Apotek Demo Farma.",
     time: "Kemarin",
     category: "obat",
     severity: "warning",
@@ -58,7 +57,7 @@ export const mockPatientNotifications: Notification[] = [
     id: "p6",
     role: "patient",
     title: "Rujukan disetujui",
-    desc: "Rujukan ke Sp.JP RSUP telah dikonfirmasi BPJS.",
+    desc: "Rujukan demo ke Sp.JP telah ditandai valid pada alur simulasi.",
     time: "2 hari lalu",
     category: "rujukan",
     severity: "success",
@@ -81,7 +80,7 @@ export const mockHospitalNotifications: Notification[] = [
     id: "h1",
     role: "hospital",
     title: "9 klaim risiko tinggi terdeteksi",
-    desc: "Skor AI > 70. Cek INA-CBG's coding dan kelengkapan dokumen.",
+    desc: "Skor risiko > 70. Cek INA-CBG's coding dan kelengkapan dokumen.",
     time: "Baru saja",
     category: "ai",
     severity: "danger",
@@ -114,7 +113,7 @@ export const mockHospitalNotifications: Notification[] = [
     id: "h4",
     role: "hospital",
     title: "Deadline klaim 3 hari lagi",
-    desc: "12 klaim bulan ini belum disubmit ke BPJS Kesehatan.",
+    desc: "12 klaim demo bulan ini belum masuk tahap submit final.",
     time: "1 jam lalu",
     category: "klaim",
     severity: "warning",
@@ -135,8 +134,8 @@ export const mockHospitalNotifications: Notification[] = [
   {
     id: "h6",
     role: "hospital",
-    title: "Rekomendasi AI baru",
-    desc: "Optimasi klaim rawat inap dapat naikkan approval +4.2%.",
+    title: "Rekomendasi review baru",
+    desc: "Beberapa klaim rawat inap perlu pengecekan resume medis dan kode ICD-10.",
     time: "Hari ini",
     category: "ai",
     severity: "info",
@@ -145,13 +144,15 @@ export const mockHospitalNotifications: Notification[] = [
   {
     id: "h7",
     role: "hospital",
-    title: "Integrasi HL7 FHIR berhasil",
-    desc: "Sinkronisasi 248 rekam medis dengan SatuSehat selesai.",
+    title: "Preview FHIR demo berhasil",
+    desc: "Contoh struktur data EHR berhasil disiapkan untuk demo.",
     time: "Kemarin",
     category: "sistem",
     severity: "success",
     read: true,
   },
 ];
+
+
 
 

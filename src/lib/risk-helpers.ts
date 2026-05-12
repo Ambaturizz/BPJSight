@@ -14,3 +14,5 @@ export function getRiskLevelFromScore(score?: number | null): RiskLevel {
 export function getRiskLevelLabel(level: RiskLevel): string {
   return riskLevelLabels[level];
 }
+
+

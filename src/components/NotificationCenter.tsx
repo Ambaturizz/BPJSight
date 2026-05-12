@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Bell,
   AlertTriangle,
-  Sparkles,
+  ClipboardCheck,
   MapPin,
   Calendar,
   Pill,
@@ -31,7 +31,7 @@ import type { UserRole } from "@/types/user";
 
 const ICONS: Record<NotificationCategory, ComponentType<{ className?: string }>> = {
   klaim: FileText,
-  ai: Sparkles,
+  ai: ClipboardCheck,
   darurat: ShieldAlert,
   jadwal: Calendar,
   obat: Pill,
@@ -52,7 +52,7 @@ const sevTone: Record<NotificationSeverity, string> = {
 const CATEGORY_LABELS: { key: NotificationCategory | "all"; label: string }[] = [
   { key: "all", label: "Semua" },
   { key: "klaim", label: "Klaim" },
-  { key: "ai", label: "AI" },
+  { key: "ai", label: "Review" },
   { key: "darurat", label: "Darurat" },
   { key: "jadwal", label: "Jadwal" },
   { key: "dokumen", label: "Dokumen" },
@@ -228,7 +228,7 @@ const NotificationCenter = ({ role }: Props) => {
               return (
                 <article
                   key={notification.id}
-                  className={`rounded-xl border p-3.5 transition-all hover:shadow-md ${
+                  className={`rounded-xl border p-3.5 transition-colors hover:border-primary/30 ${
                     notification.read ? "border-border/40 bg-card opacity-75" : "border-border/60 bg-card"
                   }`}
                   style={{ animationDelay: `${index * 0.04}s` }}
@@ -286,3 +286,5 @@ const NotificationCenter = ({ role }: Props) => {
 };
 
 export default NotificationCenter;
+
+

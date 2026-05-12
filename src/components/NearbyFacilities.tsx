@@ -26,20 +26,20 @@ interface Facility {
   openNow: boolean;
 }
 
-// Default center: Jakarta (Monas) — used as fallback if geolocation denied
+// Default center demo: Jakarta — used as fallback if geolocation is unavailable
 const DEFAULT_LOCATION = { lat: -6.1754, lng: 106.8272 };
 
 const FACILITIES: Facility[] = [
-  { id: "1", name: "RS MBG Pusat", type: "rumah_sakit", lat: -6.1820, lng: 106.8290, address: "Jl. Merdeka Utara No. 1, Jakarta Pusat", rating: 4.8, bpjs: true, emergency: true, open24h: true, phone: "021-3500-100", openNow: true },
-  { id: "2", name: "Klinik Sehat Sentosa", type: "klinik", lat: -6.1700, lng: 106.8200, address: "Jl. Thamrin No. 45, Jakarta Pusat", rating: 4.5, bpjs: true, emergency: false, open24h: false, phone: "021-3100-220", openNow: true },
-  { id: "3", name: "Apotek Kimia Farma", type: "apotek", lat: -6.1780, lng: 106.8250, address: "Jl. Sudirman Kav. 21, Jakarta Pusat", rating: 4.3, bpjs: false, emergency: false, open24h: true, phone: "021-2900-440", openNow: true },
-  { id: "4", name: "Puskesmas Menteng", type: "faskes_bpjs", lat: -6.1900, lng: 106.8350, address: "Jl. Cikini Raya No. 12, Menteng", rating: 4.2, bpjs: true, emergency: false, open24h: false, phone: "021-3155-600", openNow: false },
-  { id: "5", name: "RS Cipto Mangunkusumo", type: "rumah_sakit", lat: -6.1985, lng: 106.8410, address: "Jl. Diponegoro No. 71, Jakarta Pusat", rating: 4.7, bpjs: true, emergency: true, open24h: true, phone: "021-3147-900", openNow: true },
-  { id: "6", name: "Klinik Mitra Keluarga", type: "klinik", lat: -6.1650, lng: 106.8150, address: "Jl. Kebon Sirih No. 30, Jakarta Pusat", rating: 4.4, bpjs: true, emergency: true, open24h: false, phone: "021-3920-110", openNow: true },
-  { id: "7", name: "Apotek Guardian", type: "apotek", lat: -6.1740, lng: 106.8300, address: "Plaza Indonesia Lt. 1, Jakarta Pusat", rating: 4.1, bpjs: false, emergency: false, open24h: false, phone: "021-2992-330", openNow: true },
-  { id: "8", name: "Puskesmas Kebon Jeruk", type: "faskes_bpjs", lat: -6.1880, lng: 106.7700, address: "Jl. Kebon Jeruk Raya, Jakarta Barat", rating: 4.0, bpjs: true, emergency: false, open24h: false, phone: "021-5366-110", openNow: true },
-  { id: "9", name: "RS Pondok Indah", type: "rumah_sakit", lat: -6.2650, lng: 106.7850, address: "Jl. Metro Duta Kav. UE, Pondok Indah", rating: 4.9, bpjs: true, emergency: true, open24h: true, phone: "021-7657-525", openNow: true },
-  { id: "10", name: "Apotek Century", type: "apotek", lat: -6.1760, lng: 106.8230, address: "Grand Indonesia Mall, Jakarta Pusat", rating: 4.2, bpjs: true, emergency: false, open24h: true, phone: "021-2358-110", openNow: true },
+  { id: "1", name: "RS Demo Jakarta", type: "rumah_sakit", lat: -6.1820, lng: 106.8290, address: "Area Demo Jakarta Pusat", rating: 4.8, bpjs: true, emergency: true, open24h: true, phone: "021-3500-100", openNow: true },
+  { id: "2", name: "Klinik Sehat Demo", type: "klinik", lat: -6.1700, lng: 106.8200, address: "Area Demo Sudirman", rating: 4.5, bpjs: true, emergency: false, open24h: false, phone: "021-3100-220", openNow: true },
+  { id: "3", name: "Apotek Demo Farma", type: "apotek", lat: -6.1780, lng: 106.8250, address: "Area Demo Perkantoran", rating: 4.3, bpjs: false, emergency: false, open24h: true, phone: "021-2900-440", openNow: true },
+  { id: "4", name: "Klinik Demo Sentosa", type: "faskes_bpjs", lat: -6.1900, lng: 106.8350, address: "Area Demo Menteng", rating: 4.2, bpjs: true, emergency: false, open24h: false, phone: "021-3155-600", openNow: false },
+  { id: "5", name: "RS Demo Pusat", type: "rumah_sakit", lat: -6.1985, lng: 106.8410, address: "Area Demo Salemba", rating: 4.7, bpjs: true, emergency: true, open24h: true, phone: "021-3147-900", openNow: true },
+  { id: "6", name: "Klinik Demo Sentosa", type: "klinik", lat: -6.1650, lng: 106.8150, address: "Area Demo Kebon Sirih", rating: 4.4, bpjs: true, emergency: true, open24h: false, phone: "021-3920-110", openNow: true },
+  { id: "7", name: "Apotek Demo Sehat", type: "apotek", lat: -6.1740, lng: 106.8300, address: "Area Demo Pusat Kota", rating: 4.1, bpjs: false, emergency: false, open24h: false, phone: "021-2992-330", openNow: true },
+  { id: "8", name: "Faskes Demo Barat", type: "faskes_bpjs", lat: -6.1880, lng: 106.7700, address: "Area Demo Jakarta Barat", rating: 4.0, bpjs: true, emergency: false, open24h: false, phone: "021-5366-110", openNow: true },
+  { id: "9", name: "RS Demo Selatan", type: "rumah_sakit", lat: -6.2650, lng: 106.7850, address: "Area Demo Jakarta Selatan", rating: 4.9, bpjs: true, emergency: true, open24h: true, phone: "021-7657-525", openNow: true },
+  { id: "10", name: "Apotek Demo 24 Jam", type: "apotek", lat: -6.1760, lng: 106.8230, address: "Area Demo Pusat Belanja", rating: 4.2, bpjs: true, emergency: false, open24h: true, phone: "021-2358-110", openNow: true },
 ];
 
 const TYPE_META: Record<FacilityType, { label: string; icon: typeof Hospital; color: string }> = {
@@ -125,7 +125,7 @@ const NearbyFacilities = () => {
       <Card className="p-4 md:p-5" style={{ boxShadow: "var(--shadow-card)" }}>
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gradient-primary shadow-md shadow-primary/30">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary">
               {locStatus === "loading" ? (
                 <Loader2 className="h-4 w-4 text-primary-foreground animate-spin" />
               ) : (
@@ -135,8 +135,8 @@ const NearbyFacilities = () => {
             <div>
               <p className="text-sm font-bold text-foreground">
                 {locStatus === "loading" && "Mendeteksi lokasi…"}
-                {locStatus === "ok" && "Lokasi real-time aktif"}
-                {locStatus === "error" && "Lokasi default (Jakarta Pusat)"}
+                {locStatus === "ok" && "Lokasi aktif untuk pencarian demo"}
+                {locStatus === "error" && "Lokasi default demo (Jakarta)"}
                 {locStatus === "idle" && "Aktifkan lokasi"}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -315,3 +315,5 @@ const NearbyFacilities = () => {
 };
 
 export default NearbyFacilities;
+
+

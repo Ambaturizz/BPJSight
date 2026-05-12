@@ -5,3 +5,5 @@ export default function PatientDashboardRoute() {
   const navigate = useNavigate();
   return <PatientDashboard onBack={() => navigate("/")} />;
 }
+
+

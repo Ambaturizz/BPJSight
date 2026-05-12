@@ -23,7 +23,7 @@ const progressTone: Record<RiskLevel, string> = {
 };
 
 const DEFAULT_DISCLAIMER =
-  "AI hanya alat bantu untuk membantu prioritas review dan perbaikan dokumen. Keputusan akhir klaim tetap melalui verifikasi resmi sesuai prosedur yang berlaku.";
+  "Skor ini bersifat simulatif untuk membantu prioritas review dan perbaikan dokumen. Keputusan akhir klaim tetap melalui verifikasi resmi sesuai prosedur yang berlaku.";
 
 export default function RiskExplanationPanel({
   score,
@@ -31,7 +31,7 @@ export default function RiskExplanationPanel({
   confidence,
   riskFactors,
   recommendedActions,
-  title = "Penjelasan Skor Risiko AI",
+  title = "Penjelasan Skor Risiko Administratif",
   summary,
   className = "",
 }: RiskExplanationPanelProps) {
@@ -86,5 +86,7 @@ export default function RiskExplanationPanel({
     </Card>
   );
 }
+
+
 
 

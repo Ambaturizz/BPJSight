@@ -10,3 +10,5 @@ document.documentElement.classList.toggle("dark", initialTheme === "dark");
 document.documentElement.dataset.theme = initialTheme;
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+

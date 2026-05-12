@@ -1,4 +1,3 @@
-
 import type { UserRole } from "@/types/user";
 
 export type NotificationCategory =
@@ -35,5 +34,7 @@ export interface Notification {
   read: boolean;
   action?: NotificationAction;
 }
+
+
 
 

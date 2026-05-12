@@ -27,3 +27,5 @@ describe("app helpers", () => {
     expect(getClaimStatusLabel("berisiko")).toBe("Berisiko");
   });
 });
+
+

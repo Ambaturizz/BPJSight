@@ -21,7 +21,7 @@ const STATS = [
   { label: "Diproses", value: "2", icon: Heart },
 ];
 
-const HOSPITALS = ["RS MBG", "RSUD Pusat", "Klinik Pratama Sehat"];
+const HOSPITALS = ["RS Demo Jakarta", "RS Demo Bandung", "Klinik Demo Sentosa"];
 
 const PatientProfile = ({ onBack }: { onBack: () => void }) => {
   const { currentUser } = useAuth();
@@ -32,7 +32,7 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
     bpjs: currentUser?.bpjsMasked ?? "•••• •••• •7890",
     blood: "O+",
     phone: "+62 812-3456-7890",
-    emergency: "Keluarga MBG · +62 813-1111-2222",
+    emergency: "Keluarga Pasien · +62 813-1111-2222",
     history: "Hipertensi terkontrol, tidak ada riwayat operasi",
   });
   const [twoFA, setTwoFA] = useState(true);
@@ -48,7 +48,7 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Profil Saya</h1>
-          <p className="text-sm text-muted-foreground">Kelola informasi pribadi & keamanan akun</p>
+          <p className="text-sm text-muted-foreground">Kelola informasi akun demo pasien</p>
         </div>
         <Button variant="ghost" onClick={onBack}>Kembali</Button>
       </div>
@@ -61,11 +61,11 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
               <h2 className="text-xl font-bold text-foreground">{form.name}</h2>
               <p className="text-sm text-muted-foreground">BPJS Kelas 1 · Aktif</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Badge className="bg-success/15 text-success border border-success/25"><Shield className="mr-1 h-3 w-3" />Terverifikasi</Badge>
+                <Badge className="bg-success/15 text-success border border-success/25"><Shield className="mr-1 h-3 w-3" />Akun Demo</Badge>
                 <Badge className="bg-primary/15 text-primary border border-primary/25"><Droplet className="mr-1 h-3 w-3" />Gol. Darah {form.blood}</Badge>
               </div>
             </div>
-            <Button onClick={() => editing ? save() : setEditing(true)} className="rounded-xl gradient-primary text-primary-foreground border-0">
+            <Button onClick={() => editing ? save() : setEditing(true)} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0">
               {editing ? <><Save className="h-4 w-4" /> Simpan</> : <><Edit3 className="h-4 w-4" /> Edit Profil</>}
             </Button>
           </div>
@@ -117,7 +117,7 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
       </div>
 
       <Card className="p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-        <h3 className="font-bold text-foreground mb-3 flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" /> RS Terhubung</h3>
+        <h3 className="font-bold text-foreground mb-3 flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" /> Faskes Demo Terkait</h3>
         <div className="flex flex-wrap gap-2">
           {HOSPITALS.map(h => (
             <Badge key={h} className="bg-muted/40 text-foreground border border-border/60 px-3 py-1">{h}</Badge>
@@ -150,5 +150,7 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
 };
 
 export default PatientProfile;
+
+
 
 

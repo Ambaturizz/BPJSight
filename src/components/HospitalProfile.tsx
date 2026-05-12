@@ -11,16 +11,16 @@ import {
 import { toast } from "sonner";
 
 const STATS = [
-  { label: "Total Klaim Diproses", value: "12,480", icon: Activity },
-  { label: "Tingkat Persetujuan", value: "94.2%", icon: TrendingUp },
-  { label: "Departemen Aktif", value: "18", icon: Users },
+  { label: "Klaim Demo Diproses", value: "24", icon: Activity },
+  { label: "Kelengkapan Dokumen", value: "78/100", icon: TrendingUp },
+  { label: "Unit Demo", value: "6", icon: Users },
 ];
 
 const EHR = [
-  { name: "SatuSehat", status: "live" },
-  { name: "Epic Systems", status: "live" },
-  { name: "Cerner", status: "sandbox" },
-  { name: "OpenMRS", status: "live" },
+  { name: "Preview FHIR Demo", status: "demo" },
+  { name: "Gateway Klaim Demo", status: "demo" },
+  { name: "Sandbox Dokumen", status: "sandbox" },
+  { name: "Mock EHR Internal", status: "demo" },
 ];
 
 const DEPARTMENTS = ["Kardiologi", "Neurologi", "Pediatri", "Bedah Umum", "Onkologi", "Radiologi", "IGD 24 Jam", "Laboratorium"];
@@ -35,7 +35,7 @@ const STAFF = [
 const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
-    name: "RS MBG",
+    name: "RS Demo Jakarta",
     code: "1234567",
     address: "Jl. Kesehatan No. 12, Jakarta Selatan",
     phone: "+62 21 7000-1234",
@@ -52,7 +52,7 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Profil Rumah Sakit</h1>
-          <p className="text-sm text-muted-foreground">Manajemen institusi & integrasi sistem</p>
+          <p className="text-sm text-muted-foreground">Profil demo rumah sakit dan pengaturan simulasi</p>
         </div>
         <Button variant="ghost" onClick={onBack}>Kembali</Button>
       </div>
@@ -60,19 +60,19 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
       <Card className="overflow-hidden border-primary/20" style={{ boxShadow: 'var(--shadow-card)' }}>
         <div className="bg-gradient-to-br from-primary/15 via-primary/8 to-transparent p-6 md:p-8">
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/30">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl gradient-primary ">
               <Building2 className="h-12 w-12 text-primary-foreground" />
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-foreground">{form.name}</h2>
               <p className="text-sm text-muted-foreground">{form.type} · Kode: {form.code}</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Badge className="bg-success/15 text-success border border-success/25"><Shield className="mr-1 h-3 w-3" />Mitra BPJS Aktif</Badge>
-                <Badge className="bg-primary/15 text-primary border border-primary/25"><Database className="mr-1 h-3 w-3" />HL7 FHIR R4</Badge>
-                <Badge className="bg-info/15 text-info border border-info/25">Akreditasi Paripurna</Badge>
+                <Badge className="bg-success/15 text-success border border-success/25"><Shield className="mr-1 h-3 w-3" />Faskes Demo</Badge>
+                <Badge className="bg-primary/15 text-primary border border-primary/25"><Database className="mr-1 h-3 w-3" />Preview FHIR</Badge>
+                <Badge className="bg-info/15 text-info border border-info/25">Data Simulasi</Badge>
               </div>
             </div>
-            <Button onClick={() => editing ? save() : setEditing(true)} className="rounded-xl gradient-primary text-primary-foreground border-0">
+            <Button onClick={() => editing ? save() : setEditing(true)} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0">
               {editing ? <><Save className="h-4 w-4" /> Simpan</> : <><Edit3 className="h-4 w-4" /> Edit Profil</>}
             </Button>
           </div>
@@ -111,15 +111,15 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-          <h3 className="font-bold text-foreground mb-3 flex items-center gap-2"><Database className="h-4 w-4 text-primary" /> Sistem EHR Terhubung</h3>
+          <h3 className="font-bold text-foreground mb-3 flex items-center gap-2"><Database className="h-4 w-4 text-primary" /> Sistem Demo Terkait</h3>
           <div className="space-y-2">
             {EHR.map(e => (
               <div key={e.name} className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
                 <span className="text-sm font-semibold text-foreground">{e.name}</span>
-                <Badge className={e.status === "live"
+                <Badge className={e.status === "demo"
                   ? "bg-success/15 text-success border border-success/25 text-xs"
                   : "bg-warning/15 text-warning border border-warning/25 text-xs"}>
-                  <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${e.status === "live" ? "bg-success animate-pulse" : "bg-warning"}`} />
+                  <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${e.status === "demo" ? "bg-success" : "bg-warning"}`} />
                   {e.status.toUpperCase()}
                 </Badge>
               </div>
@@ -143,7 +143,7 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
           {STAFF.map(s => (
             <div key={s.name} className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
+                <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
                   {s.name.charAt(0)}
                 </div>
                 <div>
@@ -168,15 +168,15 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-foreground">Auto-Sync FHIR</p>
-              <p className="text-xs text-muted-foreground">Sinkron rekam medis tiap 15 menit ke SatuSehat.</p>
+              <p className="text-sm font-semibold text-foreground">Preview FHIR Demo</p>
+              <p className="text-xs text-muted-foreground">Menampilkan contoh sinkronisasi tanpa koneksi produksi.</p>
             </div>
             <Switch checked={autoSync} onCheckedChange={setAutoSync} />
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-foreground">Audit Log Aktif</p>
-              <p className="text-xs text-muted-foreground">Catat semua akses data pasien (HIPAA-compliant).</p>
+              <p className="text-sm font-semibold text-foreground">Audit Log Demo</p>
+              <p className="text-xs text-muted-foreground">Mencatat aktivitas demo tanpa data pasien asli.</p>
             </div>
             <Switch checked={auditLog} onCheckedChange={setAuditLog} />
           </div>
@@ -191,3 +191,5 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
 };
 
 export default HospitalProfile;
+
+

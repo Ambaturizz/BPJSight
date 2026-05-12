@@ -39,3 +39,5 @@ export interface AuthUser {
   loginAt: number;
   sessionId: string;
 }
+
+

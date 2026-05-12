@@ -15,12 +15,12 @@ export default function RiskExplainer({ result }: Props) {
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-bold text-foreground">Skor Risiko AI</h3>
+            <h3 className="font-bold text-foreground">Skor Risiko Administratif</h3>
             <Badge className={`bg-${tone}/15 text-${tone} border border-${tone}/25 text-xs font-bold capitalize`}>
               {result.level}
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground">Model {result.modelVersion} • Confidence {result.confidence}%</p>
+          <p className="text-xs text-muted-foreground">Simulasi model {result.modelVersion} • Kelengkapan {result.confidence}/100</p>
         </div>
         <div className={`flex h-16 w-16 items-center justify-center rounded-2xl border bg-${tone}/15 border-${tone}/25 text-${tone} text-2xl font-extrabold`}>
           {result.score}
@@ -54,3 +54,5 @@ export default function RiskExplainer({ result }: Props) {
     </Card>
   );
 }
+
+

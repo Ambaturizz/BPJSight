@@ -20,7 +20,7 @@ import {
   CheckCircle2,
   Users,
   Eye,
-  Sparkles,
+  ClipboardList,
   Plus,
   SearchX,
   ChevronLeft,
@@ -34,7 +34,7 @@ import {
 import NotificationCenter from "./NotificationCenter";
 import ThemeToggle from "@/components/ThemeToggle";
 import LogoutButton from "./LogoutButton";
-import AIRecommendations from "./AIRecommendations";
+import ClaimReviewRecommendations from "./AIRecommendations";
 import HospitalProfile from "./HospitalProfile";
 import ClaimFilters, { type HospitalClaimFiltersState } from "@/components/hospital/ClaimFilters";
 import { applyHospitalClaimFilters } from "@/lib/hospital-claim-filters";
@@ -199,7 +199,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
 
   return (
     <div className="operational-dashboard min-h-screen bg-background">
-      <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
+      <header className="sticky top-0 z-20 border-b border-border/60 bg-card/95 backdrop-blur-md px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Kembali ke halaman utama" onClick={onBack} className="rounded-xl hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
@@ -232,7 +232,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                 view === "ai" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Insight AI
+              Insight Klaim
             </button>
 
             <button
@@ -249,7 +249,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
             <LogoutButton compact onLoggedOut={onBack} />
 
             <button aria-label="Buka profil rumah sakit" onClick={() => setView("profil")} className="flex items-center gap-2 rounded-xl hover:bg-muted/40 px-1.5 py-1">
-              <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground">
+              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground">
                 <Users className="h-4 w-4" />
               </div>
               <div className="hidden lg:block text-left">
@@ -262,15 +262,15 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
-        {view === "ai" && <AIRecommendations role="hospital" />}
+        {view === "ai" && <ClaimReviewRecommendations role="hospital" />}
         {view === "profil" && <HospitalProfile onBack={() => setView("home")} />}
 
         {view === "home" && (
           <>
             <div className="animate-fade-in-up mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h1 className="mb-1 text-2xl font-extrabold tracking-tight md:text-3xl">Command Center Klaim</h1>
-                <p className="text-muted-foreground">Dashboard operasional untuk memantau risiko klaim, kelengkapan dokumen, dan prioritas review rumah sakit.</p>
+                <h1 className="mb-1 text-2xl font-extrabold tracking-tight md:text-3xl">Dashboard Operasional Klaim</h1>
+                <p className="text-muted-foreground">Dashboard operasional untuk memantau risiko klaim, kelengkapan dokumen, dan prioritas review administrasi rumah sakit.</p>
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -280,7 +280,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                 {onSubmitClaim && (
                   <Button
                     onClick={onSubmitClaim}
-                    className="rounded-xl gradient-primary text-primary-foreground border-0 shadow-lg shadow-primary/20 px-6 py-3 text-base font-bold transition-transform hover:scale-[1.02]"
+                    className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0 px-6 py-3 text-base font-bold"
                   >
                     <Plus className="h-5 w-5" /> Ajukan Klaim Baru
                   </Button>
@@ -303,7 +303,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                 : stats.map((stat, index) => (
                     <Card
                       key={stat.label}
-                      className="animate-slide-up group relative overflow-hidden border-border/60 p-5 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5 transition-all"
+                      className="animate-slide-up group relative overflow-hidden border-border/60 p-5 transition-colors hover:border-primary/30"
                       style={{ animationDelay: `${index * 0.08}s`, boxShadow: "var(--shadow-card)" }}
                     >
                       <div className="flex items-center justify-between">
@@ -323,8 +323,8 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-warning" />
-                      <h2 className="font-bold text-foreground">Prioritas Review AI</h2>
+                      <ClipboardList className="h-5 w-5 text-warning" />
+                      <h2 className="font-bold text-foreground">Prioritas Review Administratif</h2>
                       <RiskScoreBadge
                         score={visiblePriorityClaim.risk}
                         level={visiblePriorityClaim.riskLevel}
@@ -342,7 +342,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                     </div>
 
                     <p className="mt-3 text-xs text-muted-foreground">
-                      AI hanya alat bantu prioritas review. Verifikasi resmi tetap dilakukan oleh petugas berwenang.
+                      Skor ini simulatif untuk membantu prioritas review. Verifikasi resmi tetap dilakukan oleh petugas berwenang.
                     </p>
                   </div>
 
@@ -384,10 +384,10 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
               <div className="flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between md:px-6">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
-                    <Sparkles className="h-4 w-4 text-primary" />
+                    <ClipboardList className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <h2 className="font-bold text-foreground">Klaim Terbaru — Skor Risiko AI</h2>
+                    <h2 className="font-bold text-foreground">Klaim Terbaru — Skor Risiko Administratif</h2>
                     <p className="text-xs text-muted-foreground">Cari, filter, urutkan, dan prioritaskan klaim yang perlu direview.</p>
                   </div>
                 </div>
@@ -437,7 +437,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                     title="Tidak ada klaim yang cocok"
                     description="Coba ubah kata kunci, rentang skor risiko, status risiko, atau filter dokumen untuk melihat hasil lain."
                     icon={<SearchX className="h-7 w-7" aria-hidden="true" />}
-                    action={<Button onClick={showAllClaims} className="rounded-xl gradient-primary text-primary-foreground">Lihat Semua Klaim</Button>}
+                    action={<Button onClick={showAllClaims} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">Lihat Semua Klaim</Button>}
                   />
                 </div>
               ) : (
@@ -489,7 +489,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                                 size="sm"
                                 showConfidence={false}
                               />
-                              <p className="mt-1 text-[10px] text-muted-foreground">Confidence {claim.confidence}%</p>
+                              <p className="mt-1 text-[10px] text-muted-foreground">Skor kelengkapan {claim.confidence}/100</p>
                             </td>
 
                             <td className="hidden px-5 py-4 md:table-cell md:px-6">
@@ -607,7 +607,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                   <Wrench className="h-5 w-5 text-primary" /> Langkah Perbaikan Klaim
                 </DialogTitle>
                 <DialogDescription>
-                  Rekomendasi simulasi untuk klaim #{selectedRecommendationClaim.id}. AI hanya alat bantu prioritas review, bukan keputusan otomatis.
+                  Rekomendasi simulasi untuk klaim #{selectedRecommendationClaim.id}. Skor risiko hanya alat bantu prioritas review, bukan keputusan otomatis.
                 </DialogDescription>
               </DialogHeader>
 
@@ -660,7 +660,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                       setSelectedRecommendationClaim(null);
                       openChecklist(claim);
                     }}
-                    className="rounded-xl gradient-primary text-primary-foreground"
+                    className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     Lihat Daftar Periksa
                   </Button>
@@ -706,7 +706,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                   <Button variant="outline" onClick={() => setSelectedChecklistClaim(null)} className="rounded-xl">
                     Tutup
                   </Button>
-                  <Button onClick={() => goToClaimDetail(selectedChecklistClaim.id)} className="rounded-xl gradient-primary text-primary-foreground">
+                  <Button onClick={() => goToClaimDetail(selectedChecklistClaim.id)} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
                     Buka Detail Klaim
                   </Button>
                 </div>
@@ -720,5 +720,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
 };
 
 export default HospitalDashboard;
+
+
 
 

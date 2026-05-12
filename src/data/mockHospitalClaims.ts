@@ -209,7 +209,7 @@ export const HOSPITAL_CLAIMS: HospitalClaim[] = PATIENTS.map((patient, index) =>
     audit: [
       {
         at: dateNDaysAgo(submittedDaysAgo),
-        actor: "Admin RS MBG",
+        actor: "Admin RS Demo Jakarta",
         action: "Klaim diajukan",
       },
       {
@@ -228,3 +228,5 @@ export const HOSPITAL_CLAIMS: HospitalClaim[] = PATIENTS.map((patient, index) =>
     ],
   };
 });
+
+

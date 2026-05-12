@@ -1,4 +1,3 @@
-
 import { NOTIFICATION_DELAY_MS } from "@/constants/app";
 import {
   mockHospitalNotifications,
@@ -44,7 +43,7 @@ async function createRealtimeNotification(role: UserRole): Promise<Notification>
           id: `rt-${Date.now()}`,
           role,
           title: "Klaim baru masuk antrean",
-          desc: "Sistem AI sedang menganalisis risiko klaim baru.",
+          desc: "Sistem demo sedang menghitung estimasi risiko klaim baru.",
           time: "Baru saja",
           category: "ai",
           severity: "info",
@@ -59,5 +58,7 @@ export const notificationService = {
   getNotifications,
   createRealtimeNotification,
 };
+
+
 
 

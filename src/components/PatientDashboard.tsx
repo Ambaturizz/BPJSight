@@ -22,7 +22,7 @@ import {
   Clock,
   FileText,
   ChevronRight,
-  Sparkles,
+  ClipboardCheck,
   Inbox,
   MapPin,
   User as UserIcon,
@@ -33,7 +33,7 @@ import NearbyFacilities from "./NearbyFacilities";
 import NotificationCenter from "./NotificationCenter";
 import ThemeToggle from "@/components/ThemeToggle";
 import LogoutButton from "./LogoutButton";
-import AIRecommendations from "./AIRecommendations";
+import ClaimReviewRecommendations from "./AIRecommendations";
 import PatientProfile from "./PatientProfile";
 import RiskFactorList from "@/components/ai/RiskFactorList";
 import RiskScoreBadge from "@/components/ai/RiskScoreBadge";
@@ -130,7 +130,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
+      <header className="sticky top-0 z-20 border-b border-border/60 bg-card/95 backdrop-blur-md px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Kembali ke halaman utama" onClick={onBack} className="rounded-xl hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
@@ -153,7 +153,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
               onClick={() => setActiveTab("profil")}
               className="flex items-center gap-2 rounded-xl hover:bg-muted/40 px-1.5 py-1 transition-colors"
             >
-              <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
+              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
                 {patientInitial}
               </div>
               <div className="hidden md:block text-left">
@@ -166,24 +166,26 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-6 md:px-6 md:py-8">
-        <Card className="animate-slide-up mb-8 overflow-hidden border-primary/20" style={{ boxShadow: "var(--shadow-card)" }}>
+        <Card className="animate-slide-up mb-8 overflow-hidden border-border/70" style={{ boxShadow: "var(--shadow-card)" }}>
           <div className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
-            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/8 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+            <div className="absolute inset-0 bg-muted/20" />
 
             <div className="relative flex flex-col gap-5 p-5 md:flex-row md:items-center md:justify-between md:p-7">
               <div className="flex items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/30">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary">
                   <Heart className="h-7 w-7 text-primary-foreground" />
                 </div>
 
                 <div>
                   <h2 className="text-xl font-bold text-foreground tracking-tight">Ringkasan Status Klaim</h2>
-                  <p className="mt-0.5 text-sm text-muted-foreground">BPJS Kelas 1 • No. {bpjsDisplay}</p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">BPJS Kelas 1 • No. {bpjsDisplay} • Data simulasi</p>
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Badge className="bg-success/15 text-success border border-success/25 font-medium">
                       <CheckCircle2 className="mr-1 h-3 w-3" /> {activeClaims.length} Klaim Aktif
+                    </Badge>
+                    <Badge variant="outline" className="border-primary/25 text-primary font-medium">
+                      Data Simulasi
                     </Badge>
                     <Badge className="bg-warning/15 text-warning border border-warning/25 font-medium">
                       <AlertTriangle className="mr-1 h-3 w-3" /> {urgentClaims.length} Perlu Tindakan
@@ -249,7 +251,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
             { key: "klaim" as Tab, label: "Klaim", icon: FileText },
             { key: "manfaat" as Tab, label: "Manfaat", icon: Heart },
             { key: "faskes" as Tab, label: "Faskes", icon: MapPin },
-            { key: "ai" as Tab, label: "Insight AI", icon: Sparkles },
+            { key: "ai" as Tab, label: "Insight Klaim", icon: ClipboardCheck },
             { key: "profil" as Tab, label: "Profil", icon: UserIcon },
             { key: "riwayat" as Tab, label: "Riwayat", icon: Clock },
           ]).map((tab) => (
@@ -314,7 +316,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
               activeClaims.map((claim, index) => (
                 <Card
                   key={claim.id}
-                  className="animate-slide-up overflow-hidden border-border/60 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5 hover:border-primary/20"
+                  className="animate-slide-up overflow-hidden border-border/70 transition-colors duration-200 hover:border-primary/30"
                   style={{ animationDelay: `${index * 0.08}s`, boxShadow: "var(--shadow-card)" }}
                 >
                   <div className="p-5 md:p-6">
@@ -353,7 +355,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                             <div
                               className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
                                 stepIndex <= claim.currentStep
-                                  ? "gradient-primary text-primary-foreground shadow-md shadow-primary/25"
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md shadow-primary/25"
                                   : "bg-muted text-muted-foreground"
                               }`}
                             >
@@ -388,7 +390,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                           <div className="flex-1">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-sm font-bold text-foreground">Penjelasan Risiko AI</span>
+                              <span className="text-sm font-bold text-foreground">Estimasi Risiko Klaim</span>
                               <RiskScoreBadge
                                 score={claim.riskScore}
                                 level={claim.riskLevel}
@@ -407,7 +409,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                             </div>
 
                             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                              AI hanya membantu memprioritaskan perbaikan. Keputusan akhir tetap melalui verifikasi resmi.
+                              Skor ini bersifat simulatif untuk membantu prioritas perbaikan. Keputusan akhir tetap melalui verifikasi resmi.
                             </p>
 
                             <div className="mt-4 flex flex-wrap gap-2">
@@ -459,7 +461,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                 className="animate-slide-up group flex items-start gap-4 border-border/60 p-5 transition-all duration-200 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-0.5 hover:border-primary/20"
                 style={{ animationDelay: `${index * 0.08}s`, boxShadow: "var(--shadow-card)" }}
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary transition-all duration-300 group-hover:gradient-primary group-hover:text-primary-foreground group-hover:shadow-md group-hover:shadow-primary/25">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
                   <benefit.icon className="h-5 w-5" />
                 </div>
 
@@ -479,7 +481,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
 
         {!isLoading && !errorMessage && activeTab === "faskes" && <NearbyFacilities />}
 
-        {!isLoading && !errorMessage && activeTab === "ai" && <AIRecommendations role="patient" />}
+        {!isLoading && !errorMessage && activeTab === "ai" && <ClaimReviewRecommendations role="patient" />}
 
         {!isLoading && !errorMessage && activeTab === "profil" && (
           <PatientProfile onBack={() => setActiveTab("klaim")} />
@@ -536,7 +538,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                   <Wrench className="h-5 w-5 text-primary" /> Langkah Perbaikan Klaim
                 </DialogTitle>
                 <DialogDescription>
-                  Rekomendasi simulasi untuk {selectedActionClaim.id}. AI hanya alat bantu, verifikasi akhir tetap melalui proses resmi.
+                  Rekomendasi simulasi untuk {selectedActionClaim.id}. Skor risiko hanya alat bantu review, verifikasi akhir tetap mengikuti proses resmi.
                 </DialogDescription>
               </DialogHeader>
 
@@ -594,7 +596,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
                   <Button variant="outline" onClick={() => setSelectedActionClaim(null)} className="rounded-xl">
                     Tutup
                   </Button>
-                  <Button onClick={() => goToClaimDetail(selectedActionClaim.id)} className="rounded-xl gradient-primary text-primary-foreground">
+                  <Button onClick={() => goToClaimDetail(selectedActionClaim.id)} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
                     Buka Detail Klaim
                   </Button>
                 </div>
@@ -608,3 +610,5 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
 };
 
 export default PatientDashboard;
+
+

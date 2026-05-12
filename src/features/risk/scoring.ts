@@ -23,7 +23,7 @@ export interface RiskResult {
 
 const MODEL_VERSION = "bpjsight-risk@1.0.0";
 const DISCLAIMER =
-  "Skor ini adalah indikasi statistik berdasarkan data historis klaim, bukan keputusan medis atau finansial final. Verifikasi manual oleh verifikator BPJS tetap diperlukan.";
+  "Skor ini adalah indikasi simulatif berdasarkan data contoh klaim, bukan keputusan medis atau finansial final. Verifikasi manual oleh petugas berwenang tetap diperlukan.";
 
 /**
  * Deterministic risk scorer.
@@ -65,7 +65,7 @@ export function scoreClaim(claim: Claim): RiskResult {
       weight: 0.25,
       value: Math.round(inaCbgFit),
       contribution: 0.25 * inaCbgFit,
-      source: "Tarif INA-CBG Permenkes 3/2023",
+      source: "Referensi tarif INA-CBG pada data demo",
     },
     {
       key: "dpjpDenialRate",
@@ -73,7 +73,7 @@ export function scoreClaim(claim: Claim): RiskResult {
       weight: 0.2,
       value: Math.round(dpjpDenialRate),
       contribution: 0.2 * dpjpDenialRate,
-      source: "Histori 90 hari klaim DPJP terkait",
+      source: "Histori klaim DPJP pada data demo",
     },
     {
       key: "costAnomaly",
@@ -113,3 +113,5 @@ function hashCode(str: string): number {
   }
   return h;
 }
+
+

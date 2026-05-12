@@ -32,3 +32,5 @@ export const maskNik = (nik: string): string =>
   nik.length === 16 ? `${nik.slice(0, 4)}••••••••${nik.slice(-4)}` : nik;
 
 export { formatCurrencyIDR, formatDateID, maskNik as maskNikSafe, maskBpjsNumber, getRiskLevel, getClaimStatusLabel } from "./app-helpers";
+
+

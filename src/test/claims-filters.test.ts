@@ -29,3 +29,5 @@ describe("applyFilters", () => {
     expect(applyFilters(data, { q: "", status: "all", sort: "date_desc" }).map(c => c.id)).toEqual(["2", "3", "1"]);
   });
 });
+
+

@@ -16,3 +16,5 @@ export const REQUIRED_CLAIM_DOCUMENTS: { key: string; label: string; optional?: 
   { key: "procedure_proof", label: "Bukti tindakan" },
   { key: "icd10_code", label: "Kode diagnosis ICD-10" },
 ];
+
+
