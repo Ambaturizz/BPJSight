@@ -31,7 +31,7 @@ export default function HospitalLoginRoute() {
       identifier: values.faskes,
       remember: values.remember ?? true,
     });
-    const dest = location.state?.from?.pathname || "/rs";
+    const dest = location.state?.from?.pathname || "/rumah-sakit/dashboard";
     navigate(dest, { replace: true });
   };
 

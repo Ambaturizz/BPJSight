@@ -23,7 +23,7 @@ export default function ClaimDetailRoute() {
         <Card className="p-8 max-w-md text-center border-border/60">
           <h2 className="text-xl font-bold mb-2">Klaim tidak ditemukan</h2>
           <p className="text-sm text-muted-foreground mb-4">Klaim #{claimId} tidak tersedia atau telah dihapus.</p>
-          <Button onClick={() => navigate("/rs")}>Kembali ke Dashboard</Button>
+          <Button onClick={() => navigate("/rumah-sakit/dashboard")}>Kembali ke Dashboard</Button>
         </Card>
       </div>
     );
@@ -49,7 +49,7 @@ export default function ClaimDetailRoute() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
-          <Link to="/rs" className="inline-flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-muted text-sm font-medium">
+          <Link to="/rumah-sakit/dashboard" className="inline-flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-muted text-sm font-medium">
             <ArrowLeft className="h-4 w-4" /> Kembali
           </Link>
           <span className="text-sm text-muted-foreground">/ Klaim #{claim.id}</span>

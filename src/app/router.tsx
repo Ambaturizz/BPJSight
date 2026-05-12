@@ -23,9 +23,9 @@ const router = createBrowserRouter([
   { path: "/fitur", element: <FeaturesRoute /> },
   { path: "/ehr", element: <EHRRoute /> },
   { path: "/login/pasien", element: <Boundary><PatientLoginRoute /></Boundary> },
-  { path: "/login/rs", element: <Boundary><HospitalLoginRoute /></Boundary> },
+  { path: "/login/rumah-sakit", element: <Boundary><HospitalLoginRoute /></Boundary> },
   {
-    path: "/pasien",
+    path: "/pasien/dashboard",
     element: (
       <ProtectedRoute role="patient">
         <Boundary><PatientDashboardRoute /></Boundary>
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/rs",
+    path: "/rumah-sakit/dashboard",
     element: (
       <ProtectedRoute role="hospital">
         <Boundary><HospitalDashboardRoute /></Boundary>
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/rs/ajukan",
+    path: "/rumah-sakit/ajukan",
     element: (
       <ProtectedRoute role="hospital">
         <Boundary><SubmitClaimRoute /></Boundary>
@@ -49,13 +49,19 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/rs/klaim/:claimId",
+    path: "/rumah-sakit/klaim/:claimId",
     element: (
       <ProtectedRoute role="hospital">
         <Boundary><ClaimDetailRoute /></Boundary>
       </ProtectedRoute>
     ),
   },
+  // Backward-compat redirects from previous short paths
+  { path: "/login/rs", element: <Navigate to="/login/rumah-sakit" replace /> },
+  { path: "/pasien", element: <Navigate to="/pasien/dashboard" replace /> },
+  { path: "/rs", element: <Navigate to="/rumah-sakit/dashboard" replace /> },
+  { path: "/rs/ajukan", element: <Navigate to="/rumah-sakit/ajukan" replace /> },
+  { path: "/rs/klaim/:claimId", element: <Navigate to="/rumah-sakit/dashboard" replace /> },
   { path: "/dashboard", element: <Navigate to="/" replace /> },
   { path: "*", element: <NotFound /> },
 ]);

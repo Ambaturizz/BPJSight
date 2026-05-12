@@ -6,7 +6,7 @@ export default function HospitalDashboardRoute() {
   return (
     <HospitalDashboard
       onBack={() => navigate("/")}
-      onSubmitClaim={() => navigate("/rs/ajukan")}
+      onSubmitClaim={() => navigate("/rumah-sakit/ajukan")}
     />
   );
 }

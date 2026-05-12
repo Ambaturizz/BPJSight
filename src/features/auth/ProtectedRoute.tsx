@@ -13,11 +13,11 @@ export function ProtectedRoute({ role, children }: Props) {
   const location = useLocation();
 
   if (!user) {
-    const loginPath = role === "hospital" ? "/login/rs" : "/login/pasien";
+    const loginPath = role === "hospital" ? "/login/rumah-sakit" : "/login/pasien";
     return <Navigate to={loginPath} replace state={{ from: location }} />;
   }
   if (role && user.role !== role) {
-    const home = user.role === "patient" ? "/pasien" : "/rs";
+    const home = user.role === "patient" ? "/pasien/dashboard" : "/rumah-sakit/dashboard";
     return <Navigate to={home} replace />;
   }
   return <>{children}</>;

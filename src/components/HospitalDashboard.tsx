@@ -171,7 +171,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                         </Badge>
                       </td>
                       <td className="px-5 py-4 md:px-6">
-                        <Button variant="ghost" size="sm" onClick={() => navigate(`/rs/klaim/${claim.id}`)} className="rounded-lg hover:bg-primary/15 hover:text-primary">
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/rumah-sakit/klaim/${claim.id}`)} className="rounded-lg hover:bg-primary/15 hover:text-primary">
                           <Eye className="h-4 w-4" /> <span className="hidden sm:inline">Detail</span>
                         </Button>
                       </td>

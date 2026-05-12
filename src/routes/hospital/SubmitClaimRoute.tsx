@@ -5,8 +5,8 @@ export default function SubmitClaimRoute() {
   const navigate = useNavigate();
   return (
     <SmartClaimSubmission
-      onBack={() => navigate("/rs")}
-      onSuccess={() => navigate("/rs")}
+      onBack={() => navigate("/rumah-sakit/dashboard")}
+      onSuccess={() => navigate("/rumah-sakit/dashboard")}
     />
   );
 }
