@@ -1,24 +1,40 @@
 import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
+import LoadingState from "@/components/feedback/LoadingState";
 import { useAuth } from "./AuthProvider";
-import type { Role } from "@/types/user";
+import type { Role, UserRole } from "@/types/user";
 
-interface Props {
+interface ProtectedRouteProps {
+  allowedRole?: UserRole;
+  /** Backward compatibility untuk router lama. */
   role?: Role;
   children: ReactNode;
 }
 
-export function ProtectedRoute({ role, children }: Props) {
-  const { user } = useAuth();
+function LoadingSession() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <LoadingState title="Memeriksa sesi..." description="Mohon tunggu sebentar." />
+    </div>
+  );
+}
+
+export function ProtectedRoute({ allowedRole, role, children }: ProtectedRouteProps) {
+  const requiredRole = allowedRole ?? role;
+  const { currentUser, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  if (!user) {
-    const loginPath = role === "hospital" ? "/login/rumah-sakit" : "/login/pasien";
+  if (isLoading) return <LoadingSession />;
+
+  if (!isAuthenticated || !currentUser) {
+    const loginPath = requiredRole === "hospital" ? "/login/rumah-sakit" : "/login/pasien";
     return <Navigate to={loginPath} replace state={{ from: location }} />;
   }
-  if (role && user.role !== role) {
-    const home = user.role === "patient" ? "/pasien/dashboard" : "/rumah-sakit/dashboard";
-    return <Navigate to={home} replace />;
+
+  if (requiredRole && currentUser.role !== requiredRole) {
+    const correctDashboard = currentUser.role === "patient" ? "/pasien/dashboard" : "/rumah-sakit/dashboard";
+    return <Navigate to={correctDashboard} replace />;
   }
+
   return <>{children}</>;
 }

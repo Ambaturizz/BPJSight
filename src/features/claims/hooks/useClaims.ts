@@ -1,19 +1,31 @@
 import { useMemo } from "react";
-import { CLAIMS } from "@/data/claims.mock";
+import { HOSPITAL_CLAIMS } from "@/data/mockHospitalClaims";
 import type { Claim } from "@/types/claim";
 import { scoreClaim } from "@/features/risk/scoring";
 
-/** All claims with AI risk computed deterministically. */
+/**
+ * Hook lama tetap sinkron untuk menjaga kompatibilitas
+ * dengan ClaimDetailRoute.
+ */
 export function useClaims(): Claim[] {
   return useMemo(() => {
-    return CLAIMS.map((c) => {
-      const r = scoreClaim(c);
-      return { ...c, risk: r.score, confidence: r.confidence };
+    return HOSPITAL_CLAIMS.map((claim) => {
+      const risk = scoreClaim(claim);
+
+      return {
+        ...claim,
+        risk: risk.score,
+        confidence: risk.confidence,
+      };
     });
   }, []);
 }
 
 export function useClaim(id: string | undefined): Claim | undefined {
   const claims = useClaims();
-  return useMemo(() => claims.find((c) => c.id === id), [claims, id]);
+
+  return useMemo(
+    () => claims.find((claim) => claim.id === id),
+    [claims, id]
+  );
 }

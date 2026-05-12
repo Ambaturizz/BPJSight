@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/features/auth/AuthProvider";
 import AppRouter from "@/app/router";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { toast } from "sonner";
 
 const queryClient = new QueryClient({
@@ -16,7 +17,9 @@ const App = () => (
       <AuthProvider onTimeout={() => toast.warning("Sesi berakhir karena tidak aktif. Silakan masuk kembali.")}>
         <Toaster />
         <Sonner />
-        <AppRouter />
+        <ErrorBoundary>
+          <AppRouter />
+        </ErrorBoundary>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

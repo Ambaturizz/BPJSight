@@ -1,82 +1,125 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { AuthUser, Role } from "@/types/user";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { authService } from "@/services/authService";
+import type { AuthUser, UserRole } from "@/types/user";
 
-const STORAGE_KEY = "bpjsight.session";
 const INACTIVITY_MS = 15 * 60 * 1000;
 
 interface AuthContextValue {
+  currentUser: AuthUser | null;
   user: AuthUser | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  role: UserRole | null;
   status: "loading" | "authenticated" | "unauthenticated";
-  signIn: (user: Omit<AuthUser, "loginAt">) => void;
-  signOut: () => void;
+  login: (user: AuthUser) => void;
+  logout: () => Promise<void>;
+  /** Backward compatibility untuk komponen lama. */
+  signIn: (user: AuthUser) => void;
+  signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-function readStoredUser(): AuthUser | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as AuthUser) : null;
-  } catch {
-    return null;
-  }
-}
-
-function clearStoredUser() {
-  localStorage.removeItem(STORAGE_KEY);
-  sessionStorage.removeItem(STORAGE_KEY);
-}
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children, onTimeout }: { children: ReactNode; onTimeout?: () => void }) {
-  const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const lastActivity = useRef(Date.now());
-  const timeoutCb = useRef(onTimeout);
-  timeoutCb.current = onTimeout;
+  const timeoutCallback = useRef(onTimeout);
+  timeoutCallback.current = onTimeout;
 
-  const signIn = useCallback((u: Omit<AuthUser, "loginAt">) => {
-    const full: AuthUser = { ...u, loginAt: Date.now() };
-    const store = full.remember ? localStorage : sessionStorage;
-    store.setItem(STORAGE_KEY, JSON.stringify(full));
-    setUser(full);
+  useEffect(() => {
+    let isMounted = true;
+
+    async function restoreSession() {
+      setIsLoading(true);
+      try {
+        const sessionUser = await authService.getCurrentUser();
+        if (isMounted) setCurrentUser(sessionUser);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    restoreSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const signOut = useCallback(() => {
-    clearStoredUser();
-    setUser(null);
+  const login = useCallback((user: AuthUser) => {
+    setCurrentUser(user);
+  }, []);
+
+  const logout = useCallback(async () => {
+    await authService.logout();
+    setCurrentUser(null);
   }, []);
 
   useEffect(() => {
-    const bump = () => { lastActivity.current = Date.now(); };
+    const bumpActivity = () => {
+      lastActivity.current = Date.now();
+    };
+
     const events = ["mousemove", "keydown", "click", "touchstart"] as const;
-    events.forEach((e) => window.addEventListener(e, bump, { passive: true }));
-    const i = setInterval(() => {
-      if (!user) return;
+    events.forEach((eventName) => window.addEventListener(eventName, bumpActivity, { passive: true }));
+
+    const intervalId = window.setInterval(() => {
+      if (!currentUser) return;
+
       if (Date.now() - lastActivity.current > INACTIVITY_MS) {
-        clearStoredUser();
-        setUser(null);
-        timeoutCb.current?.();
+        void authService.logout();
+        setCurrentUser(null);
+        timeoutCallback.current?.();
       }
     }, 30_000);
-    return () => {
-      clearInterval(i);
-      events.forEach((e) => window.removeEventListener(e, bump));
-    };
-  }, [user]);
 
-  const value = useMemo<AuthContextValue>(() => ({
-    user,
-    status: user ? "authenticated" : "unauthenticated",
-    signIn,
-    signOut,
-  }), [user, signIn, signOut]);
+    return () => {
+      window.clearInterval(intervalId);
+      events.forEach((eventName) => window.removeEventListener(eventName, bumpActivity));
+    };
+  }, [currentUser]);
+
+  const value = useMemo<AuthContextValue>(() => {
+    const isAuthenticated = Boolean(currentUser);
+    const status: AuthContextValue["status"] = isLoading
+      ? "loading"
+      : isAuthenticated
+        ? "authenticated"
+        : "unauthenticated";
+
+    return {
+      currentUser,
+      user: currentUser,
+      isAuthenticated,
+      isLoading,
+      role: currentUser?.role ?? null,
+      status,
+      login,
+      logout,
+      signIn: login,
+      signOut: logout,
+    };
+  }, [currentUser, isLoading, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
-  return ctx;
-}
+  const context = useContext(AuthContext);
 
-export type { Role };
+  if (!context) {
+    throw new Error("useAuth harus digunakan di dalam AuthProvider");
+  }
+
+  return context;
+}

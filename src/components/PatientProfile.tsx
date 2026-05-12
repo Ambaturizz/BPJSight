@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
-  User, Heart, Phone, Shield, Activity, Building2, Lock, Edit3, Save, Droplet
+  Heart, Phone, Shield, Activity, Building2, Lock, Edit3, Save, Droplet
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/features/auth/AuthProvider";
 
 const WHATSAPP_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(`
 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 212 212'><path fill='#DFE5E7' d='M106.251.5C164.653.5 212 47.846 212 106.25S164.653 212 106.25 212C47.846 212 .5 164.654.5 106.25S47.846.5 106.251.5z'/><g fill='#FFF'><path d='M173.561 171.615a62.767 62.767 0 0 0-2.065-2.955 67.7 67.7 0 0 0-22.1-19.299c-10.366-5.84-22.612-9.221-35.643-9.221s-25.277 3.381-35.643 9.221a67.704 67.704 0 0 0-22.1 19.299 63.083 63.083 0 0 0-2.065 2.955C70.642 194.342 87.045 200.5 106.25 200.5s35.608-6.158 50.311-28.885z'/><path d='M106.002 96.633c12.791 0 23.16-10.371 23.16-23.16 0-12.792-10.369-23.161-23.16-23.161-12.79 0-23.159 10.369-23.159 23.161 0 12.789 10.369 23.16 23.159 23.16z'/></g></svg>
@@ -23,11 +24,12 @@ const STATS = [
 const HOSPITALS = ["RS MBG", "RSUD Pusat", "Klinik Pratama Sehat"];
 
 const PatientProfile = ({ onBack }: { onBack: () => void }) => {
+  const { currentUser } = useAuth();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
-    name: "Polisi MBG",
-    nik: "3201234567890123",
-    bpjs: "0001234567890",
+    name: currentUser?.displayName ?? currentUser?.name ?? "Pasien BPJS",
+    nik: currentUser?.identifierMasked ?? "•••• •••• •••• 0123",
+    bpjs: currentUser?.bpjsMasked ?? "•••• •••• •7890",
     blood: "O+",
     phone: "+62 812-3456-7890",
     emergency: "Keluarga MBG · +62 813-1111-2222",
@@ -83,7 +85,7 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
               <Input
                 value={form[key]}
                 onChange={e => setForm({ ...form, [key]: e.target.value })}
-                disabled={!editing}
+                disabled={!editing || key === "nik" || key === "bpjs"}
                 className="rounded-xl bg-muted/20"
               />
             </div>
@@ -148,3 +150,5 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
 };
 
 export default PatientProfile;
+
+

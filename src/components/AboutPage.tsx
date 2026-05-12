@@ -1,5 +1,6 @@
 import { Shield, Target, Heart, Users, Award, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface AboutPageProps {
   onBack: () => void;
@@ -40,6 +41,7 @@ const AboutPage = ({ onBack, onNavigate }: AboutPageProps) => {
           <button className="text-sm font-semibold text-primary">Tentang</button>
           <button onClick={() => onNavigate("fitur")} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Fitur</button>
         </div>
+        <ThemeToggle compact />
       </nav>
 
       <div className="relative z-10 mx-auto max-w-5xl px-6 pt-8 pb-20 lg:px-20">

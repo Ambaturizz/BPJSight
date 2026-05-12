@@ -1,5 +1,6 @@
 import { Shield, ArrowLeft, Activity, Sparkles, Lock, FileText, Brain, Database, Bell, BarChart3, Users, Zap, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface FeaturesPageProps {
   onBack: () => void;
@@ -34,7 +35,7 @@ const MAIN_FEATURES = [
 ];
 
 const SUB_FEATURES = [
-  { icon: Lock, title: "Enkripsi End-to-End", desc: "Standar keamanan AES-256 untuk semua data medis dan personal." },
+  { icon: Lock, title: "Keamanan Data Aplikasi", desc: "Data Anda dilindungi sesuai standar keamanan aplikasi dan praktik minimisasi data." },
   { icon: Bell, title: "Notifikasi Cerdas", desc: "Pengingat dokumen kurang, status berubah, atau klaim disetujui." },
   { icon: BarChart3, title: "Analitik Mendalam", desc: "Laporan tren klaim, tingkat persetujuan, dan performa rumah sakit." },
   { icon: Users, title: "Multi-Role Access", desc: "Akses berbeda untuk pasien, admin RS, dan verifikator." },
@@ -71,6 +72,7 @@ const FeaturesPage = ({ onBack, onNavigate }: FeaturesPageProps) => {
           <button onClick={() => onNavigate("tentang")} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Tentang</button>
           <button className="text-sm font-semibold text-primary">Fitur</button>
         </div>
+        <ThemeToggle compact />
       </nav>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 pt-8 pb-20 lg:px-20">

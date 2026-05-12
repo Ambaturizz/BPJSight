@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -42,8 +43,8 @@ const PARTNERS: Partner[] = [
 
 const SAMPLE_PATIENT = {
   name: "Polisi MBG",
-  nik: "3201234567890001",
-  bpjs: "0001234567890",
+  nik: "•••• •••• •••• 0001",
+  bpjs: "•••• •••• •7890",
   dob: "12 Mei 1990",
   gender: "Laki-laki",
   bloodType: "O+",
@@ -134,7 +135,7 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-xl hover:bg-muted">
+          <Button variant="ghost" size="icon" aria-label="Kembali ke beranda" onClick={onBack} className="rounded-xl hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
@@ -143,6 +144,7 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
             </div>
             <span className="font-bold text-foreground tracking-tight">BPJSight</span>
           </div>
+          <div className="ml-auto"><ThemeToggle compact /></div>
           <Badge className="ml-3 bg-primary/15 text-primary border border-primary/25 text-xs font-semibold">
             <Plug className="mr-1 h-3 w-3" /> EHR Partners
           </Badge>

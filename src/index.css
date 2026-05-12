@@ -6,6 +6,65 @@
 
 @layer base {
   :root {
+    color-scheme: light;
+
+    --background: 210 38% 98%;
+    --foreground: 222 35% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 35% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 35% 12%;
+
+    --primary: 174 62% 36%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 174 70% 45%;
+
+    --secondary: 210 26% 93%;
+    --secondary-foreground: 222 25% 18%;
+
+    --muted: 210 28% 94%;
+    --muted-foreground: 215 18% 36%;
+
+    --accent: 38 85% 48%;
+    --accent-foreground: 222 35% 12%;
+
+    --destructive: 0 70% 46%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 213 22% 84%;
+    --input: 213 22% 86%;
+    --ring: 174 62% 36%;
+
+    --radius: 0.75rem;
+
+    --success: 152 58% 33%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 88% 43%;
+    --warning-foreground: 222 35% 12%;
+    --info: 200 78% 40%;
+    --info-foreground: 0 0% 100%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 25% 18%;
+    --sidebar-primary: 174 62% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 28% 94%;
+    --sidebar-accent-foreground: 222 25% 18%;
+    --sidebar-border: 213 22% 84%;
+    --sidebar-ring: 174 62% 36%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(174 62% 36%), hsl(174 70% 45%));
+    --gradient-hero: linear-gradient(135deg, hsl(174 62% 36% / 0.1), hsl(200 78% 40% / 0.07), hsl(38 88% 43% / 0.05));
+    --shadow-card: 0 1px 3px hsl(220 30% 25% / 0.08), 0 12px 28px hsl(220 30% 25% / 0.08);
+    --shadow-card-hover: 0 8px 24px hsl(174 62% 36% / 0.14), 0 18px 44px hsl(220 30% 25% / 0.12);
+    --shadow-elevated: 0 14px 34px -14px hsl(174 62% 36% / 0.45);
+  }
+
+  .dark {
+    color-scheme: dark;
+
     --background: 220 20% 7%;
     --foreground: 210 20% 92%;
 
@@ -23,7 +82,7 @@
     --secondary-foreground: 210 20% 85%;
 
     --muted: 220 14% 14%;
-    --muted-foreground: 215 12% 55%;
+    --muted-foreground: 215 12% 68%;
 
     --accent: 38 85% 55%;
     --accent-foreground: 220 20% 7%;
@@ -34,8 +93,6 @@
     --border: 220 14% 16%;
     --input: 220 14% 18%;
     --ring: 174 62% 45%;
-
-    --radius: 0.75rem;
 
     --success: 152 60% 42%;
     --success-foreground: 0 0% 100%;
@@ -59,22 +116,38 @@
     --shadow-card-hover: 0 4px 16px hsl(174 62% 45% / 0.15), 0 8px 32px hsl(0 0% 0% / 0.3);
     --shadow-elevated: 0 8px 30px -10px hsl(174 62% 45% / 0.3);
   }
-}
 
-@layer base {
   * {
     @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"]) {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.24);
+  }
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50;
+    @apply border border-border/60 bg-card/80 backdrop-blur-xl;
   }
 
   .gradient-primary {
@@ -97,30 +170,52 @@
   }
 
   .animate-slide-up {
-    animation: slide-up 0.5s ease-out;
+    animation: slide-up 0.38s ease-out;
   }
 
   .animate-fade-in-up {
-    animation: fade-in-up 0.6s ease-out;
+    animation: fade-in-up 0.42s ease-out;
+  }
+
+  .safe-container {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
   }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes pulse-soft {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.78; }
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.operational-dashboard .animate-slide-up,
+.operational-dashboard .animate-fade-in-up,
+.operational-dashboard .animate-pulse,
+.operational-dashboard .animate-float,
+.operational-dashboard .animate-pulse-soft {
+  animation-duration: 0.16s;
+  animation-iteration-count: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

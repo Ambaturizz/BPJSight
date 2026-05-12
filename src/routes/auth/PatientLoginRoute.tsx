@@ -1,100 +1,225 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft, Eye, EyeOff, Loader2, Shield, User } from "lucide-react";
+import { toast } from "sonner";
+import { ZodError } from "zod";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ArrowLeft, User, Eye, EyeOff } from "lucide-react";
-import { patientLoginSchema, patientRegisterSchema, type PatientLoginInput, type PatientRegisterInput } from "@/lib/validators";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { patientLoginSchema, patientRegisterSchema } from "@/lib/validators";
+import { authService } from "@/services/authService";
+
+interface PatientFormState {
+  name: string;
+  nik: string;
+  bpjs: string;
+  password: string;
+}
+
+type PatientField = keyof PatientFormState;
+type PatientErrors = Partial<Record<PatientField, string>>;
+
+const initialForm: PatientFormState = {
+  name: "",
+  nik: "",
+  bpjs: "",
+  password: "",
+};
+
+function getRedirectTarget(location: ReturnType<typeof useLocation>): string {
+  const state = location.state as { from?: { pathname?: string } } | null;
+  return state?.from?.pathname || "/pasien/dashboard";
+}
+
+function mapZodErrors(error: ZodError): PatientErrors {
+  return error.issues.reduce<PatientErrors>((acc, issue) => {
+    const field = issue.path[0];
+    if (typeof field === "string" && field in initialForm) {
+      acc[field as PatientField] = issue.message;
+    }
+    return acc;
+  }, {});
+}
 
 export default function PatientLoginRoute() {
   const navigate = useNavigate();
-  const location = useLocation() as { state?: { from?: { pathname?: string } } };
-  const { signIn } = useAuth();
+  const location = useLocation();
+  const { login } = useAuth();
   const [isRegistering, setIsRegistering] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [form, setForm] = useState<PatientFormState>(initialForm);
+  const [errors, setErrors] = useState<PatientErrors>({});
 
-  const schema = isRegistering ? patientRegisterSchema : patientLoginSchema;
-  const { register, handleSubmit, formState: { errors, isSubmitting } } =
-    useForm<PatientRegisterInput>({
-      resolver: zodResolver(schema as never),
-      defaultValues: { remember: true } as Partial<PatientRegisterInput>,
-    });
+  const updateField = (field: PatientField) => (event: ChangeEvent<HTMLInputElement>) => {
+    const rawValue = event.target.value;
+    const value = field === "nik" || field === "bpjs" ? rawValue.replace(/\D/g, "") : rawValue;
 
-  const onSubmit = (values: PatientLoginInput | PatientRegisterInput) => {
-    signIn({
-      role: "patient",
-      name: ("name" in values && values.name) ? values.name : "Polisi MBG",
-      identifier: values.nik,
-      remember: values.remember ?? true,
-    });
-    const dest = location.state?.from?.pathname || "/pasien/dashboard";
-    navigate(dest, { replace: true });
+    setForm((current) => ({ ...current, [field]: value }));
+    setErrors((current) => ({ ...current, [field]: undefined }));
+  };
+
+  const validate = (): PatientErrors => {
+    const schema = isRegistering ? patientRegisterSchema : patientLoginSchema;
+    const payload = isRegistering
+      ? form
+      : { nik: form.nik, bpjs: form.bpjs, password: form.password };
+    const result = schema.safeParse(payload);
+
+    if (result.success) return {};
+    return mapZodErrors(result.error);
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const nextErrors = validate();
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error("Periksa kembali data pasien yang Anda isi.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const user = isRegistering
+        ? await authService.registerPatient(form)
+        : await authService.loginPatient({ nik: form.nik, bpjs: form.bpjs, password: form.password });
+
+      login(user);
+      toast.success(isRegistering ? "Registrasi pasien berhasil." : "Login pasien berhasil.");
+      navigate(getRedirectTarget(location), { replace: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Autentikasi pasien gagal.";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const switchMode = () => {
+    setIsRegistering((current) => !current);
+    setErrors({});
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 overflow-hidden">
-      <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-primary/8 blur-3xl" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-6 sm:py-8">
+      <div className="absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full bg-primary/8 blur-3xl" />
       <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-info/6 blur-3xl" />
+
+      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6"><ThemeToggle compact /></div>
+
       <div className="relative z-10 w-full max-w-md">
-        <Link to="/" className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary">
+        <Link to="/" className="mb-5 inline-flex items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary">
           <ArrowLeft className="h-4 w-4" /> Kembali ke beranda
         </Link>
 
-        <Card className="animate-slide-up border-border/60 p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+        <Card className="border-border/60 p-5 sm:p-8" style={{ boxShadow: "var(--shadow-card)" }}>
           <div className="mb-8 flex flex-col items-center text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/30">
               <User className="h-8 w-8 text-primary-foreground" />
             </div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="mb-2 flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
-              <span className="font-bold text-foreground tracking-tight">BPJSight</span>
+              <span className="font-bold tracking-tight text-foreground">BPJSight</span>
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight">
               {isRegistering ? "Registrasi Pasien" : "Login Pasien"}
             </h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Validasi NIK 16 digit & nomor BPJS 13 digit
+              Data Anda dilindungi sesuai standar keamanan aplikasi.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             {isRegistering && (
-              <Field label="Nama Lengkap" error={errors.name?.message}>
-                <Input {...register("name")} placeholder="Nama lengkap sesuai KTP" className="h-11 rounded-xl bg-muted/50 border-border/60" />
+              <Field label="Nama Lengkap" error={errors.name}>
+                <Input
+                  value={form.name}
+                  onChange={updateField("name")}
+                  placeholder="Nama lengkap sesuai KTP"
+                  className="h-11 rounded-xl border-border/70 bg-background/80"
+                  disabled={isLoading}
+                  autoComplete="name"
+                />
               </Field>
             )}
-            <Field label="Nomor NIK (KTP)" error={errors.nik?.message}>
-              <Input inputMode="numeric" maxLength={16} {...register("nik")} placeholder="16 digit NIK" className="h-11 rounded-xl bg-muted/50 border-border/60" />
+
+            <Field label="Nomor NIK (KTP)" error={errors.nik}>
+              <Input
+                value={form.nik}
+                onChange={updateField("nik")}
+                inputMode="numeric"
+                maxLength={16}
+                placeholder="16 digit NIK"
+                className="h-11 rounded-xl border-border/70 bg-background/80"
+                disabled={isLoading}
+                autoComplete="off"
+              />
             </Field>
-            <Field label="Nomor Kartu BPJS" error={errors.bpjs?.message}>
-              <Input inputMode="numeric" maxLength={13} {...register("bpjs")} placeholder="13 digit BPJS" className="h-11 rounded-xl bg-muted/50 border-border/60" />
+
+            <Field label="Nomor Kartu BPJS" error={errors.bpjs}>
+              <Input
+                value={form.bpjs}
+                onChange={updateField("bpjs")}
+                inputMode="numeric"
+                maxLength={13}
+                placeholder="13 digit nomor BPJS"
+                className="h-11 rounded-xl border-border/70 bg-background/80"
+                disabled={isLoading}
+                autoComplete="off"
+              />
             </Field>
-            <Field label="Password" error={errors.password?.message}>
+
+            <Field label="Password" error={errors.password}>
               <div className="relative">
-                <Input type={showPassword ? "text" : "password"} {...register("password")} placeholder="Min 8 karakter, huruf + angka" className="h-11 rounded-xl pr-10 bg-muted/50 border-border/60" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={updateField("password")}
+                  placeholder="Minimal 8 karakter"
+                  className="h-11 rounded-xl border-border/70 bg-background/80 pr-10"
+                  disabled={isLoading}
+                  autoComplete={isRegistering ? "new-password" : "current-password"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((current) => !current)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1 text-muted-foreground hover:text-foreground"
+                  disabled={isLoading}
+                  aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </Field>
 
-            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-              <input type="checkbox" {...register("remember")} className="h-4 w-4 rounded border-border/60 accent-primary" />
-              Ingat saya di perangkat ini
-            </label>
-
-            <Button type="submit" disabled={isSubmitting} className="w-full h-11 rounded-xl gradient-primary text-primary-foreground border-0 font-bold shadow-lg shadow-primary/30">
-              {isRegistering ? "Daftar Sekarang" : "Masuk"}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="h-11 w-full rounded-xl border-0 gradient-primary font-bold text-primary-foreground shadow-lg shadow-primary/30"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {isRegistering ? "Memproses registrasi..." : "Memeriksa akun..."}
+                </>
+              ) : isRegistering ? (
+                "Daftar Sekarang"
+              ) : (
+                "Masuk"
+              )}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
             {isRegistering ? "Sudah punya akun? " : "Belum punya akun? "}
-            <button onClick={() => setIsRegistering(!isRegistering)} className="font-semibold text-primary hover:underline">
+            <button onClick={switchMode} className="rounded-lg px-1 font-semibold text-primary hover:underline" disabled={isLoading}>
               {isRegistering ? "Masuk di sini" : "Daftar sekarang"}
             </button>
           </div>
@@ -104,12 +229,12 @@ export default function PatientLoginRoute() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
   return (
     <div className="space-y-1.5">
       <Label className="text-sm font-semibold">{label}</Label>
       {children}
-      {error && <p className="text-xs font-medium text-destructive">{error}</p>}
+      {error ? <p className="text-xs font-medium text-destructive">{error}</p> : null}
     </div>
   );
 }

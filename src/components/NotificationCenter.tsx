@@ -1,59 +1,55 @@
 import { useEffect, useMemo, useState } from "react";
+import type { ComponentType } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Bell, AlertTriangle, CheckCircle2, Sparkles, MapPin, Calendar,
-  Pill, FileText, Activity, Building2, ShieldAlert, Database, Clock
+  Bell,
+  AlertTriangle,
+  Sparkles,
+  MapPin,
+  Calendar,
+  Pill,
+  FileText,
+  Activity,
+  ShieldAlert,
+  Database,
+  Clock,
+  CheckCircle2,
+  Eye,
 } from "lucide-react";
+import { REALTIME_NOTIFICATION_INTERVAL_MS } from "@/constants/app";
+import { notificationService } from "@/services/notificationService";
+import type {
+  Notification as NotificationItem,
+  NotificationCategory,
+  NotificationSeverity,
+} from "@/types/notification";
+import type { UserRole } from "@/types/user";
 
-type Category = "klaim" | "ai" | "darurat" | "jadwal" | "obat" | "rujukan" | "faskes" | "dokumen" | "fraud" | "sistem";
-type Severity = "info" | "warning" | "danger" | "success";
-
-export interface NotifItem {
-  id: string;
-  title: string;
-  desc: string;
-  time: string;
-  category: Category;
-  severity: Severity;
-  read: boolean;
-}
-
-const PATIENT_NOTIFS: NotifItem[] = [
-  { id: "p1", title: "Klaim KLM-2024-002 berisiko ditolak", desc: "AI mendeteksi dokumentasi rekam medis tidak lengkap. Hubungi RS MBG.", time: "5 menit lalu", category: "ai", severity: "danger", read: false },
-  { id: "p2", title: "Status klaim diperbarui", desc: "KLM-2024-001 kini dalam tahap verifikasi BPJS Kesehatan.", time: "1 jam lalu", category: "klaim", severity: "info", read: false },
-  { id: "p3", title: "Pengingat janji temu", desc: "Konsultasi Poli Jantung besok pukul 09:00 di RS MBG.", time: "3 jam lalu", category: "jadwal", severity: "info", read: false },
-  { id: "p4", title: "Klinik baru di sekitar Anda", desc: "Klinik Pratama Sehat (1.2 km) menerima BPJS — buka 24 jam.", time: "Kemarin", category: "faskes", severity: "info", read: true },
-  { id: "p5", title: "Resep harus segera ditebus", desc: "Resep dr. Andini berlaku 3 hari lagi di Apotek Kimia Farma.", time: "Kemarin", category: "obat", severity: "warning", read: true },
-  { id: "p6", title: "Rujukan disetujui", desc: "Rujukan ke Sp.JP RSUP telah dikonfirmasi BPJS.", time: "2 hari lalu", category: "rujukan", severity: "success", read: true },
-  { id: "p7", title: "Peringatan kesehatan wilayah", desc: "DBD meningkat di area Anda — lakukan 3M plus.", time: "3 hari lalu", category: "darurat", severity: "warning", read: true },
-];
-
-const HOSPITAL_NOTIFS: NotifItem[] = [
-  { id: "h1", title: "9 klaim risiko tinggi terdeteksi", desc: "Skor AI > 70. Cek INA-CBG's coding dan kelengkapan dokumen.", time: "Baru saja", category: "ai", severity: "danger", read: false },
-  { id: "h2", title: "Dokumen kurang: Klaim #9 Freya Aninditha", desc: "Resume medis DPJP belum diunggah.", time: "10 menit lalu", category: "dokumen", severity: "warning", read: false },
-  { id: "h3", title: "Anomali pola klaim terdeteksi", desc: "5 klaim diagnosis identik dalam 1 jam — verifikasi fraud.", time: "30 menit lalu", category: "fraud", severity: "danger", read: false },
-  { id: "h4", title: "Deadline klaim 3 hari lagi", desc: "12 klaim bulan ini belum disubmit ke BPJS Kesehatan.", time: "1 jam lalu", category: "klaim", severity: "warning", read: false },
-  { id: "h5", title: "Pasien IGD prioritas", desc: "Pasien Aurora Senja masuk IGD — kondisi kritis.", time: "2 jam lalu", category: "darurat", severity: "danger", read: true },
-  { id: "h6", title: "Rekomendasi AI baru", desc: "Optimasi klaim rawat inap dapat naikkan approval +4.2%.", time: "Hari ini", category: "ai", severity: "info", read: true },
-  { id: "h7", title: "Integrasi HL7 FHIR berhasil", desc: "Sinkronisasi 248 rekam medis dengan SatuSehat selesai.", time: "Kemarin", category: "sistem", severity: "success", read: true },
-];
-
-const ICONS: Record<Category, React.ComponentType<{ className?: string }>> = {
-  klaim: FileText, ai: Sparkles, darurat: ShieldAlert, jadwal: Calendar,
-  obat: Pill, rujukan: Activity, faskes: MapPin, dokumen: FileText,
-  fraud: AlertTriangle, sistem: Database,
+const ICONS: Record<NotificationCategory, ComponentType<{ className?: string }>> = {
+  klaim: FileText,
+  ai: Sparkles,
+  darurat: ShieldAlert,
+  jadwal: Calendar,
+  obat: Pill,
+  rujukan: Activity,
+  faskes: MapPin,
+  dokumen: FileText,
+  fraud: AlertTriangle,
+  sistem: Database,
 };
 
-const sevTone: Record<Severity, string> = {
+const sevTone: Record<NotificationSeverity, string> = {
   info: "bg-info/15 text-info border-info/25",
   warning: "bg-warning/15 text-warning border-warning/25",
   danger: "bg-destructive/15 text-destructive border-destructive/25",
   success: "bg-success/15 text-success border-success/25",
 };
 
-const CATEGORY_LABELS: { key: Category | "all"; label: string }[] = [
+const CATEGORY_LABELS: { key: NotificationCategory | "all"; label: string }[] = [
   { key: "all", label: "Semua" },
   { key: "klaim", label: "Klaim" },
   { key: "ai", label: "AI" },
@@ -62,110 +58,227 @@ const CATEGORY_LABELS: { key: Category | "all"; label: string }[] = [
   { key: "dokumen", label: "Dokumen" },
 ];
 
-interface Props { role: "patient" | "hospital" }
+interface Props {
+  role: UserRole;
+}
 
 const NotificationCenter = ({ role }: Props) => {
-  const seed = role === "patient" ? PATIENT_NOTIFS : HOSPITAL_NOTIFS;
-  const [items, setItems] = useState<NotifItem[]>(seed);
-  const [filter, setFilter] = useState<Category | "all">("all");
+  const navigate = useNavigate();
+  const [items, setItems] = useState<NotificationItem[]>([]);
+  const [filter, setFilter] = useState<NotificationCategory | "all">("all");
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulated real-time push
   useEffect(() => {
-    const t = setInterval(() => {
-      setItems(prev => {
-        if (Math.random() > 0.35) return prev;
-        const news: NotifItem = role === "patient"
-          ? { id: `rt-${Date.now()}`, title: "Update klaim real-time", desc: "Status klaim Anda baru saja diperbarui oleh sistem.", time: "Baru saja", category: "klaim", severity: "info", read: false }
-          : { id: `rt-${Date.now()}`, title: "Klaim baru masuk antrean", desc: "Sistem AI sedang menganalisis risiko klaim baru.", time: "Baru saja", category: "ai", severity: "info", read: false };
-        return [news, ...prev];
-      });
-    }, 45_000);
-    return () => clearInterval(t);
+    let isMounted = true;
+
+    async function loadNotifications() {
+      setIsLoading(true);
+
+      try {
+        const notifications = await notificationService.getNotifications(role);
+
+        if (!isMounted) return;
+
+        setItems(notifications);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadNotifications();
+
+    return () => {
+      isMounted = false;
+    };
   }, [role]);
 
-  const unread = items.filter(i => !i.read).length;
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (Math.random() > 0.35) return;
+
+      notificationService.createRealtimeNotification(role).then((notification) => {
+        setItems((current) => [notification, ...current]);
+        toast.info(notification.title, { description: notification.desc });
+      });
+    }, REALTIME_NOTIFICATION_INTERVAL_MS);
+
+    return () => window.clearInterval(timer);
+  }, [role]);
+
+  const unread = items.filter((item) => !item.read).length;
+
   const filtered = useMemo(
-    () => filter === "all" ? items : items.filter(i => i.category === filter),
+    () => (filter === "all" ? items : items.filter((item) => item.category === filter)),
     [items, filter]
   );
 
-  const markAll = () => setItems(items.map(i => ({ ...i, read: true })));
-  const toggleRead = (id: string) =>
-    setItems(items.map(i => i.id === id ? { ...i, read: !i.read } : i));
+  const markAll = () => {
+    if (unread === 0) {
+      toast.info("Semua notifikasi sudah dibaca.");
+      return;
+    }
+
+    setItems((current) => current.map((item) => ({ ...item, read: true })));
+    toast.success("Semua notifikasi ditandai sudah dibaca.");
+  };
+
+  const toggleRead = (id: string) => {
+    let nextRead = false;
+
+    setItems((current) =>
+      current.map((item) => {
+        if (item.id !== id) return item;
+        nextRead = !item.read;
+        return { ...item, read: nextRead };
+      })
+    );
+
+    toast.success(nextRead ? "Notifikasi ditandai sudah dibaca." : "Notifikasi ditandai belum dibaca.");
+  };
+
+  const openNotificationAction = (notification: NotificationItem) => {
+    if (!notification.action?.path) {
+      toggleRead(notification.id);
+      return;
+    }
+
+    setItems((current) => current.map((item) => (item.id === notification.id ? { ...item, read: true } : item)));
+    setOpen(false);
+    toast.info(notification.action.label, { description: notification.title });
+    navigate(notification.action.path);
+  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+        <button
+          type="button"
+          aria-label={unread > 0 ? `Buka notifikasi, ${unread} belum dibaca` : "Buka notifikasi"}
+          className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
           <Bell className="h-4 w-4" />
           {unread > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive border-2 border-card flex items-center justify-center text-[10px] font-bold text-destructive-foreground">
+            <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-card bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
               {unread > 9 ? "9+" : unread}
             </span>
           )}
         </button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md p-0 flex flex-col bg-card">
-        <SheetHeader className="px-5 pt-5 pb-3 border-b border-border/60">
-          <div className="flex items-center justify-between">
-            <SheetTitle className="text-lg font-bold flex items-center gap-2">
+
+      <SheetContent className="flex w-full flex-col bg-card p-0 sm:max-w-md">
+        <SheetHeader className="border-b border-border/60 px-5 pb-3 pt-5">
+          <div className="flex items-center justify-between gap-3">
+            <SheetTitle className="flex items-center gap-2 text-lg font-bold">
               <Bell className="h-5 w-5 text-primary" /> Notifikasi
-              {unread > 0 && <Badge className="bg-primary/15 text-primary border-primary/25">{unread} baru</Badge>}
+              {unread > 0 && (
+                <Badge className="border-primary/25 bg-primary/15 text-primary">
+                  {unread} baru
+                </Badge>
+              )}
             </SheetTitle>
-            <Button variant="ghost" size="sm" onClick={markAll} className="text-xs">Tandai dibaca</Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={markAll}
+              disabled={items.length === 0}
+              className="text-xs"
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" /> Tandai dibaca
+            </Button>
           </div>
-          <div className="flex gap-1.5 overflow-x-auto pt-2 pb-1 -mx-1 px-1">
-            {CATEGORY_LABELS.map(c => (
+
+          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 pt-2">
+            {CATEGORY_LABELS.map((category) => (
               <button
-                key={c.key}
-                onClick={() => setFilter(c.key)}
+                key={category.key}
+                type="button"
+                onClick={() => setFilter(category.key)}
                 className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-                  filter === c.key
+                  filter === category.key
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted/50 text-muted-foreground hover:bg-muted"
                 }`}
               >
-                {c.label}
+                {category.label}
               </button>
             ))}
           </div>
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
-          {filtered.length === 0 ? (
+
+        <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+          {isLoading ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <Bell className="h-10 w-10 text-muted-foreground/50 mb-3" />
+              <Bell className="mb-3 h-10 w-10 animate-pulse text-muted-foreground/50" />
+              <p className="text-sm text-muted-foreground">Memuat notifikasi...</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Bell className="mb-3 h-10 w-10 text-muted-foreground/50" />
               <p className="text-sm text-muted-foreground">Tidak ada notifikasi</p>
             </div>
-          ) : filtered.map((n, idx) => {
-            const Icon = ICONS[n.category];
-            return (
-              <button
-                key={n.id}
-                onClick={() => toggleRead(n.id)}
-                className={`animate-slide-up w-full text-left rounded-xl border p-3.5 transition-all hover:shadow-md ${
-                  n.read ? "bg-card border-border/40 opacity-70" : "bg-card border-border/60"
-                }`}
-                style={{ animationDelay: `${idx * 0.04}s` }}
-              >
-                <div className="flex gap-3">
-                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${sevTone[n.severity]}`}>
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-semibold text-foreground leading-snug">{n.title}</p>
-                      {!n.read && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />}
+          ) : (
+            filtered.map((notification, index) => {
+              const Icon = ICONS[notification.category];
+
+              return (
+                <article
+                  key={notification.id}
+                  className={`rounded-xl border p-3.5 transition-all hover:shadow-md ${
+                    notification.read ? "border-border/40 bg-card opacity-75" : "border-border/60 bg-card"
+                  }`}
+                  style={{ animationDelay: `${index * 0.04}s` }}
+                >
+                  <div className="flex gap-3">
+                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${sevTone[notification.severity]}`}>
+                      <Icon className="h-4 w-4" />
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{n.desc}</p>
-                    <p className="mt-1.5 text-[10px] text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-3 w-3" /> {n.time}
-                    </p>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-sm font-semibold leading-snug text-foreground">{notification.title}</p>
+                        {!notification.read && <span className="shrink-0 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary">Baru</span>}
+                      </div>
+
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{notification.desc}</p>
+
+                      <p className="mt-1.5 flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Clock className="h-3 w-3" /> {notification.time}
+                      </p>
+
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleRead(notification.id)}
+                          className="h-8 rounded-lg text-xs"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {notification.read ? "Tandai belum dibaca" : "Tandai sudah dibaca"}
+                        </Button>
+
+                        {notification.action && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => openNotificationAction(notification)}
+                            className="h-8 rounded-lg gradient-primary text-xs text-primary-foreground"
+                          >
+                            <Eye className="h-3.5 w-3.5" /> {notification.action.label}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </button>
-            );
-          })}
+                </article>
+              );
+            })
+          )}
         </div>
       </SheetContent>
     </Sheet>
