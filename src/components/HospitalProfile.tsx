@@ -6,9 +6,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
-  Building2, Shield, Activity, Users, Edit3, Save, Database, Phone, MapPin, TrendingUp, Lock
+  Building2,
+  Shield,
+  Activity,
+  Users,
+  Edit3,
+  Save,
+  Database,
+  Phone,
+  MapPin,
+  TrendingUp,
+  Lock,
+  UserPlus,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/features/auth/AuthProvider";
+
+const HOSPITAL_PROFILE_STORAGE_KEY = "bpjsight.hospital.profile";
+const HOSPITAL_STAFF_STORAGE_KEY = "bpjsight.hospital.staff";
 
 const STATS = [
   { label: "Klaim Demo Diproses", value: "24", icon: Activity },
@@ -25,27 +41,123 @@ const EHR = [
 
 const DEPARTMENTS = ["Kardiologi", "Neurologi", "Pediatri", "Bedah Umum", "Onkologi", "Radiologi", "IGD 24 Jam", "Laboratorium"];
 
-const STAFF = [
-  { name: "dr. Andini Pratama", role: "Verifikator Senior", status: "online" },
-  { name: "Bagus Setiawan", role: "Admin Klaim", status: "online" },
-  { name: "Maya Sari", role: "Koder INA-CBG's", status: "offline" },
-  { name: "dr. Rizki Hidayat", role: "DPJP", status: "online" },
+type HospitalProfileForm = {
+  name: string;
+  code: string;
+  address: string;
+  phone: string;
+  director: string;
+  type: string;
+};
+
+type StaffStatus = "online" | "offline";
+
+type StaffMember = {
+  id: string;
+  name: string;
+  role: string;
+  status: StaffStatus;
+};
+
+const INITIAL_STAFF: StaffMember[] = [
+  { id: "staff-1", name: "dr. Andini Pratama", role: "Verifikator Senior", status: "online" },
+  { id: "staff-2", name: "Bagus Setiawan", role: "Admin Klaim", status: "online" },
+  { id: "staff-3", name: "Maya Sari", role: "Koder INA-CBG's", status: "offline" },
+  { id: "staff-4", name: "dr. Rizki Hidayat", role: "DPJP", status: "online" },
 ];
 
+function readSessionValue<T>(key: string, defaultValue: T): T {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return defaultValue;
+
+    return JSON.parse(raw) as T;
+  } catch {
+    return defaultValue;
+  }
+}
+
+function saveSessionValue<T>(key: string, value: T): void {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Abaikan jika storage browser tidak tersedia.
+  }
+}
+
 const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
+  const { currentUser, updateCurrentUser } = useAuth();
+  const defaultHospitalName = currentUser?.displayName && currentUser.displayName !== "Admin Rumah Sakit"
+    ? currentUser.displayName
+    : "RS Demo Jakarta";
+
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({
-    name: "RS Demo Jakarta",
+  const [form, setForm] = useState<HospitalProfileForm>(() => readSessionValue(HOSPITAL_PROFILE_STORAGE_KEY, {
+    name: defaultHospitalName,
     code: "1234567",
     address: "Jl. Kesehatan No. 12, Jakarta Selatan",
     phone: "+62 21 7000-1234",
     director: "dr. Sutrisno Wibowo, MARS",
     type: "RS Tipe B",
-  });
+  }));
+  const [staffManagerOpen, setStaffManagerOpen] = useState(false);
+  const [staffList, setStaffList] = useState<StaffMember[]>(() => readSessionValue(HOSPITAL_STAFF_STORAGE_KEY, INITIAL_STAFF));
+  const [newStaff, setNewStaff] = useState({ name: "", role: "" });
   const [autoSync, setAutoSync] = useState(true);
   const [auditLog, setAuditLog] = useState(true);
 
-  const save = () => { setEditing(false); toast.success("Profil rumah sakit diperbarui"); };
+  const persistStaff = (nextStaff: StaffMember[]) => {
+    setStaffList(nextStaff);
+    saveSessionValue(HOSPITAL_STAFF_STORAGE_KEY, nextStaff);
+  };
+
+  const save = () => {
+    const cleanName = form.name.trim() || "RS Demo Jakarta";
+    const nextForm = { ...form, name: cleanName };
+
+    setForm(nextForm);
+    saveSessionValue(HOSPITAL_PROFILE_STORAGE_KEY, nextForm);
+    updateCurrentUser({ name: cleanName, displayName: cleanName });
+    setEditing(false);
+    toast.success("Profil rumah sakit diperbarui", {
+      description: "Nama pada header dasbor ikut berubah selama sesi website berjalan.",
+    });
+  };
+
+  const addStaff = () => {
+    const name = newStaff.name.trim();
+    const role = newStaff.role.trim();
+
+    if (!name || !role) {
+      toast.warning("Nama dan role staf wajib diisi.");
+      return;
+    }
+
+    persistStaff([
+      ...staffList,
+      {
+        id: `staff-${Date.now()}`,
+        name,
+        role,
+        status: "online",
+      },
+    ]);
+    setNewStaff({ name: "", role: "" });
+    toast.success("Staf baru ditambahkan.");
+  };
+
+  const removeStaff = (staffId: string) => {
+    persistStaff(staffList.filter((staff) => staff.id !== staffId));
+    toast.success("Staf dihapus dari daftar demo.");
+  };
+
+  const toggleStaffStatus = (staffId: string) => {
+    persistStaff(staffList.map((staff) => (
+      staff.id === staffId
+        ? { ...staff, status: staff.status === "online" ? "offline" : "online" }
+        : staff
+    )));
+  };
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8 space-y-6">
@@ -138,29 +250,84 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
       </div>
 
       <Card className="p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
-        <h3 className="font-bold text-foreground mb-3 flex items-center gap-2"><Users className="h-4 w-4 text-primary" /> Manajemen Akses Staf</h3>
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h3 className="font-bold text-foreground flex items-center gap-2"><Users className="h-4 w-4 text-primary" /> Manajemen Akses Staf</h3>
+          <Button variant="outline" className="rounded-xl" onClick={() => setStaffManagerOpen((open) => !open)}>
+            <Users className="h-4 w-4" /> {staffManagerOpen ? "Tutup Kelola" : "Kelola Staf"}
+          </Button>
+        </div>
+
         <div className="divide-y divide-border/40">
-          {STAFF.map(s => (
-            <div key={s.name} className="flex items-center justify-between py-3">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
-                  {s.name.charAt(0)}
+          {staffList.map(s => (
+            <div key={s.id} className="flex items-center justify-between gap-3 py-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="h-9 w-9 shrink-0 rounded-xl bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
+                  {s.name.charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{s.name}</p>
-                  <p className="text-xs text-muted-foreground">{s.role}</p>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">{s.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">{s.role}</p>
                 </div>
               </div>
-              <Badge className={s.status === "online"
-                ? "bg-success/15 text-success border border-success/25 text-xs"
-                : "bg-muted/40 text-muted-foreground border border-border/60 text-xs"}>
-                <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${s.status === "online" ? "bg-success" : "bg-muted-foreground"}`} />
-                {s.status}
-              </Badge>
+              <div className="flex shrink-0 items-center gap-2">
+                <Badge className={s.status === "online"
+                  ? "bg-success/15 text-success border border-success/25 text-xs"
+                  : "bg-muted/40 text-muted-foreground border border-border/60 text-xs"}>
+                  <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${s.status === "online" ? "bg-success" : "bg-muted-foreground"}`} />
+                  {s.status}
+                </Badge>
+                {staffManagerOpen && (
+                  <Button variant="ghost" size="sm" className="rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => removeStaff(s.id)}>
+                    <Trash2 className="h-4 w-4" /> Hapus
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
         </div>
-        <Button variant="outline" className="mt-3 w-full rounded-xl"><Users className="h-4 w-4" /> Kelola Staf</Button>
+
+        {staffManagerOpen && (
+          <div className="mt-4 rounded-2xl border border-border/60 bg-muted/10 p-4">
+            <div className="mb-4 grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground">Nama staf</Label>
+                <Input
+                  value={newStaff.name}
+                  onChange={(event) => setNewStaff((previous) => ({ ...previous, name: event.target.value }))}
+                  placeholder="Contoh: Siti Rahma"
+                  className="rounded-xl bg-background/80"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-muted-foreground">Role</Label>
+                <Input
+                  value={newStaff.role}
+                  onChange={(event) => setNewStaff((previous) => ({ ...previous, role: event.target.value }))}
+                  placeholder="Contoh: Admin Klaim"
+                  className="rounded-xl bg-background/80"
+                />
+              </div>
+              <Button onClick={addStaff} className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
+                <UserPlus className="h-4 w-4" /> Tambah
+              </Button>
+            </div>
+
+            <div className="grid gap-2 md:grid-cols-2">
+              {staffList.map((staff) => (
+                <div key={`manage-${staff.id}`} className="flex items-center justify-between rounded-xl border border-border/60 bg-background/70 px-3 py-2">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">{staff.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{staff.role}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-muted-foreground">{staff.status === "online" ? "Online" : "Offline"}</span>
+                    <Switch checked={staff.status === "online"} onCheckedChange={() => toggleStaffStatus(staff.id)} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </Card>
 
       <Card className="p-5" style={{ boxShadow: 'var(--shadow-card)' }}>
@@ -191,5 +358,3 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
 };
 
 export default HospitalProfile;
-
-

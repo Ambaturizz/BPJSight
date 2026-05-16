@@ -177,7 +177,7 @@ function buildRevisionRequests(level: DocumentStatus): string[] {
   ];
 }
 
-export const HOSPITAL_CLAIMS: HospitalClaim[] = PATIENTS.map((patient, index) => {
+const HOSPITAL_CLAIM_BLUEPRINTS: HospitalClaim[] = PATIENTS.map((patient, index) => {
   const diagnosis = DIAGNOSES[index];
   const meta = STATUSES[index];
   const submittedDaysAgo = index * 2 + 1;
@@ -229,4 +229,10 @@ export const HOSPITAL_CLAIMS: HospitalClaim[] = PATIENTS.map((patient, index) =>
   };
 });
 
-
+export const HOSPITAL_CLAIMS: HospitalClaim[] = HOSPITAL_CLAIM_BLUEPRINTS
+  .sort((a, b) => a.patient.localeCompare(b.patient, "id-ID", { sensitivity: "base" }))
+  .map((claim, index) => ({
+    ...claim,
+    id: String(index + 1),
+    fhirBundleId: `urn:uuid:bpjsight-${index + 1}`,
+  }));

@@ -32,6 +32,8 @@ export function applyHospitalClaimFilters(claims: HospitalClaim[], filters: Hosp
     })
     .sort((a, b) => {
       switch (filters.sort) {
+        case "patient_asc":
+          return a.patient.localeCompare(b.patient, "id-ID", { sensitivity: "base" });
         case "risk_asc":
           return a.risk - b.risk;
         case "amount_desc":
@@ -46,5 +48,7 @@ export function applyHospitalClaimFilters(claims: HospitalClaim[], filters: Hosp
       }
     });
 }
+
+
 
 

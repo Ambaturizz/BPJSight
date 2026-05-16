@@ -5,7 +5,7 @@ import type { DocumentStatus } from "@/types/claim";
 
 export type RiskStatusFilter = "all" | "aman" | "sedang" | "berisiko";
 export type DocumentStatusFilter = "all" | DocumentStatus;
-export type HospitalClaimSort = "risk_desc" | "risk_asc" | "amount_desc" | "amount_asc" | "date_desc";
+export type HospitalClaimSort = "patient_asc" | "risk_desc" | "risk_asc" | "amount_desc" | "amount_asc" | "date_desc";
 
 export interface HospitalClaimFiltersState {
   query: string;
@@ -40,6 +40,7 @@ const documentStatusOptions: { value: DocumentStatusFilter; label: string }[] = 
 ];
 
 const sortOptions: { value: HospitalClaimSort; label: string }[] = [
+  { value: "patient_asc", label: "Nama pasien A-Z" },
   { value: "risk_desc", label: "Risiko tertinggi" },
   { value: "risk_asc", label: "Risiko terendah" },
   { value: "amount_desc", label: "Nilai klaim tertinggi" },
@@ -198,5 +199,7 @@ export default function ClaimFilters({
     </div>
   );
 }
+
+
 
 

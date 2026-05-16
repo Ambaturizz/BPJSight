@@ -25,7 +25,7 @@ export default function HospitalClaimCard({ claim, onDetail, onChecklist, onReco
     <Card className="border-border/60 p-4 shadow-[var(--shadow-card)]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-wider text-primary">#{claim.id}</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-primary">No. {claim.id} · urut abjad</p>
           <h3 className="mt-1 truncate text-base font-extrabold text-foreground">{claim.patient}</h3>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Stethoscope className="h-3.5 w-3.5" /> {claim.diagnosis} ({claim.icd10})
@@ -106,5 +106,7 @@ export default function HospitalClaimCard({ claim, onDetail, onChecklist, onReco
     </Card>
   );
 }
+
+
 
 

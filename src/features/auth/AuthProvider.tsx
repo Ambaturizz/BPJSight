@@ -21,6 +21,7 @@ interface AuthContextValue {
   role: UserRole | null;
   status: "loading" | "authenticated" | "unauthenticated";
   login: (user: AuthUser) => void;
+  updateCurrentUser: (patch: Partial<AuthUser>) => void;
   logout: () => Promise<void>;
   /** Backward compatibility untuk komponen lama. */
   signIn: (user: AuthUser) => void;
@@ -58,6 +59,16 @@ export function AuthProvider({ children, onTimeout }: { children: ReactNode; onT
 
   const login = useCallback((user: AuthUser) => {
     setCurrentUser(user);
+  }, []);
+
+  const updateCurrentUser = useCallback((patch: Partial<AuthUser>) => {
+    setCurrentUser((previous) => {
+      if (!previous) return previous;
+
+      const updatedUser = { ...previous, ...patch };
+      authService.updateCurrentUser(updatedUser);
+      return updatedUser;
+    });
   }, []);
 
   const logout = useCallback(async () => {
@@ -105,11 +116,12 @@ export function AuthProvider({ children, onTimeout }: { children: ReactNode; onT
       role: currentUser?.role ?? null,
       status,
       login,
+      updateCurrentUser,
       logout,
       signIn: login,
       signOut: logout,
     };
-  }, [currentUser, isLoading, login, logout]);
+  }, [currentUser, isLoading, login, updateCurrentUser, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -123,5 +135,7 @@ export function useAuth(): AuthContextValue {
 
   return context;
 }
+
+
 
 

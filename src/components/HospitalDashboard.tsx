@@ -60,7 +60,7 @@ const DEFAULT_FILTERS: HospitalClaimFiltersState = {
   documentStatus: "all",
   riskMin: 0,
   riskMax: 100,
-  sort: "risk_desc",
+  sort: "patient_asc",
 };
 
 
@@ -387,8 +387,8 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                     <ClipboardList className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <h2 className="font-bold text-foreground">Klaim Terbaru — Skor Risiko Administratif</h2>
-                    <p className="text-xs text-muted-foreground">Cari, filter, urutkan, dan prioritaskan klaim yang perlu direview.</p>
+                    <h2 className="font-bold text-foreground">Klaim Rumah Sakit — Skor Risiko Administratif</h2>
+                    <p className="text-xs text-muted-foreground">Nomor pasien mengikuti urutan abjad. Nama pasien bersifat fiktif dan hanya digunakan untuk keperluan demo.</p>
                   </div>
                 </div>
 
@@ -452,7 +452,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                     <table className="w-full">
                       <thead>
                         <tr className="border-b border-border/60 bg-muted/30">
-                          <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">No</th>
+                          <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">No Urut</th>
                           <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:px-6">Pasien</th>
                           <th className="hidden px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground md:table-cell md:px-6">Diagnosis</th>
                           <th className="hidden px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground lg:table-cell md:px-6">Nilai</th>
@@ -720,6 +720,8 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
 };
 
 export default HospitalDashboard;
+
+
 
 
 

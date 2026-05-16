@@ -155,12 +155,9 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
             />
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button variant="outline" onClick={() => handleNav("features")} className="rounded-xl">
+          <div className="mt-8 flex justify-center">
+            <Button variant="outline" onClick={() => handleNav("features")} className="rounded-xl px-6">
               Lihat Alur Demo
-            </Button>
-            <Button variant="ghost" onClick={onOpenEHR} className="rounded-xl text-primary hover:bg-primary/10 hover:text-primary">
-              Preview EHR Simulatif
             </Button>
           </div>
 
@@ -276,3 +273,5 @@ function RoleCard({ icon: Icon, title, desc, onClick }: RoleCardProps) {
 }
 
 export default LandingHero;
+
+

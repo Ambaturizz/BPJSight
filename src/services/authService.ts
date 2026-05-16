@@ -181,6 +181,21 @@ async function registerHospital(payload: HospitalRegisterPayload): Promise<AuthU
   return delay(user);
 }
 
+
+function updateCurrentUser(patch: Partial<AuthUser>): AuthUser | null {
+  const currentUser = readSession();
+
+  if (!currentUser) return null;
+
+  const updatedUser: AuthUser = {
+    ...currentUser,
+    ...patch,
+  };
+
+  saveSession(updatedUser);
+  return updatedUser;
+}
+
 async function logout(): Promise<void> {
   clearSession();
   return delay(undefined, 250);
@@ -197,7 +212,10 @@ export const authService = {
   registerHospital,
   logout,
   getCurrentUser,
+  updateCurrentUser,
   maskIdentity,
 };
+
+
 
 
