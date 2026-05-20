@@ -2,6 +2,7 @@ import { Shield, ArrowLeft, Activity, Lock, FileText, Database, Bell, BarChart3,
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ThemeToggle from "@/components/ThemeToggle";
+import { AppLayout } from "./AppLayout";
 
 interface FeaturesPageProps {
   onBack: () => void;
@@ -55,7 +56,7 @@ const COMPARISON = [
 
 const FeaturesPage = ({ onBack, onNavigate }: FeaturesPageProps) => {
   return (
-    <div className="relative min-h-screen bg-background">
+    <AppLayout>
       <nav className="relative z-10 flex items-center justify-between border-b border-border/70 bg-background/95 px-6 py-5 md:px-12 lg:px-20">
         <button onClick={() => onNavigate("beranda")} className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -150,7 +151,7 @@ const FeaturesPage = ({ onBack, onNavigate }: FeaturesPageProps) => {
           <Button onClick={() => onNavigate("beranda")} className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">Kembali ke Beranda</Button>
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

@@ -46,6 +46,7 @@ import RiskFactorList from "@/components/ai/RiskFactorList";
 import RiskScoreBadge from "@/components/ai/RiskScoreBadge";
 import type { DashboardStat } from "@/types/dashboard";
 import type { HospitalClaim } from "@/types/claim";
+import { AppLayout } from "./AppLayout";
 
 interface HospitalDashboardProps {
   onBack: () => void;
@@ -198,7 +199,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
   };
 
   return (
-    <div className="operational-dashboard min-h-screen bg-background">
+    <AppLayout className="operational-dashboard">
       <header className="sticky top-0 z-20 border-b border-border/60 bg-card/95 backdrop-blur-md px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Kembali ke halaman utama" onClick={onBack} className="rounded-xl hover:bg-muted">
@@ -715,7 +716,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </AppLayout>
   );
 };
 

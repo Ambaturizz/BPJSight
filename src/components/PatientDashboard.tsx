@@ -42,6 +42,7 @@ import { getClaimStatusLabel } from "@/lib/app-helpers";
 import { useAuth } from "@/features/auth/AuthProvider";
 import type { Benefit } from "@/types/dashboard";
 import type { ClaimStatus, PatientClaim } from "@/types/claim";
+import { AppLayout } from "./AppLayout";
 
 interface PatientDashboardProps {
   onBack: () => void;
@@ -129,7 +130,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppLayout>
       <header className="sticky top-0 z-20 border-b border-border/60 bg-card/95 backdrop-blur-md px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Kembali ke halaman utama" onClick={onBack} className="rounded-xl hover:bg-muted">
@@ -605,7 +606,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </AppLayout>
   );
 };
 

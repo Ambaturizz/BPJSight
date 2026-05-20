@@ -34,7 +34,9 @@ import RiskExplanationPanel from "@/components/ai/RiskExplanationPanel";
 import { claimsService } from "@/services/claimsService";
 import { claimWorkflowService } from "@/services/claimWorkflowService";
 import { formatDate, formatDateTime, formatIDR, maskNik } from "@/lib/formatters";
+import { formatDate, formatDateTime, formatIDR, maskNik } from "@/lib/formatters";
 import type { ClaimStatus, DocumentStatus, HospitalClaim } from "@/types/claim";
+import { AppLayout } from "@/components/AppLayout";
 
 const statusTone: Record<ClaimStatus, string> = {
   aman: "bg-success/15 text-success border-success/25",
@@ -194,7 +196,7 @@ export default function HospitalClaimDetail() {
   const hasWaitingDocument = claim.documents.some((document) => document.uploaded && !document.verified);
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppLayout>
       <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Kembali ke dashboard" onClick={() => navigate("/rumah-sakit/dashboard")} className="rounded-xl hover:bg-muted">
@@ -375,7 +377,7 @@ export default function HospitalClaimDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </AppLayout>
   );
 }
 
@@ -403,7 +405,7 @@ function Info({
 
 function HospitalClaimDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-background px-4 py-8 md:px-6">
+    <AppLayout className="px-4 py-8 md:px-6">
       <div className="mx-auto max-w-6xl space-y-6">
         <Skeleton className="h-10 w-72" />
         <div className="grid gap-6 lg:grid-cols-3">
@@ -414,7 +416,7 @@ function HospitalClaimDetailSkeleton() {
           <Skeleton className="h-[32rem] rounded-2xl" />
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }
 
@@ -430,7 +432,7 @@ function EmptyClaimState({
   onAction: () => void;
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <AppLayout className="flex items-center justify-center px-4 py-10">
       <Card className="max-w-md border-border/60 p-8 text-center" style={{ boxShadow: "var(--shadow-card)" }}>
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/50">
           <Inbox className="h-8 w-8 text-muted-foreground" />
@@ -441,7 +443,7 @@ function EmptyClaimState({
           {actionLabel}
         </Button>
       </Card>
-    </div>
+    </AppLayout>
   );
 }
 

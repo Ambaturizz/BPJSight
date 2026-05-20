@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
+import { AppLayout } from "./AppLayout";
 import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -127,7 +128,7 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppLayout>
       <header className="sticky top-0 z-20 border-b border-border/70 bg-card/95 px-4 py-3 backdrop-blur-md md:px-6 md:py-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Kembali ke beranda" onClick={onBack} className="rounded-xl hover:bg-muted">
@@ -420,7 +421,7 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </AppLayout>
   );
 };
 

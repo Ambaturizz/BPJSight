@@ -2,6 +2,7 @@ import { Shield, Target, Heart, Users, ArrowLeft, CheckCircle2, ClipboardCheck }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ThemeToggle from "@/components/ThemeToggle";
+import { AppLayout } from "./AppLayout";
 
 interface AboutPageProps {
   onBack: () => void;
@@ -23,7 +24,7 @@ const ROADMAP = [
 
 const AboutPage = ({ onBack, onNavigate }: AboutPageProps) => {
   return (
-    <div className="relative min-h-screen bg-background">
+    <AppLayout>
       <nav className="relative z-10 flex items-center justify-between border-b border-border/70 bg-background/95 px-6 py-5 md:px-12 lg:px-20">
         <button onClick={() => onNavigate("beranda")} className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -114,7 +115,7 @@ const AboutPage = ({ onBack, onNavigate }: AboutPageProps) => {
           </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

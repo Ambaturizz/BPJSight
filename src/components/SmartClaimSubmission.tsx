@@ -9,6 +9,7 @@ import {
   AlertTriangle, ClipboardCheck, Bell, Loader2, ChevronRight,
   Building2, Calendar, Stethoscope, Activity, User, CreditCard, Heart
 } from "lucide-react";
+import { AppLayout } from "./AppLayout";
 
 interface SmartClaimSubmissionProps {
   onBack: () => void;
@@ -241,8 +242,9 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
   // Success screen
   if (step === "success") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="animate-fade-in-up max-w-md w-full p-8 text-center border-border/60" style={{ boxShadow: 'var(--shadow-card)' }}>
+      <AppLayout>
+        <div className="flex flex-1 items-center justify-center p-4">
+          <Card className="animate-fade-in-up max-w-md w-full p-8 text-center border-border/60" style={{ boxShadow: 'var(--shadow-card)' }}>
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full gradient-primary  mb-6">
             <CheckCircle2 className="h-10 w-10 text-primary-foreground" />
           </div>
@@ -260,12 +262,13 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
             Kembali ke Dashboard
           </Button>
         </Card>
-      </div>
+        </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppLayout>
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
@@ -675,7 +678,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
           </div>
         )}
       </main>
-    </div>
+    </AppLayout>
   );
 };
 

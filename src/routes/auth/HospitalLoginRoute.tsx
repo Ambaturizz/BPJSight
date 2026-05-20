@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { hospitalLoginSchema, hospitalRegisterSchema } from "@/lib/validators";
 import { authService } from "@/services/authService";
+import { AppLayout } from "@/components/AppLayout";
 
 interface HospitalFormState {
   hospitalName: string;
@@ -110,13 +111,10 @@ export default function HospitalLoginRoute() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-6 sm:py-8">
-      <div className="absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-primary/8 blur-3xl" />
-      <div className="absolute -bottom-40 -right-40 h-[400px] w-[400px] rounded-full bg-info/6 blur-3xl" />
-
+    <AppLayout>
       <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6"><ThemeToggle compact /></div>
-
-      <div className="relative z-10 w-full max-w-md">
+      <div className="flex flex-1 items-center justify-center p-4">
+        <div className="w-full max-w-md">
         <Link to="/" className="mb-5 inline-flex items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary">
           <ArrowLeft className="h-4 w-4" /> Kembali ke beranda
         </Link>
@@ -238,8 +236,9 @@ export default function HospitalLoginRoute() {
             </button>
           </div>
         </Card>
+        </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }
 
