@@ -208,20 +208,21 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
       <main id="home" className="relative z-10">
         <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-7xl items-center gap-12 px-5 py-12 md:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:py-16">
           <div className="max-w-3xl">
-            <Badge variant="outline" className="mb-5 rounded-full border-border/50 bg-card shadow-sm px-4 py-2 text-xs font-semibold text-primary dark:text-primary shadow-[0_0_32px_rgba(45,212,191,0.14)] sm:text-sm">
-              <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Prototype dashboard Klaim BPJS · Data simulasi
+            <Badge variant="outline" className="mb-6 rounded-full border-primary/30 bg-[#09151e]/80 px-4 py-2 text-xs font-semibold text-primary shadow-[0_0_32px_rgba(45,212,191,0.15)] sm:text-sm backdrop-blur-md">
+              <Sparkles className="mr-2 h-4 w-4" /> Prototype dashboard Klaim BPJS · Data simulasi
             </Badge>
 
-            <h1 className="text-balance text-4xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[4.15rem]">
-              <span className="bg-gradient-to-r from-primary via-primary-glow to-accent  bg-clip-text text-transparent">Pemantauan dan Validasi Klaim BPJS</span>{" "}
-              dalam Satu Dashboard
+            <h1 className="text-balance text-4xl font-extrabold leading-[1.15] tracking-tight text-white sm:text-5xl lg:text-[4.25rem]">
+              <span className="text-primary">Pemantauan dan<br />Validasi Klaim<br /></span>
+              <span className="text-[#fde047]">BPJS</span>{" "}
+              dalam<br />Satu Dashboard
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+            <p className="mt-5 mb-8 max-w-2xl text-base leading-relaxed text-slate-300 md:text-lg">
               BPJSight adalah prototype dashboard untuk membantu pasien dan rumah sakit memantau status klaim, mengecek kelengkapan dokumen, dan mengidentifikasi risiko administratif sejak awal.
             </p>
 
-            <div id="login-options" className="mt-7 grid w-full max-w-[44rem] gap-4 scroll-mt-24 md:grid-cols-2">
+            <div id="login-options"  className="mt-7 grid w-full max-w-[44rem] gap-4 scroll-mt-24 md:grid-cols-2">
               <RoleCard
                 icon={User}
                 title="Masuk/Daftar sebagai Pasien"
@@ -332,72 +333,48 @@ interface RoleCardProps {
 
 function RoleCard({ icon: Icon, title, desc, onClick }: RoleCardProps) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group relative overflow-hidden rounded-3xl border border-border bg-card shadow-sm p-5 text-left shadow-[0_22px_70px_rgba(0,0,0,0.28)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/25 hover:bg-white/[0.085]"
-    >
-      <div className="pointer-events-none absolute inset-0 dark:bg-[radial-gradient(circle_at_10%_0%,rgba(94,234,212,0.18),transparent_34%)] opacity-0 transition group-hover:opacity-100" />
-      <div className="relative flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/50 bg-primary/10 text-primary">
-          <Icon className="h-6 w-6" aria-hidden="true" />
+    <div className="flex flex-col justify-between rounded-2xl border border-primary/30 bg-[#09151e]/80 p-5 shadow-lg backdrop-blur-md transition hover:border-primary/60">
+      <div>
+        <div className="flex items-start gap-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
+            <Icon className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <h3 className="text-lg font-bold leading-tight text-white">{title}</h3>
         </div>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-extrabold leading-tight text-foreground">{title}</h3>
-          <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">{desc}</p>
-          <span className="mt-4 inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-xs font-extrabold text-primary-foreground shadow-[0_12px_28px_rgba(45,212,191,0.20)]">
-            Mulai <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-          </span>
-        </div>
+        <p className="mt-4 text-sm leading-relaxed text-slate-300">
+          {desc}
+        </p>
       </div>
-    </button>
+      <div className="mt-6">
+        <Button onClick={onClick} className="rounded-full bg-primary px-6 font-bold text-slate-900 hover:bg-primary-glow">
+          Mulai <ChevronRight className="ml-1 inline-block h-4 w-4" />
+        </Button>
+      </div>
+    </div>
   );
 }
 
 function HeroVisual() {
   return (
-    <div className="relative min-h-[32rem] overflow-hidden rounded-[2.4rem] border border-border/50 dark:bg-[radial-gradient(circle_at_45%_20%,rgba(45,212,191,0.27),transparent_28%),linear-gradient(145deg,rgba(15,23,42,0.20),rgba(8,13,29,0.56))] p-6 shadow-[0_30px_110px_rgba(0,0,0,0.35)] backdrop-blur-sm">
-      <div className="absolute inset-0 dark:bg-[linear-gradient(rgba(94,234,212,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(94,234,212,0.08)_1px,transparent_1px)] bg-[size:54px_54px]" />
-      <div className="absolute left-8 top-20 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
-      <div className="absolute bottom-12 right-8 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
-
-      <div className="relative h-[28rem]">
-        <FloatingIcon className="left-8 top-14" icon={HeartPulse} />
-        <FloatingIcon className="right-10 top-14" icon={FileText} />
-        <FloatingIcon className="left-10 bottom-28" icon={ClipboardList} small />
-        <FloatingIcon className="right-14 bottom-28" icon={LockKeyhole} small />
-
-        <div className="absolute left-1/2 top-[43%] h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-[2.4rem] border border-white/35 bg-gradient-to-br from-white/45 via-cyan-200/30 to-cyan-400/20 shadow-[0_0_80px_rgba(94,234,212,0.38)] backdrop-blur-md">
-          <Shield className="absolute inset-0 m-auto h-28 w-28 text-primary dark:text-primary/75 drop-shadow-[0_0_18px_rgba(255,255,255,0.75)]" strokeWidth={1.15} aria-hidden="true" />
-          <svg viewBox="0 0 200 120" className="absolute left-1/2 top-1/2 h-28 w-40 -translate-x-1/2 -translate-y-1/2 text-foreground/75" aria-hidden="true">
-            <path d="M10 62H55L70 31l24 70 18-44h28l14-25 16 30h20" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-
-        <div className="absolute bottom-10 left-1/2 flex w-[82%] -translate-x-1/2 items-end justify-center gap-2 sm:gap-4">
-          <PersonCard className="h-32 w-24" tone="from-primary to-primary-glow" />
-          <PersonCard className="h-24 w-20" tone="from-accent to-primary" child />
-          <PersonCard className="h-24 w-20" tone="from-muted to-accent" child />
-          <PersonCard className="h-32 w-24" tone="from-primary to-accent" />
-        </div>
+    <div className="relative min-h-[36rem] w-full max-w-[40rem] mx-auto overflow-visible flex items-center justify-center p-4">
+      {/* Container with Premium SaaS Dashboard Aesthetics */}
+      <div 
+        className="relative flex items-center justify-center w-full h-full rounded-[2rem] border border-cyan-400/20 bg-[#06121E]/80 shadow-[0_0_60px_rgba(0,255,255,0.15)] backdrop-blur-xl transition-all duration-1000 ease-in-out animate-floating"
+        style={{ animation: 'floating 6s ease-in-out infinite' }}
+      >
+        {/* Subtle grid background inside the card */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] rounded-[2rem] pointer-events-none" />
+        
+        {/* The User's Image */}
+        <img 
+          src="/images/family-silhouette.png" 
+          alt="BPJS Network Dashboard" 
+          className="relative z-10 w-full h-full max-h-[32rem] object-contain p-4 drop-shadow-[0_0_25px_rgba(0,255,255,0.25)]" 
+        />
+        
+        {/* Inner glow gradient overlay */}
+        <div className="absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/10 bg-gradient-to-t from-cyan-900/20 to-transparent pointer-events-none" />
       </div>
-    </div>
-  );
-}
-
-function PersonCard({ className, tone, child = false }: { className: string; tone: string; child?: boolean }) {
-  return (
-    <div className={`relative ${className}`}>
-      <div className="absolute left-1/2 top-0 h-12 w-12 -translate-x-1/2 rounded-full bg-gradient-to-br from-slate-200 to-cyan-100 shadow-[0_0_26px_rgba(255,255,255,0.30)]" />
-      <div className={`absolute bottom-0 left-1/2 ${child ? "h-20 w-20" : "h-28 w-24"} -translate-x-1/2 rounded-t-[2.2rem] bg-gradient-to-br ${tone} opacity-90 shadow-[0_18px_50px_rgba(45,212,191,0.22)]`} />
-    </div>
-  );
-}
-
-function FloatingIcon({ icon: Icon, className, small = false }: { icon: LucideIcon; className: string; small?: boolean }) {
-  return (
-    <div className={`absolute ${className} flex ${small ? "h-14 w-14" : "h-20 w-20"} items-center justify-center rounded-3xl border border-primary/25 bg-white/10 text-primary dark:text-primary shadow-[0_0_45px_rgba(94,234,212,0.20)] backdrop-blur-md`}>
-      <Icon className={small ? "h-7 w-7" : "h-10 w-10"} strokeWidth={1.5} aria-hidden="true" />
     </div>
   );
 }
@@ -495,7 +472,7 @@ function Footer() {
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border/50 pt-5 text-xs text-muted-foreground/50">
-        <span>© 2026 BPJSight. All rights reserved.</span>
+        <span>Â© 2026 BPJSight. All rights reserved.</span>
         <span>|</span>
         <span>Privacy Policy</span>
         <span>|</span>
