@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { BackgroundOrnaments } from "./BackgroundOrnaments";
@@ -16,20 +14,13 @@ import {
   Lock,
   Menu,
   X,
-  CheckCircle2,
   Mail,
   Phone,
   Globe2,
   BarChart3,
-  HeartPulse,
-  FileText,
   Database,
   Stethoscope,
   Sparkles,
-  PieChart,
-  LineChart,
-  ClipboardList,
-  LockKeyhole,
   Users,
   ArrowUpRight,
 } from "lucide-react";
@@ -75,34 +66,39 @@ const NAV_ITEMS = [
   { label: "Kontak", target: "contact" },
 ] as const;
 
-const KPI_CARDS = [
+type KpiCard = {
+  label: string;
+  value: string;
+  icon: LucideIcon;
+  chart: "donut" | "ring" | "area" | "line";
+  legend: string[];
+  className: string;
+};
+
+const KPI_CARDS: KpiCard[] = [
   {
     label: "Jumlah Peserta JKN",
-    value: "224.237.094 Peserta",
+    value: "284.337.094 Peserta",
     icon: Users,
-    chart: "donut" as const,
-    legend: ["Peserta aktif", "Perlindungan", "Portabilitas"],
+    chart: "donut",
+    legend: ["Penerima Bantuan Iuran", "Penduduk didaftarkan Pemda", "PPU Swasta"],
+    className: "sm:col-span-2",
   },
   {
     label: "Fasilitas Kesehatan Tingkat Pertama",
-    value: "23.823 FKTP",
+    value: "23.623 FKTP",
     icon: Stethoscope,
-    chart: "ring" as const,
-    legend: ["Tingkat pertama", "Perta", "PUTP"],
+    chart: "ring",
+    legend: ["Puskesmas", "Klinik Pratama", "Praktik Perorangan"],
+    className: "",
   },
   {
     label: "Faskes Rujukan Tingkat Lanjutan",
-    value: "3.205 RS/klinik utama dan 8.360 optik/apotek",
+    value: "3.206 RS/Klinik Utama & 6.360 Apotek/Optik",
     icon: Database,
-    chart: "area" as const,
-    legend: ["RS/Klinik", "Apotek", "Optik"],
-  },
-  {
-    label: "Faskes Rujukan Berwenang Jaminan",
-    value: "25.823 NKTP",
-    icon: LineChart,
-    chart: "line" as const,
-    legend: ["Jan", "Mar", "Jun", "Sep"],
+    chart: "area",
+    legend: ["Apotek", "RS Swasta", "Optik"],
+    className: "",
   },
 ];
 
@@ -117,7 +113,7 @@ function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
+const LandingHero = ({ onNavigate }: LandingHeroProps) => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleNav = (target: string) => {
@@ -163,7 +159,7 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
               variant="outline"
               size="sm"
               onClick={() => handleNav("login-options")}
-              className="rounded-full border-border bg-transparent px-5 text-primary dark:text-primary hover:bg-primary/10 hover:text-primary dark:text-primary"
+              className="rounded-full border-border bg-transparent px-5 text-primary hover:bg-primary/10 hover:text-primary"
             >
               Masuk/Daftar
             </Button>
@@ -177,7 +173,7 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
               size="icon"
               aria-label={mobileNavOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
               onClick={() => setMobileNavOpen((open) => !open)}
-              className="rounded-xl text-primary dark:text-primary hover:bg-white/10 hover:text-primary dark:text-primary"
+              className="rounded-xl text-primary hover:bg-white/10"
             >
               {mobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -197,7 +193,7 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
                   {item.label}
                 </button>
               ))}
-              <Button type="button" onClick={() => handleNav("login-options")} className="mt-1 rounded-xl bg-primary text-primary-foreground hover:bg-primary-glow">
+              <Button type="button" onClick={() => handleNav("login-options")} className="mt-1 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
                 Pilih Login
               </Button>
             </div>
@@ -208,21 +204,21 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
       <main id="home" className="relative z-10">
         <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-7xl items-center gap-12 px-5 py-12 md:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:py-16">
           <div className="max-w-3xl">
-            <Badge variant="outline" className="mb-6 rounded-full border-primary/30 bg-[#09151e]/80 px-4 py-2 text-xs font-semibold text-primary shadow-[0_0_32px_rgba(45,212,191,0.15)] sm:text-sm backdrop-blur-md">
+            <Badge variant="outline" className="mb-6 rounded-full border-primary/30 bg-primary/5 dark:bg-[#09151e]/80 px-4 py-2 text-xs font-semibold text-primary shadow-[0_0_32px_rgba(45,212,191,0.10)] sm:text-sm backdrop-blur-md">
               <Sparkles className="mr-2 h-4 w-4" /> Prototype dashboard Klaim BPJS · Data simulasi
             </Badge>
 
-            <h1 className="text-balance text-4xl font-extrabold leading-[1.15] tracking-tight text-white sm:text-5xl lg:text-[4.25rem]">
+            <h1 className="text-balance text-4xl font-extrabold leading-[1.15] tracking-tight text-foreground sm:text-5xl lg:text-[4.25rem]">
               <span className="text-primary">Pemantauan dan<br />Validasi Klaim<br /></span>
-              <span className="text-[#fde047]">BPJS</span>{" "}
+              <span className="text-[#d97706] dark:text-[#fde047]">BPJS</span>{" "}
               dalam<br />Satu Dashboard
             </h1>
 
-            <p className="mt-5 mb-8 max-w-2xl text-base leading-relaxed text-slate-300 md:text-lg">
+            <p className="mt-5 mb-8 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
               BPJSight adalah prototype dashboard untuk membantu pasien dan rumah sakit memantau status klaim, mengecek kelengkapan dokumen, dan mengidentifikasi risiko administratif sejak awal.
             </p>
 
-            <div id="login-options"  className="mt-7 grid w-full max-w-[44rem] gap-4 scroll-mt-24 md:grid-cols-2">
+            <div id="login-options" className="mt-7 grid w-full max-w-[44rem] gap-4 scroll-mt-24 md:grid-cols-2">
               <RoleCard
                 icon={User}
                 title="Masuk/Daftar sebagai Pasien"
@@ -272,7 +268,7 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
               <article key={feature.title} className="group rounded-3xl border border-border/50 bg-card shadow-sm p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/25 hover:bg-white/[0.075]">
                 <div className="flex items-start justify-between gap-5">
                   <div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/25 bg-gradient-to-br from-cyan-300/25 to-sky-400/15 text-primary dark:text-primary shadow-[0_0_34px_rgba(45,212,191,0.20)]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/25 bg-gradient-to-br from-cyan-300/25 to-sky-400/15 text-primary shadow-[0_0_34px_rgba(45,212,191,0.20)]">
                       <feature.icon className="h-6 w-6" aria-hidden="true" />
                     </div>
                     <h3 className="mt-5 text-xl font-extrabold text-foreground">{feature.title}</h3>
@@ -297,10 +293,9 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
                   BPJSight memperlihatkan alur pasien dan rumah sakit tanpa mengklaim terhubung ke BPJS atau fasilitas kesehatan nyata.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <Button onClick={() => scrollToSection("login-options")} className="rounded-full bg-primary px-5 font-bold text-primary-foreground hover:bg-primary-glow">
+                  <Button onClick={() => scrollToSection("login-options")} className="rounded-full bg-primary px-5 font-bold text-primary-foreground hover:bg-primary/90">
                     Pilih role login
                   </Button>
-                  
                 </div>
               </div>
               <div className="grid gap-3 text-sm text-muted-foreground">
@@ -333,20 +328,20 @@ interface RoleCardProps {
 
 function RoleCard({ icon: Icon, title, desc, onClick }: RoleCardProps) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-primary/30 bg-[#09151e]/80 p-5 shadow-lg backdrop-blur-md transition hover:border-primary/60">
+    <div className="flex flex-col justify-between rounded-2xl border border-primary/30 bg-card p-5 shadow-lg backdrop-blur-md transition hover:border-primary/60 hover:shadow-primary/10">
       <div>
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
             <Icon className="h-5 w-5" aria-hidden="true" />
           </div>
-          <h3 className="text-lg font-bold leading-tight text-white">{title}</h3>
+          <h3 className="text-lg font-bold leading-tight text-foreground">{title}</h3>
         </div>
-        <p className="mt-4 text-sm leading-relaxed text-slate-300">
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
           {desc}
         </p>
       </div>
       <div className="mt-6">
-        <Button onClick={onClick} className="rounded-full bg-primary px-6 font-bold text-slate-900 hover:bg-primary-glow">
+        <Button onClick={onClick} className="rounded-full bg-primary px-6 font-bold text-primary-foreground hover:bg-primary/90">
           Mulai <ChevronRight className="ml-1 inline-block h-4 w-4" />
         </Button>
       </div>
@@ -357,31 +352,25 @@ function RoleCard({ icon: Icon, title, desc, onClick }: RoleCardProps) {
 function HeroVisual() {
   return (
     <div className="relative min-h-[36rem] w-full max-w-[40rem] mx-auto overflow-visible flex items-center justify-center p-4">
-      {/* Container with Premium SaaS Dashboard Aesthetics */}
-      <div 
-        className="relative flex items-center justify-center w-full h-full rounded-[2rem] border border-cyan-400/20 bg-[#06121E]/80 shadow-[0_0_60px_rgba(0,255,255,0.15)] backdrop-blur-xl transition-all duration-1000 ease-in-out animate-floating"
+      <div
+        className="relative flex items-center justify-center w-full h-full rounded-[2rem] border border-primary/20 bg-card/80 shadow-[0_0_60px_rgba(0,255,255,0.10)] dark:border-cyan-400/20 dark:bg-[#06121E]/80 dark:shadow-[0_0_60px_rgba(0,255,255,0.15)] backdrop-blur-xl"
         style={{ animation: 'floating 6s ease-in-out infinite' }}
       >
-        {/* Subtle grid background inside the card */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] rounded-[2rem] pointer-events-none" />
-        
-        {/* The User's Image */}
-        <img 
-          src="/images/family-silhouette.png" 
-          alt="BPJS Network Dashboard" 
-          className="relative z-10 w-full h-full max-h-[32rem] object-contain p-4 drop-shadow-[0_0_25px_rgba(0,255,255,0.25)]" 
+        <img
+          src="/images/family-silhouette.png"
+          alt="BPJS Network Dashboard"
+          className="relative z-10 w-full h-full max-h-[32rem] object-contain p-4 drop-shadow-[0_0_25px_rgba(0,255,255,0.25)]"
         />
-        
-        {/* Inner glow gradient overlay */}
         <div className="absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/10 bg-gradient-to-t from-cyan-900/20 to-transparent pointer-events-none" />
       </div>
     </div>
   );
 }
 
-function MetricCard({ label, value, chart, legend, icon: Icon, delay }: (typeof KPI_CARDS)[number] & { delay: number }) {
+function MetricCard({ label, value, chart, legend, icon: Icon, delay, className = "" }: KpiCard & { delay: number }) {
   return (
-    <article className="rounded-2xl border border-border/50 bg-card shadow-sm p-4 shadow-[0_18px_55px_rgba(0,0,0,0.24)] backdrop-blur-xl" style={{ animationDelay: `${delay}ms` }}>
+    <article className={`rounded-2xl border border-border/50 bg-card shadow-sm p-4 shadow-[0_18px_55px_rgba(0,0,0,0.24)] backdrop-blur-xl ${className}`} style={{ animationDelay: `${delay}ms` }}>
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[0.72rem] font-semibold leading-snug text-muted-foreground">{label}</p>
@@ -441,8 +430,6 @@ function MiniChart({ type }: { type: "donut" | "ring" | "area" | "line" }) {
   );
 }
 
-
-
 function Footer() {
   return (
     <footer className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-8 md:px-8 lg:px-10">
@@ -451,10 +438,6 @@ function Footer() {
           <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
             BPJSight adalah mini project yang memperlihatkan alur pasien dan rumah sakit tanpa mengklaim terhubung ke BPJS atau fasilitas kesehatan nyata.
           </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            
-            
-          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
@@ -472,26 +455,14 @@ function Footer() {
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border/50 pt-5 text-xs text-muted-foreground/50">
-        <span>Â© 2026 BPJSight. All rights reserved.</span>
+        <span>© 2026 BPJSight. All rights reserved.</span>
         <span>|</span>
         <span>Privacy Policy</span>
         <span>|</span>
         <span>Terms of Service</span>
-        <span>|</span>
-        <span>Legal &amp; Compliance</span>
-        <span>|</span>
-        <span>Non-Discrimination Policy</span>
-        <span>|</span>
-        <span>Accessibility</span>
-        <span>|</span>
-        <span>Your Privacy Choices</span>
       </div>
     </footer>
   );
 }
 
 export default LandingHero;
-
-
-
-
