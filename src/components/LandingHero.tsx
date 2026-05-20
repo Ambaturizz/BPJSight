@@ -10,14 +10,12 @@ import {
   ChevronRight,
   ClipboardCheck,
   Lock,
-  Plug,
   Menu,
   X,
   CheckCircle2,
   Mail,
   Phone,
   MapPin,
-  FileText,
   BarChart3,
 } from "lucide-react";
 
@@ -90,9 +88,6 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
                 {item.label}
               </button>
             ))}
-            <button type="button" onClick={onOpenEHR} className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary">
-              <Plug className="h-3.5 w-3.5" aria-hidden="true" /> EHR Demo
-            </button>
             <ThemeToggle compact />
             <Button type="button" variant="outline" size="sm" onClick={() => handleNav("login-options")} className="rounded-full">
               Masuk
@@ -115,9 +110,6 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
                   {item.label}
                 </button>
               ))}
-              <button type="button" onClick={() => { setMobileNavOpen(false); onOpenEHR?.(); }} className="rounded-xl px-3 py-2 text-left text-sm font-semibold text-foreground hover:bg-muted">
-                EHR Demo
-              </button>
               <Button type="button" onClick={() => handleNav("login-options")} className="mt-1 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
                 Pilih Login
               </Button>
@@ -153,28 +145,6 @@ const LandingHero = ({ onNavigate, onOpenEHR }: LandingHeroProps) => {
               desc="Pantau klaim berisiko, checklist dokumen, dan prioritas review administrasi pada dashboard demo."
               onClick={() => onNavigate("hospital")}
             />
-          </div>
-
-          <div className="mt-8 flex justify-center">
-            <Button variant="outline" onClick={() => handleNav("features")} className="rounded-xl px-6">
-              Lihat Alur Demo
-            </Button>
-          </div>
-
-          <div className="mt-12 grid w-full max-w-3xl grid-cols-1 gap-4 rounded-2xl border border-border/70 bg-card p-4 sm:grid-cols-3 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
-            {[
-              { value: "3", label: "Skenario klaim demo", icon: FileText },
-              { value: "10", label: "Dokumen klaim dicek", icon: ClipboardCheck },
-              { value: "4", label: "Tahap timeline klaim", icon: Activity },
-            ].map((stat) => (
-              <div key={stat.label} className="flex items-center gap-3 rounded-xl p-2 text-left sm:flex-col sm:text-center">
-                <stat.icon className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
-                <div>
-                  <p className="text-2xl font-extrabold tracking-tight text-foreground md:text-3xl">{stat.value}</p>
-                  <p className="text-xs font-medium text-muted-foreground">{stat.label}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -273,5 +243,6 @@ function RoleCard({ icon: Icon, title, desc, onClick }: RoleCardProps) {
 }
 
 export default LandingHero;
+
 
 

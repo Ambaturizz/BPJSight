@@ -8,7 +8,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  ArrowLeft, Shield, Search, Hospital, CheckCircle2, Loader2, Plug,
+  ArrowLeft, Shield, Search, Hospital, CheckCircle2, Loader2,
   User, FileText, FlaskConical, Pill, Receipt, GitBranch, Calendar, MapPin,
   ClipboardCheck,
 } from "lucide-react";
@@ -140,9 +140,6 @@ const EHRPartners = ({ onBack }: EHRPartnersProps) => {
             <span className="font-bold tracking-tight text-foreground">BPJSight</span>
           </div>
           <div className="ml-auto"><ThemeToggle compact /></div>
-          <Badge className="ml-3 border border-primary/25 bg-primary/10 text-xs font-semibold text-primary">
-            <Plug className="mr-1 h-3 w-3" /> EHR Demo
-          </Badge>
         </div>
       </header>
 
@@ -435,3 +432,4 @@ const InfoRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 export default EHRPartners;
+
