@@ -181,7 +181,7 @@ export default function HospitalLoginRoute() {
                 type="email"
                 value={form.email}
                 onChange={updateField("email")}
-                placeholder="admin@rumahsakit.co.id"
+                placeholder="polisi@MBG.co.id"
                 className="h-11 rounded-xl border-border/70 bg-background/80"
                 disabled={isLoading}
                 autoComplete="email"
