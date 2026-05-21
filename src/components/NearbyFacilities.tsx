@@ -3,9 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import {
   MapPin, Navigation, Clock, Star, Phone, ExternalLink,
-  Hospital, Stethoscope, Pill, ShieldCheck, Loader2, AlertCircle, Search, Crosshair,
+  Hospital, Stethoscope, Pill, ShieldCheck, Loader2, AlertCircle, Search, Crosshair, X,
 } from "lucide-react";
 
 type FacilityType = "klinik" | "rumah_sakit" | "apotek" | "faskes_bpjs";
@@ -60,12 +61,77 @@ function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: numb
   return 2 * R * Math.asin(Math.sqrt(x));
 }
 
-const NearbyFacilities = () => {
+interface NearbyFacilitiesProps {
+  onQueueBooked?: () => void;
+}
+
+const NearbyFacilities = ({ onQueueBooked }: NearbyFacilitiesProps) => {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locStatus, setLocStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [filter, setFilter] = useState<FilterKey>("nearest");
   const [typeFilter, setTypeFilter] = useState<FacilityType | "all">("all");
   const [query, setQuery] = useState("");
+
+  // Queue Booking Simulator States
+  const [bookingFacility, setBookingFacility] = useState<Facility | null>(null);
+  const [selectedPoli, setSelectedPoli] = useState("Poli Umum");
+  const [selectedDoctor, setSelectedDoctor] = useState("");
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("08:00 - 10:00");
+  const [bookingStep, setBookingStep] = useState<"select" | "loading" | "success">("select");
+  const [generatedTicket, setGeneratedTicket] = useState<any>(null);
+
+  const POLIS = [
+    { name: "Poli Umum", doctors: ["Dr. Ahmad Fauzi", "Dr. Kartika Sari"] },
+    { name: "Poli Gigi", doctors: ["Drg. Rian Hidayat", "Drg. Indah Lestari"] },
+    { name: "Poli Anak", doctors: ["Dr. Sarah Sp.A", "Dr. Denny Sp.A"] },
+    { name: "Poli Jantung", doctors: ["Dr. Hendra Sp.JP", "Dr. Mega Sp.JP"] },
+  ];
+
+  const TIMESLOTS = ["08:00 - 10:00", "10:00 - 12:00", "13:00 - 15:00"];
+
+  const handleOpenBooking = (f: Facility) => {
+    setBookingFacility(f);
+    setSelectedPoli("Poli Umum");
+    setSelectedDoctor("Dr. Ahmad Fauzi");
+    setSelectedTimeSlot("08:00 - 10:00");
+    setBookingStep("select");
+    setGeneratedTicket(null);
+  };
+
+  const handlePoliChange = (poliName: string) => {
+    setSelectedPoli(poliName);
+    const found = POLIS.find(p => p.name === poliName);
+    if (found && found.doctors.length > 0) {
+      setSelectedDoctor(found.doctors[0]);
+    }
+  };
+
+  const handleConfirmBooking = () => {
+    setBookingStep("loading");
+    setTimeout(() => {
+      const queueNo = `A-${Math.floor(Math.random() * 15) + 4}`;
+      const ticket = {
+        id: `Q-${Date.now().toString().slice(-6)}`,
+        facilityId: bookingFacility?.id,
+        facilityName: bookingFacility?.name,
+        poli: selectedPoli,
+        doctor: selectedDoctor,
+        timeSlot: selectedTimeSlot,
+        queueNumber: queueNo,
+        remaining: Math.floor(Math.random() * 5) + 3,
+        date: new Date().toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+      };
+      sessionStorage.setItem("bpjsight.active.queue", JSON.stringify(ticket));
+      setGeneratedTicket(ticket);
+      setBookingStep("success");
+      if (onQueueBooked) {
+        onQueueBooked();
+      }
+      toast.success("Antrean Berhasil Dipesan", {
+        description: `Nomor Antrean Anda: ${queueNo} di ${bookingFacility?.name}`
+      });
+    }, 1500);
+  };
 
   useEffect(() => {
     requestLocation();
@@ -303,6 +369,15 @@ const NearbyFacilities = () => {
                         <Phone className="h-3.5 w-3.5" /> Telepon
                       </a>
                     </Button>
+                    {f.bpjs && (
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleOpenBooking(f)}
+                        className="h-8 rounded-lg text-xs bg-secondary hover:bg-secondary/90 text-white border-0"
+                      >
+                        <Clock className="h-3.5 w-3.5" /> Antrean JKN
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -310,6 +385,123 @@ const NearbyFacilities = () => {
           );
         })}
       </div>
+
+      {/* JKN Booking Modal */}
+      {bookingFacility && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <Card className="w-full max-w-md bg-card border border-border overflow-hidden animate-slide-up" style={{ boxShadow: "var(--shadow-elevated)" }}>
+            {bookingStep === "select" && (
+              <div className="p-6 space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-foreground text-lg">Pendaftaran Antrean Online</h3>
+                    <p className="text-xs text-muted-foreground">{bookingFacility.name}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setBookingFacility(null)} className="h-8 w-8 rounded-full">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="space-y-3 pt-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-muted-foreground">Pilih Poliklinik</label>
+                    <select
+                      value={selectedPoli}
+                      onChange={(e) => handlePoliChange(e.target.value)}
+                      className="w-full h-10 rounded-xl border border-border/80 bg-muted/20 px-3 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-primary/40"
+                    >
+                      {POLIS.map(p => (
+                        <option key={p.name} value={p.name}>{p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-muted-foreground">Pilih Dokter</label>
+                    <select
+                      value={selectedDoctor}
+                      onChange={(e) => setSelectedDoctor(e.target.value)}
+                      className="w-full h-10 rounded-xl border border-border/80 bg-muted/20 px-3 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-primary/40"
+                    >
+                      {POLIS.find(p => p.name === selectedPoli)?.doctors.map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-muted-foreground">Pilih Jam Kunjungan</label>
+                    <select
+                      value={selectedTimeSlot}
+                      onChange={(e) => setSelectedTimeSlot(e.target.value)}
+                      className="w-full h-10 rounded-xl border border-border/80 bg-muted/20 px-3 text-sm font-semibold text-foreground outline-none focus:ring-2 focus:ring-primary/40"
+                    >
+                      {TIMESLOTS.map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button variant="outline" onClick={() => setBookingFacility(null)} className="flex-1 rounded-xl">
+                    Batal
+                  </Button>
+                  <Button onClick={handleConfirmBooking} className="flex-1 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0">
+                    Ambil Antrean
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {bookingStep === "loading" && (
+              <div className="p-12 flex flex-col items-center justify-center text-center space-y-4">
+                <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                <div>
+                  <h4 className="font-bold text-foreground">Memproses Antrean JKN…</h4>
+                  <p className="text-xs text-muted-foreground mt-1">Mengamankan nomor antrean pada database faskes...</p>
+                </div>
+              </div>
+            )}
+
+            {bookingStep === "success" && generatedTicket && (
+              <div className="p-6 space-y-5">
+                <div className="text-center space-y-1">
+                  <div className="mx-auto h-12 w-12 rounded-full bg-success/15 flex items-center justify-center mb-2">
+                    <ShieldCheck className="h-6 w-6 text-success" />
+                  </div>
+                  <h3 className="font-bold text-foreground text-lg">Pendaftaran Berhasil!</h3>
+                  <p className="text-xs text-muted-foreground">Simpan nomor antrean digital Anda</p>
+                </div>
+
+                <div className="border border-dashed border-success/30 rounded-2xl bg-success/5 p-5 space-y-4 relative">
+                  <div className="text-center border-b border-dashed border-success/20 pb-4">
+                    <span className="text-[10px] uppercase font-bold text-success tracking-widest block">Nomor Antrean Anda</span>
+                    <span className="text-4xl font-extrabold text-foreground font-mono mt-1 block">
+                      {generatedTicket.queueNumber}
+                    </span>
+                    <span className="text-xs text-muted-foreground mt-1 block">
+                      Sisa antrean di depan Anda: <span className="font-bold text-foreground">{generatedTicket.remaining} orang</span>
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between"><span className="text-muted-foreground">Faskes</span><span className="font-bold text-foreground text-right">{generatedTicket.facilityName}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Poliklinik</span><span className="font-semibold text-foreground">{generatedTicket.poli}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Dokter</span><span className="font-semibold text-foreground">{generatedTicket.doctor}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Jam Layanan</span><span className="font-semibold text-foreground">{generatedTicket.timeSlot}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Tanggal</span><span className="font-semibold text-foreground">{generatedTicket.date}</span></div>
+                  </div>
+                </div>
+
+                <Button onClick={() => setBookingFacility(null)} className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 border-0">
+                  Tutup & Lihat di Beranda
+                </Button>
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

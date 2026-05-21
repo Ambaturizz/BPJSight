@@ -123,6 +123,16 @@
     --shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
 
+  .hospital-portal {
+    --primary: 148 100% 32%; /* BPJS Green */
+    --primary-glow: 148 100% 32%;
+    --secondary: 216 63% 31%; /* BPJS Blue */
+    --ring: 148 100% 32%;
+    --accent-foreground: 148 100% 32%;
+    --sidebar-primary: 148 100% 32%;
+    --sidebar-ring: 148 100% 32%;
+  }
+
   * {
     @apply border-border;
   }

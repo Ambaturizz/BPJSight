@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import EmptyState from "@/components/feedback/EmptyState";
 import {
   Dialog,
@@ -74,7 +75,7 @@ function getDocumentTone(docs: HospitalClaim["docs"]): string {
 
 const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) => {
   const navigate = useNavigate();
-  const [view, setView] = useState<"home" | "ai" | "profil">("home");
+  const [view, setView] = useState<"home" | "ai" | "profil" | "rujukan">("home");
   const [claims, setClaims] = useState<HospitalClaim[]>([]);
   const [stats, setStats] = useState<DashboardStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -199,7 +200,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
   };
 
   return (
-    <AppLayout className="operational-dashboard">
+    <AppLayout className="operational-dashboard hospital-portal">
       <header className="sticky top-0 z-20 border-b border-border/60 bg-card/95 backdrop-blur-md px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
           <Button variant="ghost" size="icon" aria-label="Kembali ke halaman utama" onClick={onBack} className="rounded-xl hover:bg-muted">
@@ -237,6 +238,15 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
             </button>
 
             <button
+              onClick={() => setView("rujukan")}
+              className={`hidden md:inline text-xs font-semibold px-2.5 py-1 rounded-lg ${
+                view === "rujukan" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              E-Rujukan
+            </button>
+
+            <button
               onClick={() => setView("profil")}
               className={`hidden md:inline text-xs font-semibold px-2.5 py-1 rounded-lg ${
                 view === "profil" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
@@ -265,6 +275,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
       <main className="mx-auto max-w-6xl px-4 py-6 md:px-6 md:py-8">
         {view === "ai" && <ClaimReviewRecommendations role="hospital" />}
         {view === "profil" && <HospitalProfile onBack={() => setView("home")} />}
+        {view === "rujukan" && <HospitalReferralView onBackToHome={() => setView("home")} />}
 
         {view === "home" && (
           <>
@@ -318,6 +329,76 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
                     </Card>
                   ))}
             </div>
+
+            {/* Smart Claim Dispute Analytics Widget */}
+            <Card className="mb-6 border-emerald-500/20 bg-emerald-500/5 p-5 md:p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-emerald-500/10 pb-4 gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white">
+                    <Activity className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-foreground">Analisis Penolakan & Dispute Klaim JKN</h2>
+                    <p className="text-xs text-muted-foreground">Analitik real-time penyebab dispute klaim berdasarkan audit verifikator BPJS</p>
+                  </div>
+                </div>
+                <Badge className="bg-emerald-600/10 text-emerald-600 border border-emerald-600/25 px-2 py-0.5 text-xs font-bold">
+                  85% RESOLUSI KLAIM CAIR
+                </Badge>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-3 mt-5">
+                {/* Reason 1 */}
+                <div className="space-y-2 bg-card p-4 rounded-xl border border-border/80 shadow-sm">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-semibold text-foreground">Berkas Casemix Tidak Lengkap</span>
+                    <span className="font-extrabold text-destructive">45% (Tinggi)</span>
+                  </div>
+                  <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                    <div className="bg-destructive h-full rounded-full" style={{ width: "45%" }} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-normal">
+                    Terutama didominasi oleh tidak adanya Scan Resume Medis DPJP dan laporan tindakan operasi.
+                  </p>
+                </div>
+
+                {/* Reason 2 */}
+                <div className="space-y-2 bg-card p-4 rounded-xl border border-border/80 shadow-sm">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-semibold text-foreground">Koding ICD Mismatch (Upcoding)</span>
+                    <span className="font-extrabold text-warning">30% (Sedang)</span>
+                  </div>
+                  <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                    <div className="bg-warning h-full rounded-full" style={{ width: "30%" }} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-normal">
+                    Diagnosa sekunder tidak didukung oleh pemeriksaan penunjang (laboratorium atau radiologi).
+                  </p>
+                </div>
+
+                {/* Reason 3 */}
+                <div className="space-y-2 bg-card p-4 rounded-xl border border-border/80 shadow-sm">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-semibold text-foreground">Kriteria Medis Tidak Sesuai</span>
+                    <span className="font-extrabold text-info">15% (Rendah)</span>
+                  </div>
+                  <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                    <div className="bg-info h-full rounded-full" style={{ width: "15%" }} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-normal">
+                    Lama rawat inap melebihi LOS (Length of Stay) standar tanpa indikasi medis tertulis.
+                  </p>
+                </div>
+              </div>
+
+              {/* Billing Team Tips */}
+              <div className="mt-4 p-3 bg-emerald-600/5 border border-emerald-500/10 rounded-xl flex items-start gap-2.5 text-xs text-emerald-800">
+                <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-600" />
+                <div>
+                  <span className="font-bold">Tips Tim Billing RS:</span> Lakukan pre-audit koding ICD-10 dengan Kalkulator INA-CBG terintegrasi di Step 2 Form smart submission untuk meminimalisir dispute klaim bulanan.
+                </div>
+              </div>
+            </Card>
 
             {visiblePriorityClaim && (
               <Card className="mb-6 border-warning/25 bg-warning/5 p-5" style={{ boxShadow: "var(--shadow-card)" }}>
@@ -717,6 +798,285 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
         </DialogContent>
       </Dialog>
     </AppLayout>
+  );
+};
+
+const HospitalReferralView = ({ onBackToHome }: { onBackToHome: () => void }) => {
+  const [referralStep, setReferralStep] = useState<"search" | "form" | "letter">("search");
+  const [selectedHospital, setSelectedHospital] = useState<any>(null);
+  
+  // Form fields
+  const [patientBPJS, setPatientBPJS] = useState("0001427892314");
+  const [patientName, setPatientName] = useState("Fazel Hidayat");
+  const [diagnosis, setDiagnosis] = useState("J18.9 - Pneumonia");
+  const [referralType, setReferralType] = useState("Rawat Jalan");
+  const [notes, setNotes] = useState("Mohon pemeriksaan bronkoskopi dan penanganan lebih lanjut.");
+
+  const [generatedLetter, setGeneratedLetter] = useState<any>(null);
+
+  const REFERRAL_HOSPITALS = [
+    {
+      id: "rs-demo-pusat",
+      name: "RS Demo Pusat (Kelas A)",
+      address: "Jl. Salemba Raya No. 4, Jakarta Pusat",
+      beds: 12,
+      maxBeds: 15,
+      specialist: "Spesialis Paru (DPJP: Dr. Denny Sp.P)",
+      distance: "2.4 km",
+      phone: "021-3147-900",
+      status: "Menerima Rujukan JKN"
+    },
+    {
+      id: "rs-polisi-mbg",
+      name: "RS Polisi MBG (Kelas B)",
+      address: "Jl. Polisi MBG No. 1, Jakarta Barat",
+      beds: 5,
+      maxBeds: 20,
+      specialist: "Spesialis Jantung (DPJP: Dr. Hendra Sp.JP)",
+      distance: "4.8 km",
+      phone: "021-3500-100",
+      status: "Kapasitas Terbatas"
+    }
+  ];
+
+  const handleCreateReferral = (hosp: any) => {
+    setSelectedHospital(hosp);
+    setReferralStep("form");
+  };
+
+  const handleSubmitReferral = () => {
+    toast.loading("Menerbitkan rujukan elektronik di SATUSEHAT...");
+    setTimeout(() => {
+      const code = `RUJ-${Date.now().toString().slice(-6)}`;
+      const letter = {
+        id: code,
+        patientName,
+        patientBPJS,
+        diagnosis,
+        type: referralType,
+        sourceHospital: "RS Demo Sentosa",
+        targetHospital: selectedHospital.name,
+        date: new Date().toLocaleDateString("id-ID", { year: 'numeric', month: 'long', day: 'numeric' }),
+        expiryDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toLocaleDateString("id-ID", { year: 'numeric', month: 'long', day: 'numeric' }),
+        notes
+      };
+      setGeneratedLetter(letter);
+      setReferralStep("letter");
+      toast.dismiss();
+      toast.success("Rujukan Elektronik Berhasil Diterbitkan!", {
+        description: `Kode Rujukan: ${code} untuk ${patientName}`
+      });
+    }, 1500);
+  };
+
+  return (
+    <div className="space-y-6">
+      {referralStep === "search" && (
+        <div className="space-y-5 animate-slide-up">
+          <Card className="p-5 border-border/60" style={{ boxShadow: "var(--shadow-card)" }}>
+            <h3 className="font-bold text-foreground text-lg mb-2">Pencarian Rumah Sakit Rujukan</h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Cari Faskes Rujukan Tingkat Lanjut (FKRTL) BPJS berdasarkan ketersediaan tempat tidur kosong dan DPJP spesialis aktif.
+            </p>
+            <div className="flex gap-2">
+              <Input placeholder="Cari nama rumah sakit rujukan..." defaultValue="RS Demo" className="rounded-xl flex-1 bg-muted/20" />
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/95 rounded-xl border-0 h-10 px-4 text-xs font-bold">
+                Cari Faskes
+              </Button>
+            </div>
+          </Card>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {REFERRAL_HOSPITALS.map((hosp) => (
+              <Card key={hosp.id} className="p-5 border-border/60 flex flex-col justify-between" style={{ boxShadow: "var(--shadow-card)" }}>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-bold text-slate-800 leading-snug">{hosp.name}</h4>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{hosp.address}</p>
+                    </div>
+                    <Badge className={`text-[10px] font-bold px-2 py-0.5 border ${hosp.beds > 6 ? "bg-success/10 text-success border-success/20" : "bg-warning/10 text-warning border-warning/20"}`}>
+                      {hosp.status}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs border-y border-dashed border-border py-2.5">
+                    <div>
+                      <span className="text-[9px] text-slate-400 block font-bold uppercase">Tempat Tidur ICU</span>
+                      <span className="font-extrabold text-foreground">{hosp.beds} Tersedia</span>
+                      <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden mt-1 max-w-[120px]">
+                        <div className={`h-full rounded-full ${hosp.beds > 6 ? "bg-success" : "bg-warning"}`} style={{ width: `${(hosp.beds/hosp.maxBeds)*100}%` }} />
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-slate-400 block font-bold uppercase">Spesialis Aktif</span>
+                      <span className="font-semibold text-foreground truncate block max-w-[160px]">{hosp.specialist}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex gap-2 pt-1">
+                  <Button variant="outline" size="sm" className="rounded-xl flex-1 text-xs" asChild>
+                    <a href={`tel:${hosp.phone}`}>📞 Hubungi RS</a>
+                  </Button>
+                  <Button onClick={() => handleCreateReferral(hosp)} size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl border-0 flex-1 text-xs font-bold">
+                    📝 Buat Rujukan JKN
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {referralStep === "form" && selectedHospital && (
+        <Card className="p-5 md:p-6 border-border/60 max-w-xl mx-auto animate-slide-up space-y-4" style={{ boxShadow: "var(--shadow-elevated)" }}>
+          <div className="flex justify-between items-center border-b border-border pb-3">
+            <h3 className="font-bold text-foreground text-lg">Formulir Rujukan Baru</h3>
+            <Button variant="ghost" size="sm" onClick={() => setReferralStep("search")} className="rounded-xl">Batal</Button>
+          </div>
+
+          <div className="space-y-3">
+            <div className="bg-muted/10 p-3 rounded-xl border border-border/60 text-xs">
+              <span className="text-muted-foreground">Rumah Sakit Rujukan Tujuan</span>
+              <span className="font-extrabold text-foreground block mt-0.5">{selectedHospital.name}</span>
+              <span className="text-[10px] text-muted-foreground block mt-0.5">{selectedHospital.address}</span>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Nomor BPJS Pasien</label>
+              <Input value={patientBPJS} onChange={(e) => setPatientBPJS(e.target.value)} className="rounded-xl bg-muted/20 animate-none" />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Nama Lengkap Pasien</label>
+              <Input value={patientName} onChange={(e) => setPatientName(e.target.value)} className="rounded-xl bg-muted/20 animate-none" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-muted-foreground">Diagnosa Rujukan (ICD-10)</label>
+                <select value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} className="w-full h-10 rounded-xl border border-border/80 bg-muted/20 px-3 text-sm font-semibold text-foreground outline-none">
+                  <option value="J18.9 - Pneumonia">J18.9 - Pneumonia</option>
+                  <option value="E11.9 - Type 2 Diabetes">E11.9 - Type 2 Diabetes</option>
+                  <option value="I10 - Essential Hypertension">I10 - Essential Hypertension</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-muted-foreground">Tipe Pelayanan Rujukan</label>
+                <select value={referralType} onChange={(e) => setReferralType(e.target.value)} className="w-full h-10 rounded-xl border border-border/80 bg-muted/20 px-3 text-sm font-semibold text-foreground outline-none">
+                  <option value="Rawat Jalan">Rawat Jalan</option>
+                  <option value="Rawat Inap">Rawat Inap</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Catatan / Alasan Rujukan</label>
+              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full h-20 rounded-xl border border-border/80 bg-muted/20 p-3 text-sm font-semibold text-foreground outline-none resize-none" />
+            </div>
+          </div>
+
+          <Button onClick={handleSubmitReferral} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl border-0 h-10 font-bold text-sm mt-2">
+            🚀 Terbitkan Rujukan Elektronik (SATUSEHAT)
+          </Button>
+        </Card>
+      )}
+
+      {referralStep === "letter" && generatedLetter && (
+        <div className="max-w-xl mx-auto animate-slide-up space-y-4">
+          <Card className="p-6 border border-slate-300 bg-white text-slate-800 space-y-6 relative overflow-hidden" style={{ boxShadow: "0 15px 30px rgba(0,0,0,0.08)" }}>
+            {/* Watermark Logo */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
+              <Shield className="w-96 h-96 text-slate-900" />
+            </div>
+
+            {/* Official Header */}
+            <div className="flex justify-between items-start border-b-2 border-slate-900 pb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-10 w-10 bg-slate-900 rounded-full flex items-center justify-center p-1 text-white">
+                  <Shield className="h-6 w-6" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider leading-none text-slate-950">BPJS KESEHATAN</h4>
+                  <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest leading-none">Jaminan Kesehatan Nasional</span>
+                </div>
+              </div>
+              <div className="text-right">
+                <h4 className="text-xs font-extrabold text-slate-950 leading-none">SURAT RUJUKAN FKRTL</h4>
+                <span className="text-[9px] font-mono font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded mt-1.5 inline-block">
+                  No. Rujukan: {generatedLetter.id}
+                </span>
+              </div>
+            </div>
+
+            {/* Letter Content */}
+            <div className="space-y-4 text-xs leading-relaxed text-slate-700">
+              <p>Kepada Yth. Dokter Spesialis Rujukan di:<br /><span className="font-extrabold text-slate-950">{generatedLetter.targetHospital}</span></p>
+
+              <p>Mohon pemeriksaan dan penanganan lebih lanjut terhadap pasien dengan identitas berikut:</p>
+
+              <div className="grid grid-cols-3 gap-y-2 border border-slate-200 rounded-xl p-4 bg-slate-50">
+                <span className="text-slate-500 font-semibold">Nama Pasien</span>
+                <span className="col-span-2 font-extrabold text-slate-950">: {generatedLetter.patientName}</span>
+
+                <span className="text-slate-500 font-semibold">Nomor BPJS</span>
+                <span className="col-span-2 font-mono font-bold text-slate-950">: {generatedLetter.patientBPJS}</span>
+
+                <span className="text-slate-500 font-semibold">Diagnosa Utama</span>
+                <span className="col-span-2 font-extrabold text-slate-955">: {generatedLetter.diagnosis}</span>
+
+                <span className="text-slate-500 font-semibold">Tipe Pelayanan</span>
+                <span className="col-span-2 font-bold text-slate-900">: {generatedLetter.type}</span>
+              </div>
+
+              <div className="space-y-1">
+                <span className="font-bold text-slate-700">Catatan Klinis Rujukan:</span>
+                <p className="bg-slate-50 border border-slate-200 p-3 rounded-xl italic text-slate-600 leading-normal">
+                  "{generatedLetter.notes}"
+                </p>
+              </div>
+
+              <div className="flex justify-between items-end pt-4 border-t border-slate-100">
+                <div className="space-y-1 font-semibold text-[10px] text-slate-500">
+                  <p>Tanggal Diterbitkan: <span className="text-slate-800">{generatedLetter.date}</span></p>
+                  <p>Berlaku Sampai: <span className="text-slate-800 font-bold">{generatedLetter.expiryDate}</span></p>
+                  <p className="text-[8px] text-emerald-600">* Surat rujukan ini sah dan tercatat secara elektronik di SATUSEHAT.</p>
+                </div>
+
+                {/* QR Code */}
+                <div className="flex flex-col items-center gap-1 shrink-0 bg-slate-50 p-2 border border-slate-200 rounded-xl">
+                  <div className="h-14 w-14 bg-white p-1 border border-slate-300 rounded flex flex-col gap-0.5 justify-between">
+                    {Array.from({ length: 5 }).map((_, r) => (
+                      <div key={r} className="flex gap-0.5 justify-between h-full">
+                        {Array.from({ length: 5 }).map((_, c) => {
+                          const isAnchor = (r < 2 && c < 2) || (r < 2 && c > 2) || (r > 2 && c < 2);
+                          const fill = isAnchor || (r + c) % 3 === 0 || (r * c) % 2 === 0;
+                          return (
+                            <div key={c} className={`flex-1 h-full rounded-[1px] ${fill ? "bg-slate-900" : "bg-transparent"}`} />
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                  <span className="text-[7px] font-mono font-bold text-slate-500">VERIFIKASI JKN</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <div className="flex gap-2 text-white">
+            <Button onClick={() => setReferralStep("search")} variant="outline" className="flex-1 rounded-xl h-10 text-xs text-slate-700 bg-white border border-slate-200">
+              Buat Rujukan Baru
+            </Button>
+            <Button onClick={onBackToHome} className="bg-emerald-600 hover:bg-emerald-700 flex-1 rounded-xl h-10 text-xs font-bold border-0">
+              Kembali ke Beranda
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

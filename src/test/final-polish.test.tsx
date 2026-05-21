@@ -152,7 +152,7 @@ describe("final polish stability tests", () => {
       </MemoryRouter>,
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/Contoh: RSp0l1s1MBG/i), { target: { value: "RSp0l1s1MBG" } });
+    fireEvent.change(screen.getByPlaceholderText(/Contoh: RSMBG123/i), { target: { value: "RSMBG123" } });
     fireEvent.change(screen.getByPlaceholderText(/polisi@MBG.co.id/i), { target: { value: "email-salah" } });
     fireEvent.change(screen.getByPlaceholderText(/Minimal 8 karakter/i), { target: { value: "Password1" } });
     fireEvent.click(screen.getByRole("button", { name: /^Masuk$/i }));

@@ -10,7 +10,15 @@ export function LandingRoute() {
     navigate(p === "beranda" ? "/" : `/${p}`);
   return (
     <LandingHero
-      onNavigate={(role) => navigate(role === "patient" ? "/login/pasien" : "/login/rumah-sakit")}
+      onNavigate={(role) => {
+        if (role === "patient-register") {
+          navigate("/login/pasien?register=true");
+        } else if (role === "patient") {
+          navigate("/login/pasien");
+        } else {
+          navigate("/login/rumah-sakit");
+        }
+      }}
       onNavPage={goPage}
       onOpenEHR={() => navigate("/ehr")}
     />

@@ -4,12 +4,12 @@ import { BackgroundOrnaments } from "./BackgroundOrnaments";
 import { Shield, ChevronRight, ChevronDown, User, Building2, Stethoscope, Activity, ClipboardCheck, Phone, Mail, Globe2, Users, HeartPulse, Menu, X, HelpCircle } from "lucide-react";
 
 interface LandingHeroProps {
-  onNavigate: (role: "patient" | "hospital") => void;
+  onNavigate: (role: "patient" | "hospital" | "patient-register") => void;
 }
 
 const QUICK_SERVICES = [
-  { icon: User, title: "Portal Peserta JKN", desc: "Masuk atau daftar sebagai peserta JKN-KIS. Cek status kepesertaan, riwayat klaim, dan antrean layanan kesehatan.", role: "patient" as const },
-  { icon: Building2, title: "Portal Fasilitas Kesehatan", desc: "Masuk atau daftar sebagai fasilitas kesehatan dan rumah sakit mitra. Kelola klaim, rujukan, dan verifikasi dokumen.", role: "hospital" as const },
+  { icon: User, title: "Portal Peserta JKN", desc: "Masuk atau daftar sebagai peserta JKN-KIS. Cek status kepesertaan, riwayat klaim, dan antrean layanan kesehatan.", role: "patient" as const, colorTheme: "blue" as const },
+  { icon: Building2, title: "Portal Fasilitas Kesehatan", desc: "Masuk atau daftar sebagai fasilitas kesehatan dan rumah sakit mitra. Kelola klaim, rujukan, dan verifikasi dokumen.", role: "hospital" as const, colorTheme: "green" as const },
 ];
 
 // Data resmi dari Laporan Pengelolaan Program Jaminan Sosial Kesehatan s.d. 30 April 2026
@@ -127,7 +127,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 md:px-8">
           <a href="#beranda" onClick={(e) => { e.preventDefault(); scrollToSection("beranda"); }} className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
-              <Shield className="h-6 w-6" />
+              <Shield className="h-6 w-6 text-green-300" />
             </div>
             <div>
               <span className="block text-xl font-bold leading-tight text-primary">BPJSight</span>
@@ -144,7 +144,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
 
           <div className="hidden md:flex gap-3">
             <Button variant="outline" className="border-border hover:bg-slate-50 text-primary font-bold shadow-sm" onClick={() => onNavigate("patient")}>Masuk</Button>
-            <Button className="bg-secondary hover:bg-green-700 text-white font-bold shadow-sm" onClick={() => onNavigate("patient")}>Pendaftaran</Button>
+            <Button className="bg-secondary hover:bg-green-700 text-white font-bold shadow-sm" onClick={() => onNavigate("patient-register")}>Pendaftaran</Button>
           </div>
 
           {/* Mobile hamburger */}
@@ -162,7 +162,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
             <a href="#faq" onClick={() => { scrollToSection("faq"); setMobileNavOpen(false); }} className="block py-2 font-semibold text-foreground hover:text-primary">FAQ</a>
             <div className="flex gap-3 pt-3 border-t border-border">
               <Button variant="outline" className="flex-1 text-primary font-bold" onClick={() => { onNavigate("patient"); setMobileNavOpen(false); }}>Masuk</Button>
-              <Button className="flex-1 bg-secondary text-white font-bold" onClick={() => { onNavigate("patient"); setMobileNavOpen(false); }}>Daftar</Button>
+              <Button className="flex-1 bg-secondary text-white font-bold" onClick={() => { onNavigate("patient-register"); setMobileNavOpen(false); }}>Daftar</Button>
             </div>
           </div>
         )}
@@ -184,7 +184,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
                 <Button size="lg" className="bg-primary hover:bg-blue-900 text-white font-semibold rounded-md shadow-sm h-12 px-6" onClick={() => onNavigate("patient")}>
                   Portal Pasien JKN
                 </Button>
-                <Button size="lg" variant="outline" className="bg-white border-border text-foreground hover:bg-slate-50 font-semibold rounded-md shadow-sm h-12 px-6" onClick={() => onNavigate("hospital")}>
+                <Button size="lg" className="bg-secondary hover:bg-green-700 text-white font-semibold rounded-md shadow-sm h-12 px-6" onClick={() => onNavigate("hospital")}>
                   Portal Faskes & RS
                 </Button>
               </div>
@@ -203,29 +203,42 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
               <h2 className="text-3xl font-bold text-foreground mb-4">Layanan Publik JKN</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto text-lg">Akses layanan administrasi mandiri yang paling sering digunakan oleh peserta dan mitra fasilitas kesehatan secara online.</p>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {QUICK_SERVICES.map((service, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => onNavigate(service.role)}
-                  className="group cursor-pointer p-6 rounded-lg border border-border bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:border-primary/30 hover:shadow-md transition-all flex flex-col"
-                >
-                  <div className="h-12 w-12 rounded-lg bg-blue-50 text-primary flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors border border-blue-100 group-hover:border-primary">
-                    <service.icon className="h-6 w-6" />
+            <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+              {QUICK_SERVICES.map((service, idx) => {
+                const isGreen = service.colorTheme === "green";
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => onNavigate(service.role)}
+                    className={`group cursor-pointer p-6 rounded-lg border border-border bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] transition-all flex flex-col ${
+                      isGreen 
+                        ? "hover:border-secondary/30 hover:shadow-md" 
+                        : "hover:border-primary/30 hover:shadow-md"
+                    }`}
+                  >
+                    <div className={`h-12 w-12 rounded-lg flex items-center justify-center mb-6 transition-colors border ${
+                      isGreen
+                        ? "bg-green-50 text-secondary border-green-100 group-hover:bg-secondary group-hover:text-white group-hover:border-secondary"
+                        : "bg-blue-50 text-primary border-blue-100 group-hover:bg-primary group-hover:text-white group-hover:border-primary"
+                    }`}>
+                      <service.icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="font-bold text-foreground text-lg mb-2">{service.title}</h3>
+                    <p className="text-muted-foreground text-sm flex-1 leading-relaxed">{service.desc}</p>
+                    <div className={`mt-6 flex items-center text-sm font-bold ${
+                      isGreen ? "text-secondary" : "text-primary"
+                    }`}>
+                      Akses Portal <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
-                  <h3 className="font-bold text-foreground text-lg mb-2">{service.title}</h3>
-                  <p className="text-muted-foreground text-sm flex-1 leading-relaxed">{service.desc}</p>
-                  <div className="mt-6 flex items-center text-primary text-sm font-bold">
-                    Akses Portal <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
 
         {/* Data JKN — Sumber: Laporan Pengelolaan Program Jaminan Sosial Kesehatan s.d. 30 April 2026 */}
-        <section id="data-jkn" className="py-20 bg-primary text-white relative overflow-hidden">
+        <section id="data-jkn" className="py-20 bg-primary text-white relative overflow-hidden border-t-4 border-secondary">
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.4),transparent_50%)]"></div>
           <div className="mx-auto max-w-7xl px-5 md:px-8 relative z-10">
             <div className="text-center mb-4">
@@ -249,8 +262,8 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
         <section id="faq" className="py-20 bg-white border-b border-border">
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-blue-100 text-primary text-xs font-bold uppercase tracking-wider mb-4 border border-blue-200">
-                <HelpCircle className="h-3.5 w-3.5" /> Pusat Bantuan
+              <div className="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-green-100 text-secondary text-xs font-bold uppercase tracking-wider mb-4 border border-green-200">
+                <HelpCircle className="h-3.5 w-3.5 text-secondary" /> Pusat Bantuan
               </div>
               <h2 className="text-3xl font-bold text-foreground mb-4">Pertanyaan yang Sering Diajukan</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto text-lg">Temukan jawaban untuk pertanyaan umum seputar JKN-KIS, kepesertaan, iuran, dan layanan kesehatan.</p>
@@ -258,19 +271,26 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
 
             {/* Category tabs */}
             <div className="flex flex-wrap justify-center gap-2 mb-10">
-              {FAQ_DATA.map((cat) => (
-                <button
-                  key={cat.category}
-                  onClick={() => { setActiveFaqCategory(cat.category); setOpenFaq(null); }}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors border ${
-                    activeFaqCategory === cat.category
-                      ? "bg-primary text-white border-primary"
-                      : "bg-white text-foreground border-border hover:border-primary/30 hover:text-primary"
-                  }`}
-                >
-                  {cat.category}
-                </button>
-              ))}
+              {FAQ_DATA.map((cat) => {
+                const isGreenTab = cat.category === "Pelayanan Kesehatan" || cat.category === "Portal BPJSight";
+                return (
+                  <button
+                    key={cat.category}
+                    onClick={() => { setActiveFaqCategory(cat.category); setOpenFaq(null); }}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors border ${
+                      activeFaqCategory === cat.category
+                        ? isGreenTab
+                          ? "bg-secondary text-white border-secondary"
+                          : "bg-primary text-white border-primary"
+                        : isGreenTab
+                          ? "bg-white text-foreground border-border hover:border-secondary/30 hover:text-secondary"
+                          : "bg-white text-foreground border-border hover:border-primary/30 hover:text-primary"
+                    }`}
+                  >
+                    {cat.category}
+                  </button>
+                );
+              })}
             </div>
 
             {/* FAQ accordion */}
@@ -300,11 +320,11 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
         </section>
 
         {/* Footer */}
-        <footer id="kontak" className="bg-slate-50 pt-20 pb-10 border-t border-border text-sm text-muted-foreground">
+        <footer id="kontak" className="bg-slate-50 pt-20 pb-10 border-t-4 border-secondary text-sm text-muted-foreground">
           <div className="mx-auto max-w-7xl px-5 md:px-8 grid grid-cols-2 md:grid-cols-5 gap-12 mb-16">
             <div className="col-span-2">
               <a href="#beranda" onClick={(e) => { e.preventDefault(); scrollToSection("beranda"); }} className="flex items-center gap-2 mb-6 text-foreground">
-                <Shield className="h-7 w-7 text-primary" />
+                <Shield className="h-7 w-7 text-secondary" />
                 <span className="font-bold text-xl">BPJSight</span>
               </a>
               <p className="mb-6 leading-relaxed max-w-md">BPJSight adalah portal prototipe untuk Sistem Informasi Administrasi dan Pemantauan Klaim Kesehatan Terpadu Republik Indonesia.</p>
@@ -322,10 +342,10 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
             <div>
               <h4 className="font-bold text-foreground mb-4 uppercase tracking-wider text-xs">Fasilitas Kesehatan</h4>
               <ul className="space-y-3 font-medium">
-                <li><button onClick={() => onNavigate("hospital")} className="hover:text-primary transition-colors">Portal V-Claim</button></li>
-                <li><button onClick={() => onNavigate("hospital")} className="hover:text-primary transition-colors">E-Klaim Terpadu</button></li>
-                <li><button onClick={() => onNavigate("hospital")} className="hover:text-primary transition-colors">Referensi Diagnosa</button></li>
-                <li><button onClick={() => onNavigate("hospital")} className="hover:text-primary transition-colors">Verifikasi Dokumen</button></li>
+                <li><button onClick={() => onNavigate("hospital")} className="hover:text-secondary transition-colors">Portal V-Claim</button></li>
+                <li><button onClick={() => onNavigate("hospital")} className="hover:text-secondary transition-colors">E-Klaim Terpadu</button></li>
+                <li><button onClick={() => onNavigate("hospital")} className="hover:text-secondary transition-colors">Referensi Diagnosa</button></li>
+                <li><button onClick={() => onNavigate("hospital")} className="hover:text-secondary transition-colors">Verifikasi Dokumen</button></li>
               </ul>
             </div>
             <div>

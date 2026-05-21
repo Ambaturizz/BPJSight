@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useState, useEffect, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, Eye, EyeOff, Loader2, Shield, User } from "lucide-react";
 import { toast } from "sonner";
@@ -49,7 +49,15 @@ export default function PatientLoginRoute() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
-  const [isRegistering, setIsRegistering] = useState(false);
+  
+  const queryParams = new URLSearchParams(location.search);
+  const registerFromQuery = queryParams.get("register") === "true";
+  const [isRegistering, setIsRegistering] = useState(registerFromQuery);
+
+  useEffect(() => {
+    setIsRegistering(registerFromQuery);
+  }, [location.search]);
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState<PatientFormState>(initialForm);

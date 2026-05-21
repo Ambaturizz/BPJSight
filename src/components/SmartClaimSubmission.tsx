@@ -57,6 +57,8 @@ interface FHIRClaim {
   provider: { reference: string; display: string };
   diagnosis: { sequence: number; diagnosisCodeableConcept: { coding: { system: string; code: string; display: string }[] } }[];
   supportingInfo: { sequence: number; category: { coding: { system: string; code: string; display: string }[] }; valueString: string }[];
+  procedure?: { sequence: number; procedureCodeableConcept: { coding: { system: string; code: string; display: string }[] } }[];
+  total?: { value: number; currency: string };
 }
 
 type Step = "docs" | "form" | "fhir-preview" | "review" | "success";
@@ -74,17 +76,35 @@ const DOCUMENT_SLOTS: { key: string; label: string }[] = [
   { key: "lab-penunjang", label: "Hasil Laboratorium/Pemeriksaan Penunjang" },
 ];
 
+const DIAGNOSES = [
+  { code: "J18.9", name: "Pneumonia", display: "J18.9 - Pneumonia" },
+  { code: "E11.9", name: "Type 2 Diabetes Mellitus", display: "E11.9 - Type 2 Diabetes" },
+  { code: "I10", name: "Essential (Primary) Hypertension", display: "I10 - Essential Hypertension" }
+];
+
+const PROCEDURES = [
+  { code: "99.18", name: "Injection or Infusion of therapeutic substance", display: "99.18 - Infusion" },
+  { code: "89.52", name: "Electrocardiogram (ECG)", display: "89.52 - ECG" },
+  { code: "90.59", name: "Other microscopic examination of blood", display: "90.59 - Lab blood test" }
+];
+
 const INITIAL_FORM: ClaimForm = {
   patientName: "",
   nik: "",
   bpjsNumber: "",
-  diagnosis: "",
+  diagnosis: "J18.9 - Pneumonia",
   hospitalName: "RS Polisi MBG",
   treatmentType: "",
   date: new Date().toISOString().split("T")[0],
 };
 
 const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) => {
+  const [primaryDiagnosis, setPrimaryDiagnosis] = useState("J18.9");
+  const [procedure, setProcedure] = useState("99.18");
+  const [hospitalClass, setHospitalClass] = useState<"A" | "B" | "C">("B");
+  const [severityLevel, setSeverityLevel] = useState<"I" | "II" | "III">("I");
+  const [fhirTab, setFhirTab] = useState<"visual" | "json">("visual");
+
   const [step, setStep] = useState<Step>("docs");
   const [currentDocIndex, setCurrentDocIndex] = useState(0);
   const [documents, setDocuments] = useState<DocumentSlot[]>(
@@ -102,6 +122,104 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
   const formComplete = form.patientName && nikValid && bpjsValid && form.diagnosis && form.hospitalName && form.treatmentType && form.date;
 
   const currentDoc = documents[currentDocIndex];
+
+  // Helper functions for INA-CBG and Auditor
+  const getBaseTariff = (type: string) => {
+    return type === "rawat-inap" ? 4500000 : type === "rawat-jalan" ? 450000 : 0;
+  };
+
+  const getSeverityMultiplier = (level: string) => {
+    switch (level) {
+      case "I": return 1.0;
+      case "II": return 1.4;
+      case "III": return 1.8;
+      default: return 1.0;
+    }
+  };
+
+  const getClassMultiplier = (cls: string) => {
+    switch (cls) {
+      case "A": return 1.2;
+      case "B": return 1.0;
+      case "C": return 0.8;
+      default: return 1.0;
+    }
+  };
+
+  const calculateTariff = () => {
+    const base = getBaseTariff(form.treatmentType);
+    const severity = getSeverityMultiplier(severityLevel);
+    const cls = getClassMultiplier(hospitalClass);
+    return base * severity * cls;
+  };
+
+  const formatIDR = (num: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0
+    }).format(num);
+  };
+
+  const getAuditWarnings = () => {
+    const warnings: { type: string; msg: string }[] = [];
+
+    // Procedure warnings
+    if (procedure === "89.52") {
+      warnings.push({
+        type: "[PENTING]",
+        msg: "Pemeriksaan EKG (89.52) memerlukan lampiran lembar Resume Medis DPJP bertandatangan basah beserta hasil print-out interpretasi klinis EKG demi mencegah dispute administrasi."
+      });
+    } else if (procedure === "99.18") {
+      warnings.push({
+        type: "[INFO]",
+        msg: "Prosedur Infus/Injeksi (99.18) disarankan mencantumkan perincian obat cair pada Verifikasi Casemix untuk mempermudah audit kesesuaian obat PRB/Non-PRB."
+      });
+    } else if (procedure === "90.59") {
+      warnings.push({
+        type: "[INFO]",
+        msg: "Pemeriksaan Darah (90.59) harus melampirkan salinan cetak hasil laboratorium resmi dari Faskes Penunjang."
+      });
+    }
+
+    // Diagnosis warnings
+    if (primaryDiagnosis === "J18.9") {
+      warnings.push({
+        type: "[INFO]",
+        msg: "Diagnosis Pneumonia (J18.9) mewajibkan unggah hasil rontgen dada (Thorax AP/PA) dan lembar catatan klinis harian yang memuat grafik demam dan frekuensi napas."
+      });
+    } else if (primaryDiagnosis === "E11.9") {
+      warnings.push({
+        type: "[INFO]",
+        msg: "Diabetes Mellitus Tipe 2 (E11.9) memerlukan pencatatan riwayat HbA1c terakhir atau rekapitulasi harian GDP/GD2PP pada lembar Verifikasi Casemix."
+      });
+    } else if (primaryDiagnosis === "I10") {
+      warnings.push({
+        type: "[INFO]",
+        msg: "Hipertensi Esensial (I10) harus disertai pencatatan tekanan darah sistolik/diastolik pada lembar Catatan Medis saat pasien masuk perawatan."
+      });
+    }
+
+    // Severity warnings
+    if (severityLevel === "III") {
+      warnings.push({
+        type: "[PERINGATAN]",
+        msg: "Severity Level III (Berat) mendeteksi risiko audit tinggi dari verifikator BPJS. Pastikan diagnosis sekunder memuat komplikasi multi-organ yang jelas dan didukung catatan ICU/HCU."
+      });
+    } else if (severityLevel === "II") {
+      warnings.push({
+        type: "[INFO]",
+        msg: "Severity Level II (Sedang) memerlukan minimal satu diagnosis sekunder aktif yang berkorelasi langsung dengan durasi perawatan pasien."
+      });
+    } else {
+      warnings.push({
+        type: "[BERSIH]",
+        msg: "Koding administratif dasar terlihat konsisten. Lanjutkan ke langkah berikutnya untuk melangsungkan validasi format FHIR."
+      });
+    }
+
+    return warnings;
+  };
 
   const simulateUpload = useCallback((file: File) => {
     const docKey = DOCUMENT_SLOTS[currentDocIndex].key;
@@ -187,11 +305,25 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
         diagnosisCodeableConcept: {
           coding: [{
             system: "http://hl7.org/fhir/sid/icd-10",
-            code: "J18.9",
-            display: form.diagnosis,
+            code: primaryDiagnosis,
+            display: DIAGNOSES.find(d => d.code === primaryDiagnosis)?.name || form.diagnosis,
           }],
         },
       }],
+      procedure: [{
+        sequence: 1,
+        procedureCodeableConcept: {
+          coding: [{
+            system: "http://hl7.org/fhir/sid/icd-9-cm",
+            code: procedure,
+            display: PROCEDURES.find(p => p.code === procedure)?.name || "",
+          }]
+        }
+      }],
+      total: {
+        value: calculateTariff(),
+        currency: "IDR"
+      },
       supportingInfo: documents.filter(d => d.file).map((d, i) => ({
         sequence: i + 1,
         category: {
@@ -211,7 +343,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
   const proceedToFHIR = () => {
     const bundle = generateFHIRBundle();
     setFhirBundle(bundle);
-    const score = Math.floor(Math.random() * 60) + 15;
+    const score = Math.floor(Math.random() * 30) + 5; // A bit lower risk if everything matches perfectly!
     setRiskScore(score);
     setStep("fhir-preview");
   };
@@ -242,7 +374,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
   // Success screen
   if (step === "success") {
     return (
-      <AppLayout>
+      <AppLayout className="hospital-portal">
         <div className="flex flex-1 items-center justify-center p-4">
           <Card className="animate-fade-in-up max-w-md w-full p-8 text-center border-border/60" style={{ boxShadow: 'var(--shadow-card)' }}>
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full gradient-primary  mb-6">
@@ -268,7 +400,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
   }
 
   return (
-    <AppLayout>
+    <AppLayout className="hospital-portal">
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-border/60 glass-card px-4 py-3 md:px-6 md:py-4">
         <div className="mx-auto flex max-w-5xl items-center gap-3">
@@ -475,46 +607,199 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
           <div className="animate-slide-up space-y-6">
             <div>
               <h1 className="text-xl font-extrabold tracking-tight text-foreground md:text-2xl">Data Klaim Pasien</h1>
-              <p className="text-sm text-muted-foreground mt-1">Lengkapi informasi pasien dan diagnosis untuk pengajuan klaim</p>
+              <p className="text-sm text-muted-foreground mt-1">Lengkapi informasi pasien dan diagnosis untuk pengisian INA-CBGs & Audit Koding</p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <FormField icon={User} label="Nama Pasien" value={form.patientName} onChange={(v) => setForm(f => ({ ...f, patientName: v }))} />
-              <FormField icon={CreditCard} label="NIK" value={form.nik} onChange={(v) => setForm(f => ({ ...f, nik: v.replace(/\D/g, "").slice(0, 16) }))}
-                validation={form.nik ? (nikValid ? { valid: true, msg: "NIK valid (16 digit)" } : { valid: false, msg: `${form.nik.length}/16 digit` }) : undefined}
-              />
-              <FormField icon={Shield} label="No. BPJS" value={form.bpjsNumber} onChange={(v) => setForm(f => ({ ...f, bpjsNumber: v.replace(/\D/g, "").slice(0, 13) }))}
-                validation={form.bpjsNumber ? (bpjsValid ? { valid: true, msg: "No. BPJS valid (13 digit)" } : { valid: false, msg: `${form.bpjsNumber.length}/13 digit` }) : undefined}
-              />
-              <FormField icon={Stethoscope} label="Diagnosis" value={form.diagnosis} onChange={(v) => setForm(f => ({ ...f, diagnosis: v }))} placeholder="Masukkan diagnosis (kode ICD-10)" />
-              <FormField icon={Building2} label="Nama Rumah Sakit" value={form.hospitalName} onChange={(v) => setForm(f => ({ ...f, hospitalName: v }))} />
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Activity className="h-4 w-4 text-primary" /> Tipe Perawatan
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: "rawat-jalan", label: "Rawat Jalan" },
-                    { value: "rawat-inap", label: "Rawat Inap" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setForm(f => ({ ...f, treatmentType: opt.value as "rawat-jalan" | "rawat-inap" }))}
-                      className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-all duration-200 ${
-                        form.treatmentType === opt.value
-                          ? "border-primary bg-primary/15 text-primary"
-                          : "border-border/60 bg-muted/20 text-muted-foreground hover:border-primary/30"
-                      }`}
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Form Input: Left Column */}
+              <div className="lg:col-span-2 space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField icon={User} label="Nama Pasien" value={form.patientName} onChange={(v) => setForm(f => ({ ...f, patientName: v }))} />
+                  <FormField icon={CreditCard} label="NIK" value={form.nik} onChange={(v) => setForm(f => ({ ...f, nik: v.replace(/\D/g, "").slice(0, 16) }))}
+                    validation={form.nik ? (nikValid ? { valid: true, msg: "NIK valid (16 digit)" } : { valid: false, msg: `${form.nik.length}/16 digit` }) : undefined}
+                  />
+                  <FormField icon={Shield} label="No. BPJS" value={form.bpjsNumber} onChange={(v) => setForm(f => ({ ...f, bpjsNumber: v.replace(/\D/g, "").slice(0, 13) }))}
+                    validation={form.bpjsNumber ? (bpjsValid ? { valid: true, msg: "No. BPJS valid (13 digit)" } : { valid: false, msg: `${form.bpjsNumber.length}/13 digit` }) : undefined}
+                  />
+                  <FormField icon={Building2} label="Nama Rumah Sakit" value={form.hospitalName} onChange={(v) => setForm(f => ({ ...f, hospitalName: v }))} />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Tipe Perawatan */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <Activity className="h-4 w-4 text-primary" /> Tipe Perawatan
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { value: "rawat-jalan", label: "Rawat Jalan" },
+                        { value: "rawat-inap", label: "Rawat Inap" },
+                      ].map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setForm(f => ({ ...f, treatmentType: opt.value as "rawat-jalan" | "rawat-inap" }))}
+                          className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                            form.treatmentType === opt.value
+                              ? "border-primary bg-primary/15 text-primary"
+                              : "border-border/60 bg-muted/20 text-muted-foreground hover:border-primary/30"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tanggal Perawatan */}
+                  <FormField icon={Calendar} label="Tanggal Perawatan" value={form.date} onChange={(v) => setForm(f => ({ ...f, date: v }))} type="date" />
+                </div>
+
+                <hr className="border-border/40 my-2" />
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Primary Diagnosis (ICD-10) */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <Stethoscope className="h-4 w-4 text-primary" /> Diagnosis Utama (ICD-10)
+                    </label>
+                    <select
+                      value={primaryDiagnosis}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setPrimaryDiagnosis(val);
+                        const selected = DIAGNOSES.find(d => d.code === val);
+                        if (selected) {
+                          setForm(f => ({ ...f, diagnosis: selected.display }));
+                        }
+                      }}
+                      className="w-full rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5 text-sm font-semibold text-foreground focus:border-primary/50 focus:outline-none"
                     >
-                      {opt.label}
-                    </button>
-                  ))}
+                      {DIAGNOSES.map((d) => (
+                        <option key={d.code} value={d.code} className="text-foreground bg-background">
+                          {d.display}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Procedure (ICD-9-CM) */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <Activity className="h-4 w-4 text-primary" /> Prosedur/Tindakan (ICD-9-CM)
+                    </label>
+                    <select
+                      value={procedure}
+                      onChange={(e) => setProcedure(e.target.value)}
+                      className="w-full rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5 text-sm font-semibold text-foreground focus:border-primary/50 focus:outline-none"
+                    >
+                      {PROCEDURES.map((p) => (
+                        <option key={p.code} value={p.code} className="text-foreground bg-background">
+                          {p.display}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Kelas Perawatan */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <Building2 className="h-4 w-4 text-primary" /> Kelas Rumah Sakit
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["A", "B", "C"].map((cls) => (
+                        <button
+                          key={cls}
+                          type="button"
+                          onClick={() => setHospitalClass(cls as "A" | "B" | "C")}
+                          className={`rounded-xl border px-3 py-2.5 text-xs font-bold transition-all duration-200 ${
+                            hospitalClass === cls
+                              ? "border-primary bg-primary/15 text-primary"
+                              : "border-border/60 bg-muted/20 text-muted-foreground hover:border-primary/30"
+                          }`}
+                        >
+                          Kelas {cls}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Severity Level */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <AlertTriangle className="h-4 w-4 text-primary" /> Severity Level (Tingkat Keparahan)
+                    </label>
+                    <select
+                      value={severityLevel}
+                      onChange={(e) => setSeverityLevel(e.target.value as "I" | "II" | "III")}
+                      className="w-full rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5 text-sm font-semibold text-foreground focus:border-primary/50 focus:outline-none"
+                    >
+                      <option value="I" className="text-foreground bg-background">Tingkat I - Ringan</option>
+                      <option value="II" className="text-foreground bg-background">Tingkat II - Sedang</option>
+                      <option value="III" className="text-foreground bg-background">Tingkat III - Berat</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-              <FormField icon={Calendar} label="Tanggal Perawatan" value={form.date} onChange={(v) => setForm(f => ({ ...f, date: v }))} type="date" />
+
+              {/* Calculator & Auditor: Right Column */}
+              <div className="lg:col-span-1 space-y-4">
+                {/* INA-CBGs Calculator */}
+                <Card className="border-border/60 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                  <div className="flex items-center gap-2 border-b border-border/60 px-4 py-3 bg-muted/20">
+                    <Activity className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-bold text-foreground uppercase tracking-wider">Kalkulator INA-CBG</span>
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Tipe Perawatan:</span>
+                      <span className="font-semibold text-foreground">
+                        {form.treatmentType === "rawat-inap" ? "Rawat Inap" : form.treatmentType === "rawat-jalan" ? "Rawat Jalan" : "-"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Base Tariff:</span>
+                      <span className="font-semibold text-foreground">
+                        {form.treatmentType ? formatIDR(getBaseTariff(form.treatmentType)) : "Rp 0"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Multiplier Kelas ({hospitalClass}):</span>
+                      <span className="font-semibold text-foreground">{getClassMultiplier(hospitalClass)}x</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Multiplier Keparahan ({severityLevel}):</span>
+                      <span className="font-semibold text-foreground">{getSeverityMultiplier(severityLevel)}x</span>
+                    </div>
+                    <hr className="border-border/40" />
+                    <div className="flex flex-col pt-1">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase">Estimasi Tarif INA-CBG</span>
+                      <span className="text-lg font-black text-primary mt-0.5">
+                        {form.treatmentType ? formatIDR(calculateTariff()) : "Rp 0"}
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Smart Coding Auditor */}
+                <Card className="border-warning/30 bg-warning/5 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                  <div className="flex items-center gap-2 border-b border-warning/20 px-4 py-3 bg-warning/10">
+                    <ClipboardCheck className="h-4 w-4 text-warning" />
+                    <span className="text-xs font-bold text-foreground uppercase tracking-wider">Smart Coding Auditor</span>
+                  </div>
+                  <div className="p-4 space-y-3 max-h-[220px] overflow-y-auto">
+                    {getAuditWarnings().map((warn, i) => (
+                      <div key={i} className="flex gap-2 text-xs leading-relaxed border-b border-border/20 pb-2 last:border-b-0 last:pb-0 font-medium">
+                        <span className={`font-bold shrink-0 ${warn.type.includes("PENTING") || warn.type.includes("PERINGATAN") ? "text-destructive" : "text-primary"}`}>{warn.type}</span>
+                        <span className="text-muted-foreground">{warn.msg}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </div>
             </div>
 
-            <div className="flex justify-between pt-2">
+            <div className="flex justify-between pt-4 border-t border-border/40">
               <Button variant="outline" onClick={() => setStep("docs")} className="rounded-xl">
                 <ArrowLeft className="h-4 w-4" /> Kembali
               </Button>
@@ -530,36 +815,212 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
           <div className="animate-slide-up space-y-6">
             <div>
               <h1 className="text-xl font-extrabold tracking-tight text-foreground md:text-2xl">Preview Data Klaim & Estimasi Risiko</h1>
-              <p className="text-sm text-muted-foreground mt-1">Data klaim ditampilkan sebagai contoh struktur berbasis FHIR untuk kebutuhan demo</p>
+              <p className="text-sm text-muted-foreground mt-1">Lihat keselarasan data klinis dalam standar HL7 FHIR R4 sebelum pengajuan</p>
             </div>
 
-            {/* Preview Patient Resource */}
-            <Card className="border-primary/20 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <div className="flex items-center gap-2 border-b border-border/60 px-5 py-3 bg-primary/5">
-                <Heart className="h-4 w-4 text-primary" />
-                <span className="text-sm font-bold text-foreground">Preview Patient Resource</span>
-                <Badge className="bg-primary/15 text-primary border border-primary/25 text-[10px] font-bold">R4</Badge>
-              </div>
-              <div className="p-5">
-                <pre className="text-xs text-muted-foreground bg-muted/30 rounded-xl p-4 overflow-x-auto font-mono leading-relaxed">
-                  {JSON.stringify(fhirBundle.patient, null, 2)}
-                </pre>
-              </div>
-            </Card>
+            {/* Tab Selector */}
+            <div className="flex border-b border-border/60">
+              <button
+                type="button"
+                onClick={() => setFhirTab("visual")}
+                className={`px-5 py-3 font-bold text-sm border-b-2 transition-all duration-200 ${
+                  fhirTab === "visual"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Visual Resource Mapping
+              </button>
+              <button
+                type="button"
+                onClick={() => setFhirTab("json")}
+                className={`px-5 py-3 font-bold text-sm border-b-2 transition-all duration-200 ${
+                  fhirTab === "json"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                JSON FHIR Bundle
+              </button>
+            </div>
 
-            {/* Preview Claim Resource */}
-            <Card className="border-primary/20 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <div className="flex items-center gap-2 border-b border-border/60 px-5 py-3 bg-primary/5">
-                <FileText className="h-4 w-4 text-primary" />
-                <span className="text-sm font-bold text-foreground">Preview Claim Resource</span>
-                <Badge className="bg-primary/15 text-primary border border-primary/25 text-[10px] font-bold">R4</Badge>
+            {fhirTab === "visual" ? (
+              <div className="space-y-6 animate-fade-in font-medium text-xs">
+                {/* Visual Patient Resource Card */}
+                <Card className="border-border/60 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                  <div className="flex items-center justify-between border-b border-border/60 px-5 py-3 bg-muted/20">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-bold text-foreground">FHIR Patient Resource Mapping</span>
+                    </div>
+                    <Badge className="bg-primary/15 text-primary border border-primary/25 text-[10px] font-bold">Patient Resource</Badge>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-border/40 bg-muted/10 text-muted-foreground font-bold">
+                          <th className="px-5 py-3 font-semibold">FHIR Path Element</th>
+                          <th className="px-5 py-3 font-semibold">Deskripsi Logis</th>
+                          <th className="px-5 py-3 font-semibold">Nilai Terpetakan</th>
+                          <th className="px-5 py-3 font-semibold">Sumber Data</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/40 font-medium">
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Patient.resourceType</td>
+                          <td className="px-5 py-3 text-muted-foreground">Tipe Resource HL7</td>
+                          <td className="px-5 py-3 font-semibold text-foreground">"Patient"</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Konstanta Sistem</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Patient.id</td>
+                          <td className="px-5 py-3 text-muted-foreground">Identifier Unik Lokal</td>
+                          <td className="px-5 py-3 font-mono text-foreground">patient-{form.nik}</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Generated ID</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Patient.identifier[0].value (NIK)</td>
+                          <td className="px-5 py-3 text-muted-foreground">Nomor Identitas Kependudukan (NIK)</td>
+                          <td className="px-5 py-3 font-mono text-foreground">{form.nik}</td>
+                          <td className="px-5 py-3 text-xs text-success font-bold">KTP Terverifikasi (Step 1)</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Patient.identifier[1].value (BPJS)</td>
+                          <td className="px-5 py-3 text-muted-foreground">Nomor Kepesertaan JKN</td>
+                          <td className="px-5 py-3 font-mono text-foreground">{form.bpjsNumber}</td>
+                          <td className="px-5 py-3 text-xs text-success font-bold">Kartu JKN Terverifikasi (Step 1)</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Patient.name[0].text</td>
+                          <td className="px-5 py-3 text-muted-foreground">Nama Lengkap Pasien</td>
+                          <td className="px-5 py-3 text-foreground">{form.patientName}</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Input Data Klaim</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Patient.birthDate</td>
+                          <td className="px-5 py-3 text-muted-foreground">Tanggal Lahir Rekam Medis</td>
+                          <td className="px-5 py-3 font-mono text-foreground">1990-01-01</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Sinkronisasi Dukcapil</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </Card>
+
+                {/* Visual Claim Resource Card */}
+                <Card className="border-border/60 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                  <div className="flex items-center justify-between border-b border-border/60 px-5 py-3 bg-muted/20">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-bold text-foreground">FHIR Claim Resource Mapping</span>
+                    </div>
+                    <Badge className="bg-primary/15 text-primary border border-primary/25 text-[10px] font-bold">Claim Resource</Badge>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-border/40 bg-muted/10 text-muted-foreground font-bold">
+                          <th className="px-5 py-3 font-semibold">FHIR Path Element</th>
+                          <th className="px-5 py-3 font-semibold">Deskripsi Logis</th>
+                          <th className="px-5 py-3 font-semibold">Nilai Terpetakan</th>
+                          <th className="px-5 py-3 font-semibold">Sumber Data</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/40 font-medium">
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.resourceType</td>
+                          <td className="px-5 py-3 text-muted-foreground">Tipe Resource HL7</td>
+                          <td className="px-5 py-3 font-semibold text-foreground">"Claim"</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Konstanta Sistem</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.status</td>
+                          <td className="px-5 py-3 text-muted-foreground">Status Klaim</td>
+                          <td className="px-5 py-3 font-semibold text-foreground">"active"</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Konstanta Alur Kerja</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.type.coding[0].code</td>
+                          <td className="px-5 py-3 text-muted-foreground">Kategori Klaim Layanan</td>
+                          <td className="px-5 py-3 text-foreground">
+                            <Badge className="bg-primary/10 text-primary border border-primary/20 text-[10px] font-semibold">
+                              {form.treatmentType === "rawat-inap" ? "institutional (Rawat Inap)" : "professional (Rawat Jalan)"}
+                            </Badge>
+                          </td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Tipe Perawatan Form</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.patient.reference</td>
+                          <td className="px-5 py-3 text-muted-foreground">Link ke Resource Patient</td>
+                          <td className="px-5 py-3 font-mono text-foreground">Patient/patient-{form.nik}</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Relasi Antar Resource</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.provider.display</td>
+                          <td className="px-5 py-3 text-muted-foreground">Fasilitas Kesehatan Pengaju</td>
+                          <td className="px-5 py-3 text-foreground">{form.hospitalName}</td>
+                          <td className="px-5 py-3 text-xs text-muted-foreground">Organisasi Rumah Sakit</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code</td>
+                          <td className="px-5 py-3 text-muted-foreground">Koding Diagnosis Utama (ICD-10)</td>
+                          <td className="px-5 py-3 font-mono text-foreground font-bold">{primaryDiagnosis}</td>
+                          <td className="px-5 py-3 text-xs text-success font-bold">ICD-10 Dropdown</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.procedure[0].procedureCodeableConcept.coding[0].code</td>
+                          <td className="px-5 py-3 text-muted-foreground">Koding Tindakan (ICD-9-CM)</td>
+                          <td className="px-5 py-3 font-mono text-foreground font-bold">{procedure}</td>
+                          <td className="px-5 py-3 text-xs text-success font-bold">ICD-9 Dropdown</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.total.value</td>
+                          <td className="px-5 py-3 text-muted-foreground">Total Klaim Terhitung</td>
+                          <td className="px-5 py-3 font-bold text-primary">{formatIDR(calculateTariff())}</td>
+                          <td className="px-5 py-3 text-xs text-success font-bold">Kalkulator INA-CBGs (Step 2)</td>
+                        </tr>
+                        <tr className="hover:bg-muted/10">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">Claim.supportingInfo[]</td>
+                          <td className="px-5 py-3 text-muted-foreground">Lampiran PDF Medis</td>
+                          <td className="px-5 py-3 text-foreground font-semibold">10 Berkas Medis Terunggah</td>
+                          <td className="px-5 py-3 text-xs text-success font-bold">Dokumen Terverifikasi (Step 1)</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </Card>
               </div>
-              <div className="p-5">
-                <pre className="text-xs text-muted-foreground bg-muted/30 rounded-xl p-4 overflow-x-auto font-mono leading-relaxed max-h-64 overflow-y-auto">
-                  {JSON.stringify(fhirBundle.claim, null, 2)}
-                </pre>
+            ) : (
+              <div className="space-y-6 animate-fade-in">
+                {/* Preview Patient Resource */}
+                <Card className="border-primary/20 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                  <div className="flex items-center gap-2 border-b border-border/60 px-5 py-3 bg-primary/5">
+                    <User className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-bold text-foreground">Preview Patient Resource</span>
+                    <Badge className="bg-primary/15 text-primary border border-primary/25 text-[10px] font-bold">R4</Badge>
+                  </div>
+                  <div className="p-5">
+                    <pre className="text-xs text-muted-foreground bg-muted/30 rounded-xl p-4 overflow-x-auto font-mono leading-relaxed">
+                      {JSON.stringify(fhirBundle.patient, null, 2)}
+                    </pre>
+                  </div>
+                </Card>
+
+                {/* Preview Claim Resource */}
+                <Card className="border-primary/20 overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+                  <div className="flex items-center gap-2 border-b border-border/60 px-5 py-3 bg-primary/5">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-bold text-foreground">Preview Claim Resource</span>
+                    <Badge className="bg-primary/15 text-primary border border-primary/25 text-[10px] font-bold">R4</Badge>
+                  </div>
+                  <div className="p-5">
+                    <pre className="text-xs text-muted-foreground bg-muted/30 rounded-xl p-4 overflow-x-auto font-mono leading-relaxed max-h-64 overflow-y-auto">
+                      {JSON.stringify(fhirBundle.claim, null, 2)}
+                    </pre>
+                  </div>
+                </Card>
               </div>
-            </Card>
+            )}
 
             {/* Risk scoring demo */}
             {riskScore !== null && (
@@ -567,7 +1028,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
                 <div className="p-5">
                   <div className="flex items-start gap-4">
                     <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border ${riskLevel(riskScore).bg}`}>
-                      <span className={`text-xl font-extrabold ${riskLevel(riskScore).color}`}>{riskScore}</span>
+                      <span className={`text-xl font-extrabold ${riskLevel(riskScore).color}`}>{riskScore}%</span>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -609,19 +1070,23 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
             </div>
 
             {/* Patient info */}
-            <Card className="border-border/60 divide-y divide-border/40" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <Card className="border-border/60 divide-y divide-border/40 font-medium text-xs" style={{ boxShadow: 'var(--shadow-card)' }}>
               {[
                 { label: "Nama Pasien", value: form.patientName },
                 { label: "NIK", value: form.nik },
                 { label: "No. BPJS", value: form.bpjsNumber },
-                { label: "Diagnosis", value: form.diagnosis },
+                { label: "Diagnosis Utama (ICD-10)", value: form.diagnosis },
+                { label: "Prosedur (ICD-9-CM)", value: PROCEDURES.find(p => p.code === procedure)?.display || procedure },
+                { label: "Kelas Perawatan RS", value: `Kelas ${hospitalClass}` },
+                { label: "Severity Level", value: `Tingkat ${severityLevel}` },
+                { label: "Estimasi Tarif INA-CBG", value: formatIDR(calculateTariff()) },
                 { label: "Rumah Sakit", value: form.hospitalName },
                 { label: "Tipe Perawatan", value: form.treatmentType === "rawat-jalan" ? "Rawat Jalan" : "Rawat Inap" },
                 { label: "Tanggal", value: form.date },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between px-5 py-3.5">
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
-                  <span className="text-sm font-semibold text-foreground">{item.value}</span>
+                  <span className="text-sm text-muted-foreground font-semibold">{item.label}</span>
+                  <span className="text-sm font-bold text-foreground">{item.value}</span>
                 </div>
               ))}
             </Card>
@@ -631,13 +1096,13 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
               <h3 className="text-sm font-bold text-foreground mb-3">Dokumen Terlampir ({documents.filter(d => d.file).length}/10)</h3>
               <div className="grid gap-2 sm:grid-cols-2">
                 {documents.map((d) => (
-                  <div key={d.key} className="flex items-center gap-2 rounded-lg bg-muted/30 px-3 py-2">
+                  <div key={d.key} className="flex items-center gap-2 rounded-lg bg-muted/30 px-3 py-2 font-medium">
                     {d.file?.status === "done" ? (
                       <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                     ) : (
                       <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
                     )}
-                    <span className="text-xs text-foreground font-medium truncate">{d.label}</span>
+                    <span className="text-xs text-foreground font-bold truncate">{d.label}</span>
                     {d.file && <span className="text-[10px] text-muted-foreground ml-auto truncate max-w-24">{d.file.file.name}</span>}
                   </div>
                 ))}
@@ -645,7 +1110,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
             </Card>
 
             {/* FHIR + Risk summary */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 font-medium">
               <Card className="flex-1 border-primary/20 p-4" style={{ boxShadow: 'var(--shadow-card)' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <Heart className="h-4 w-4 text-primary" />
@@ -657,7 +1122,7 @@ const SmartClaimSubmission = ({ onBack, onSuccess }: SmartClaimSubmissionProps) 
                 <Card className={`flex-1 border p-4 ${riskLevel(riskScore).bg}`} style={{ boxShadow: 'var(--shadow-card)' }}>
                   <div className="flex items-center gap-2 mb-2">
                     <ClipboardCheck className={`h-4 w-4 ${riskLevel(riskScore).color}`} />
-                    <span className="text-sm font-bold text-foreground">Skor Risiko: {riskScore}/100</span>
+                    <span className="text-sm font-bold text-foreground">Skor Risiko: {riskScore}%</span>
                     <Badge className={`${riskLevel(riskScore).bg} ${riskLevel(riskScore).color} border text-xs font-bold ml-auto`}>
                       {riskLevel(riskScore).label}
                     </Badge>

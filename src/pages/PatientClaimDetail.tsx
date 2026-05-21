@@ -19,7 +19,6 @@ import DocumentChecklist from "@/components/claims/DocumentChecklist";
 import RiskExplanationPanel from "@/components/ai/RiskExplanationPanel";
 import { claimsService } from "@/services/claimsService";
 import { claimWorkflowService } from "@/services/claimWorkflowService";
-import { claimWorkflowService } from "@/services/claimWorkflowService";
 import type { ClaimStatus, ClaimTimelineStatus, PatientClaim } from "@/types/claim";
 import { AppLayout } from "@/components/AppLayout";
 

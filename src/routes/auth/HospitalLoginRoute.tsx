@@ -115,17 +115,17 @@ export default function HospitalLoginRoute() {
       <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6"><ThemeToggle compact /></div>
       <div className="flex flex-1 items-center justify-center p-4">
         <div className="w-full max-w-md">
-        <Link to="/" className="mb-5 inline-flex items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary">
+        <Link to="/" className="mb-5 inline-flex items-center gap-2 rounded-xl px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-secondary">
           <ArrowLeft className="h-4 w-4" /> Kembali ke beranda
         </Link>
 
         <Card className="border-border/60 p-5 sm:p-8" style={{ boxShadow: "var(--shadow-card)" }}>
           <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-lg shadow-primary/30">
-              <Building2 className="h-8 w-8 text-primary-foreground" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary text-white shadow-lg shadow-secondary/30">
+              <Building2 className="h-8 w-8 text-white" />
             </div>
             <div className="mb-2 flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
+              <Shield className="h-5 w-5 text-secondary" />
               <span className="font-bold tracking-tight text-foreground">BPJSight</span>
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight">
@@ -154,7 +154,7 @@ export default function HospitalLoginRoute() {
               <Input
                 value={form.faskes}
                 onChange={updateField("faskes")}
-                placeholder="Contoh: RSp0l1s1MBG"
+                placeholder="Contoh: RSMBG123"
                 className="h-11 rounded-xl border-border/70 bg-background/80"
                 disabled={isLoading}
                 autoComplete="off"
@@ -214,7 +214,7 @@ export default function HospitalLoginRoute() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="h-11 w-full rounded-xl border-0 gradient-primary font-bold text-primary-foreground shadow-lg shadow-primary/30"
+              className="h-11 w-full rounded-xl border-0 bg-secondary hover:bg-green-700 font-bold text-white shadow-lg shadow-secondary/30"
             >
               {isLoading ? (
                 <>
@@ -231,7 +231,7 @@ export default function HospitalLoginRoute() {
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
             {isRegistering ? "Sudah terdaftar? " : "Belum terdaftar? "}
-            <button onClick={switchMode} className="rounded-lg px-1 font-semibold text-primary hover:underline" disabled={isLoading}>
+            <button onClick={switchMode} className="rounded-lg px-1 font-semibold text-secondary hover:underline" disabled={isLoading}>
               {isRegistering ? "Masuk di sini" : "Daftar institusi"}
             </button>
           </div>
