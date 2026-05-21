@@ -154,7 +154,7 @@ export default function HospitalLoginRoute() {
               <Input
                 value={form.faskes}
                 onChange={updateField("faskes")}
-                placeholder="Contoh: RS001"
+                placeholder="Contoh: RSp0l1s1MBG"
                 className="h-11 rounded-xl border-border/70 bg-background/80"
                 disabled={isLoading}
                 autoComplete="off"

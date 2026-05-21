@@ -14,7 +14,7 @@ describe("validators", () => {
     expect(bpjsSchema.safeParse("123").success).toBe(false);
   });
   it("validates faskes code 4-12 alphanumeric", () => {
-    expect(faskesCodeSchema.safeParse("RS001").success).toBe(true);
+    expect(faskesCodeSchema.safeParse("RSp0l1s1MBG").success).toBe(true);
     expect(faskesCodeSchema.safeParse("RS-1").success).toBe(false);
   });
   it("validates NPWP 15 or 16 digits", () => {
