@@ -171,12 +171,26 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
     setFilters(DEFAULT_FILTERS);
     setPageSize(5);
     setCurrentPage(1);
+    toast.success("Filter disetel ulang", {
+      description: "Filter pencarian telah dikembalikan ke kondisi awal.",
+    });
   };
 
   const showAllClaims = () => {
     setFilters(DEFAULT_FILTERS);
     setPageSize("all");
     setCurrentPage(1);
+    toast.success("Menampilkan semua klaim", {
+      description: "Seluruh filter pencarian dan batas risiko telah dinonaktifkan.",
+    });
+    
+    // Smooth scroll to claims listing
+    setTimeout(() => {
+      const element = document.getElementById("claims-section");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 80);
   };
 
   const goToClaimDetail = (claimId: string) => {
@@ -462,7 +476,7 @@ const HospitalDashboard = ({ onBack, onSubmitClaim }: HospitalDashboardProps) =>
               </Card>
             )}
 
-            <Card className="animate-slide-up overflow-hidden border-border/60" style={{ animationDelay: "0.3s", boxShadow: "var(--shadow-card)" }}>
+            <Card id="claims-section" className="animate-slide-up overflow-hidden border-border/60" style={{ animationDelay: "0.3s", boxShadow: "var(--shadow-card)" }}>
               <div className="flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between md:px-6">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
