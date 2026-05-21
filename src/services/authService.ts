@@ -121,7 +121,7 @@ function buildPatientUser(payload: PatientLoginPayload | PatientRegisterPayload)
 
   const nik = normalizeDigits(payload.nik);
   const bpjs = normalizeDigits(payload.bpjs);
-  const displayName = "name" in payload && payload.name.trim() ? payload.name.trim() : "Pasien BPJS";
+  const displayName = "name" in payload && payload.name.trim() ? payload.name.trim() : "Pasien MBG";
   const identifierMasked = maskIdentity(nik);
 
   return {

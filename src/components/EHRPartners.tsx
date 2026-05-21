@@ -30,7 +30,7 @@ interface Partner {
 }
 
 const PARTNERS: Partner[] = [
-  { id: "p1", name: "RS Demo Jakarta", shortName: "RSDJ", type: "Rumah Sakit", city: "Jakarta", status: "demo", records: 24, apiVersion: "FHIR Preview" },
+  { id: "p1", name: "RS Polisi MBG", shortName: "RSDJ", type: "Rumah Sakit", city: "Jakarta", status: "demo", records: 24, apiVersion: "FHIR Preview" },
   { id: "p2", name: "RS Demo Bandung", shortName: "RSDB", type: "Rumah Sakit", city: "Bandung", status: "demo", records: 18, apiVersion: "FHIR Preview" },
   { id: "p3", name: "Klinik Demo Sentosa", shortName: "KDS", type: "Klinik", city: "Jakarta", status: "sandbox", records: 12, apiVersion: "FHIR Preview" },
   { id: "p4", name: "Klinik Sehat Demo", shortName: "KSD", type: "Klinik", city: "Bekasi", status: "sandbox", records: 9, apiVersion: "FHIR Preview" },
@@ -49,8 +49,8 @@ const SAMPLE_PATIENT = {
 };
 
 const MEDICAL_HISTORY = [
-  { date: "2024-03-28", title: "Konsultasi Poli Jantung", facility: "RS Demo Jakarta", status: "Selesai" },
-  { date: "2024-03-15", title: "Tindakan Bedah Minor", facility: "RS Demo Jakarta", status: "Selesai" },
+  { date: "2024-03-28", title: "Konsultasi Poli Jantung", facility: "RS Polisi MBG", status: "Selesai" },
+  { date: "2024-03-15", title: "Tindakan Bedah Minor", facility: "RS Polisi MBG", status: "Selesai" },
   { date: "2024-02-10", title: "Kontrol Rawat Jalan", facility: "Klinik Demo Sentosa", status: "Selesai" },
   { date: "2023-11-05", title: "Pemeriksaan Laboratorium", facility: "Lab Demo Nasional", status: "Selesai" },
 ];
@@ -81,8 +81,8 @@ const CLAIMS = [
 ];
 
 const REFERRALS = [
-  { from: "Klinik Demo Sentosa", to: "RS Demo Jakarta — Sp. Jantung", date: "2024-03-20" },
-  { from: "RS Demo Jakarta", to: "Lab Demo Nasional — Echocardiogram", date: "2024-03-25" },
+  { from: "Klinik Demo Sentosa", to: "RS Polisi MBG — Sp. Jantung", date: "2024-03-20" },
+  { from: "RS Polisi MBG", to: "Lab Demo Nasional — Echocardiogram", date: "2024-03-25" },
 ];
 
 type Tab = "profile" | "history" | "diagnosis" | "lab" | "rx" | "claims" | "referral";

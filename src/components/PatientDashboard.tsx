@@ -60,7 +60,7 @@ const PatientDashboard = ({ onBack }: PatientDashboardProps) => {
   const [selectedActionClaim, setSelectedActionClaim] = useState<PatientClaim | null>(null);
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(() => new Set());
   const { currentUser } = useAuth();
-  const patientName = currentUser?.displayName ?? currentUser?.name ?? "Pasien BPJS";
+  const patientName = currentUser?.displayName ?? currentUser?.name ?? "Pasien MBG";
   const patientInitial = patientName.trim().charAt(0).toUpperCase() || "P";
   const bpjsDisplay = currentUser?.bpjsMasked ?? "•••• •••• •7890";
 

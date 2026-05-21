@@ -79,7 +79,7 @@ const INITIAL_FORM: ClaimForm = {
   nik: "",
   bpjsNumber: "",
   diagnosis: "",
-  hospitalName: "RS Demo Jakarta",
+  hospitalName: "RS Polisi MBG",
   treatmentType: "",
   date: new Date().toISOString().split("T")[0],
 };

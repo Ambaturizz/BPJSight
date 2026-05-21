@@ -23,7 +23,7 @@ const STATS = [
   { label: "Diproses", value: "2", icon: Heart },
 ];
 
-const HOSPITALS = ["RS Demo Jakarta", "RS Demo Bandung", "Klinik Demo Sentosa"];
+const HOSPITALS = ["RS Polisi MBG", "RS Demo Bandung", "Klinik Demo Sentosa"];
 
 type PatientProfileForm = {
   name: string;
@@ -58,7 +58,7 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
   const { currentUser, updateCurrentUser } = useAuth();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<PatientProfileForm>(() => readPatientProfile({
-    name: currentUser?.displayName ?? currentUser?.name ?? "Pasien BPJS",
+    name: currentUser?.displayName ?? currentUser?.name ?? "Pasien MBG",
     nik: currentUser?.identifierMasked ?? "•••• •••• •••• 0123",
     bpjs: currentUser?.bpjsMasked ?? "•••• •••• •7890",
     blood: "O+",
@@ -70,7 +70,7 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
   const [bioLogin, setBioLogin] = useState(false);
 
   const save = () => {
-    const cleanName = form.name.trim() || "Pasien BPJS";
+    const cleanName = form.name.trim() || "Pasien MBG";
     const nextForm = { ...form, name: cleanName };
 
     setForm(nextForm);

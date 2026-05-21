@@ -209,7 +209,7 @@ const HOSPITAL_CLAIM_BLUEPRINTS: HospitalClaim[] = PATIENTS.map((patient, index)
     audit: [
       {
         at: dateNDaysAgo(submittedDaysAgo),
-        actor: "Admin RS Demo Jakarta",
+        actor: "Admin RS Polisi MBG",
         action: "Klaim diajukan",
       },
       {

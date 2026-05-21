@@ -30,7 +30,7 @@ export const mockPatientClaims: PatientClaim[] = [
   {
     id: "KLM-2024-001",
     title: "Rawat Jalan - Poli Jantung",
-    hospital: "RS Demo Jakarta",
+    hospital: "RS Polisi MBG",
     date: "28 Mar 2024",
     amount: "Rp 1.250.000",
     status: "diproses",
@@ -61,7 +61,7 @@ export const mockPatientClaims: PatientClaim[] = [
   {
     id: "KLM-2024-002",
     title: "Rawat Inap - Bedah Minor",
-    hospital: "RS Demo Jakarta",
+    hospital: "RS Polisi MBG",
     date: "15 Mar 2024",
     amount: "Rp 8.500.000",
     status: "berisiko",
@@ -104,7 +104,7 @@ export const mockPatientClaims: PatientClaim[] = [
   {
     id: "KLM-2024-003",
     title: "Rawat Jalan - Poli Mata",
-    hospital: "RS Demo Jakarta",
+    hospital: "RS Polisi MBG",
     date: "5 Mar 2024",
     amount: "Rp 650.000",
     status: "selesai",

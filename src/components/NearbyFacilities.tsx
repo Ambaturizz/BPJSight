@@ -30,15 +30,15 @@ interface Facility {
 const DEFAULT_LOCATION = { lat: -6.1754, lng: 106.8272 };
 
 const FACILITIES: Facility[] = [
-  { id: "1", name: "RS Demo Jakarta", type: "rumah_sakit", lat: -6.1820, lng: 106.8290, address: "Area Demo Jakarta Pusat", rating: 4.8, bpjs: true, emergency: true, open24h: true, phone: "021-3500-100", openNow: true },
+  { id: "1", name: "RS Polisi MBG", type: "rumah_sakit", lat: -6.1820, lng: 106.8290, address: "Area Polisi MBG Pusat", rating: 4.8, bpjs: true, emergency: true, open24h: true, phone: "021-3500-100", openNow: true },
   { id: "2", name: "Klinik Sehat Demo", type: "klinik", lat: -6.1700, lng: 106.8200, address: "Area Demo Sudirman", rating: 4.5, bpjs: true, emergency: false, open24h: false, phone: "021-3100-220", openNow: true },
   { id: "3", name: "Apotek Demo Farma", type: "apotek", lat: -6.1780, lng: 106.8250, address: "Area Demo Perkantoran", rating: 4.3, bpjs: false, emergency: false, open24h: true, phone: "021-2900-440", openNow: true },
   { id: "4", name: "Klinik Demo Sentosa", type: "faskes_bpjs", lat: -6.1900, lng: 106.8350, address: "Area Demo Menteng", rating: 4.2, bpjs: true, emergency: false, open24h: false, phone: "021-3155-600", openNow: false },
   { id: "5", name: "RS Demo Pusat", type: "rumah_sakit", lat: -6.1985, lng: 106.8410, address: "Area Demo Salemba", rating: 4.7, bpjs: true, emergency: true, open24h: true, phone: "021-3147-900", openNow: true },
   { id: "6", name: "Klinik Demo Sentosa", type: "klinik", lat: -6.1650, lng: 106.8150, address: "Area Demo Kebon Sirih", rating: 4.4, bpjs: true, emergency: true, open24h: false, phone: "021-3920-110", openNow: true },
   { id: "7", name: "Apotek Demo Sehat", type: "apotek", lat: -6.1740, lng: 106.8300, address: "Area Demo Pusat Kota", rating: 4.1, bpjs: false, emergency: false, open24h: false, phone: "021-2992-330", openNow: true },
-  { id: "8", name: "Faskes Demo Barat", type: "faskes_bpjs", lat: -6.1880, lng: 106.7700, address: "Area Demo Jakarta Barat", rating: 4.0, bpjs: true, emergency: false, open24h: false, phone: "021-5366-110", openNow: true },
-  { id: "9", name: "RS Demo Selatan", type: "rumah_sakit", lat: -6.2650, lng: 106.7850, address: "Area Demo Jakarta Selatan", rating: 4.9, bpjs: true, emergency: true, open24h: true, phone: "021-7657-525", openNow: true },
+  { id: "8", name: "Faskes Demo Barat", type: "faskes_bpjs", lat: -6.1880, lng: 106.7700, address: "Area Polisi MBG Barat", rating: 4.0, bpjs: true, emergency: false, open24h: false, phone: "021-5366-110", openNow: true },
+  { id: "9", name: "RS Demo Selatan", type: "rumah_sakit", lat: -6.2650, lng: 106.7850, address: "Area Polisi MBG Selatan", rating: 4.9, bpjs: true, emergency: true, open24h: true, phone: "021-7657-525", openNow: true },
   { id: "10", name: "Apotek Demo 24 Jam", type: "apotek", lat: -6.1760, lng: 106.8230, address: "Area Demo Pusat Belanja", rating: 4.2, bpjs: true, emergency: false, open24h: true, phone: "021-2358-110", openNow: true },
 ];
 

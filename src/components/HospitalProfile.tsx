@@ -89,7 +89,7 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
   const { currentUser, updateCurrentUser } = useAuth();
   const defaultHospitalName = currentUser?.displayName && currentUser.displayName !== "Admin Rumah Sakit"
     ? currentUser.displayName
-    : "RS Demo Jakarta";
+    : "RS Polisi MBG";
 
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<HospitalProfileForm>(() => readSessionValue(HOSPITAL_PROFILE_STORAGE_KEY, {
@@ -112,7 +112,7 @@ const HospitalProfile = ({ onBack }: { onBack: () => void }) => {
   };
 
   const save = () => {
-    const cleanName = form.name.trim() || "RS Demo Jakarta";
+    const cleanName = form.name.trim() || "RS Polisi MBG";
     const nextForm = { ...form, name: cleanName };
 
     setForm(nextForm);
