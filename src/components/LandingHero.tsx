@@ -1,468 +1,204 @@
 import { useState } from "react";
-import ThemeToggle from "@/components/ThemeToggle";
-import { BackgroundOrnaments } from "./BackgroundOrnaments";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import type { LucideIcon } from "lucide-react";
-import {
-  Shield,
-  Activity,
-  Building2,
-  User,
-  ChevronRight,
-  ClipboardCheck,
-  Lock,
-  Menu,
-  X,
-  Mail,
-  Phone,
-  Globe2,
-  BarChart3,
-  Database,
-  Stethoscope,
-  Sparkles,
-  Users,
-  ArrowUpRight,
-} from "lucide-react";
+import { BackgroundOrnaments } from "./BackgroundOrnaments";
+import { Shield, ChevronRight, User, Building2, Stethoscope, Activity, ClipboardCheck, Phone, Mail, Globe2, FileText, BarChart3, Users, HeartPulse, Search } from "lucide-react";
 
 interface LandingHeroProps {
   onNavigate: (role: "patient" | "hospital") => void;
-  onNavPage?: (page: "beranda" | "tentang" | "fitur") => void;
-  onOpenEHR?: () => void;
 }
 
-type FeatureItem = {
-  icon: LucideIcon;
-  title: string;
-  desc: string;
-};
-
-const FEATURES: FeatureItem[] = [
-  {
-    icon: Activity,
-    title: "Pemantauan status klaim",
-    desc: "Pantau proses klaim dari pengajuan, validasi dokumen, review, sampai keputusan akhir dengan alur yang mudah dibaca.",
-  },
-  {
-    icon: ClipboardCheck,
-    title: "Checklist kelengkapan dokumen",
-    desc: "SEP, identitas, resume medis, rujukan, billing, dan dokumen penunjang ditampilkan sebagai daftar periksa administratif.",
-  },
-  {
-    icon: BarChart3,
-    title: "Estimasi risiko administratif",
-    desc: "Risk scoring simulatif membantu menandai klaim yang perlu ditinjau lebih awal berdasarkan kelengkapan dan konsistensi data.",
-  },
-  {
-    icon: Lock,
-    title: "Data contoh yang terpisah dari produksi",
-    desc: "Seluruh data pada prototype adalah data simulasi sehingga aman untuk demo, portfolio, dan presentasi alur produk.",
-  },
-];
-
-const NAV_ITEMS = [
-  { label: "Tentang", target: "about" },
-  { label: "Fitur", target: "features" },
-  { label: "Kontak", target: "contact" },
+const QUICK_SERVICES = [
+  { icon: User, title: "Pendaftaran Pasien", desc: "Daftar antrean dan periksa status kepesertaan JKN-KIS.", role: "patient" },
+  { icon: Building2, title: "Portal Faskes", desc: "Akses dashboard untuk fasilitas kesehatan dan rumah sakit.", role: "hospital" },
+  { icon: ClipboardCheck, title: "Cek Status Klaim", desc: "Pantau proses verifikasi dan validasi klaim secara transparan.", role: "patient" },
+  { icon: HeartPulse, title: "Skrining Kesehatan", desc: "Lakukan skrining riwayat kesehatan secara mandiri.", role: "patient" },
 ] as const;
 
-type KpiCard = {
-  label: string;
-  value: string;
-  icon: LucideIcon;
-  chart: "donut" | "ring" | "area" | "line";
-  legend: string[];
-  className: string;
-};
-
-const KPI_CARDS: KpiCard[] = [
-  {
-    label: "Jumlah Peserta JKN",
-    value: "284.337.094 Peserta",
-    icon: Users,
-    chart: "donut",
-    legend: ["Penerima Bantuan Iuran", "Penduduk didaftarkan Pemda", "PPU Swasta"],
-    className: "sm:col-span-2",
-  },
-  {
-    label: "Fasilitas Kesehatan Tingkat Pertama",
-    value: "23.623 FKTP",
-    icon: Stethoscope,
-    chart: "ring",
-    legend: ["Puskesmas", "Klinik Pratama", "Praktik Perorangan"],
-    className: "",
-  },
-  {
-    label: "Faskes Rujukan Tingkat Lanjutan",
-    value: "3.206 RS/Klinik Utama & 6.360 Apotek/Optik",
-    icon: Database,
-    chart: "area",
-    legend: ["Apotek", "RS Swasta", "Optik"],
-    className: "",
-  },
+const STATS = [
+  { label: "Peserta JKN-KIS", value: "267+ Juta", icon: Users },
+  { label: "Fasilitas Kesehatan", value: "23.000+", icon: Stethoscope },
+  { label: "Klaim Diproses", value: "1.2M / hari", icon: Activity },
 ];
-
-const FOOTER_COLUMNS = [
-  { title: "Produk", items: ["Platform", "Status", "Security", "Changelog"] },
-  { title: "Fitur", items: ["Monitoring", "Risk Scoring", "Analytics", "Reporting"] },
-  { title: "Tentang", items: ["Team", "Careers", "Press", "Blog"] },
-  { title: "Resources", items: ["Documentation", "Guides", "Support", "Contact"] },
-];
-
-function scrollToSection(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
 
 const LandingHero = ({ onNavigate }: LandingHeroProps) => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const handleNav = (target: string) => {
-    setMobileNavOpen(false);
-    scrollToSection(target);
-  };
-
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+    <div className="relative min-h-screen bg-background text-foreground font-sans">
       <BackgroundOrnaments />
+      {/* Top Utility Bar (very common in govt sites) */}
+      <div className="hidden md:flex justify-end items-center bg-primary text-white py-1.5 px-8 text-xs font-medium gap-6">
+        <a href="#" className="hover:underline flex items-center gap-1.5"><Phone className="h-3 w-3" /> Care Center 165</a>
+        <a href="#" className="hover:underline flex items-center gap-1.5"><Globe2 className="h-3 w-3" /> PANDAWA</a>
+      </div>
 
-      <nav className="sticky top-0 z-40 border-b border-border/50 bg-background/80 backdrop-blur-2xl">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 md:px-8 lg:px-10">
-          <button
-            type="button"
-            onClick={() => scrollToSection("home")}
-            className="flex items-center gap-2.5 rounded-xl text-left"
-            aria-label="Kembali ke bagian utama BPJSight"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-primary/25 bg-primary/10 text-primary shadow-[0_0_30px_rgba(45,212,191,0.28)]">
-              <Shield className="h-5 w-5" aria-hidden="true" />
+      {/* Main Navigation */}
+      <nav className="sticky top-0 z-40 border-b border-border bg-white shadow-sm">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 md:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+              <Shield className="h-6 w-6" />
             </div>
-            <span className="text-xl font-extrabold tracking-tight text-primary">BPJSight</span>
-          </button>
-
-          <div className="hidden items-center gap-8 md:flex">
-            {NAV_ITEMS.map((item) => (
-              <button
-                key={item.target}
-                type="button"
-                onClick={() => handleNav(item.target)}
-                className="text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
-              >
-                {item.label}
-              </button>
-            ))}
+            <div>
+              <span className="block text-xl font-bold leading-tight text-primary">BPJSight</span>
+              <span className="block text-[10px] uppercase font-semibold text-secondary tracking-widest">Kesehatan Republik Indonesia</span>
+            </div>
           </div>
 
-          <div className="hidden items-center gap-3 md:flex">
-            <ThemeToggle compact />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => handleNav("login-options")}
-              className="rounded-full border-border bg-transparent px-5 text-primary hover:bg-primary/10 hover:text-primary"
-            >
-              Masuk/Daftar
-            </Button>
+          <div className="hidden md:flex items-center gap-8 font-semibold text-sm text-foreground">
+            <a href="#" className="hover:text-primary transition-colors">Beranda</a>
+            <a href="#" className="hover:text-primary transition-colors">Layanan Peserta</a>
+            <a href="#" className="hover:text-primary transition-colors">Fasilitas Kesehatan</a>
+            <a href="#" className="hover:text-primary transition-colors">Informasi Publik</a>
           </div>
 
-          <div className="flex items-center gap-2 md:hidden">
-            <ThemeToggle compact />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={mobileNavOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
-              onClick={() => setMobileNavOpen((open) => !open)}
-              className="rounded-xl text-primary hover:bg-white/10"
-            >
-              {mobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+          <div className="hidden md:flex gap-3">
+            <Button variant="outline" className="border-border hover:bg-slate-50 text-primary font-bold shadow-sm">Masuk</Button>
+            <Button className="bg-secondary hover:bg-green-700 text-white font-bold shadow-sm">Pendaftaran</Button>
           </div>
         </div>
-
-        {mobileNavOpen && (
-          <div className="border-t border-border/50 bg-card/95 px-5 py-3 backdrop-blur-xl md:hidden">
-            <div className="grid gap-2">
-              {NAV_ITEMS.map((item) => (
-                <button
-                  key={item.target}
-                  type="button"
-                  onClick={() => handleNav(item.target)}
-                  className="rounded-xl px-3 py-2 text-left text-sm font-semibold text-foreground hover:bg-white/10"
-                >
-                  {item.label}
-                </button>
-              ))}
-              <Button type="button" onClick={() => handleNav("login-options")} className="mt-1 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
-                Pilih Login
-              </Button>
-            </div>
-          </div>
-        )}
       </nav>
 
-      <main id="home" className="relative z-10">
-        <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-7xl items-center gap-12 px-5 py-12 md:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:py-16">
-          <div className="max-w-3xl">
-            <Badge variant="outline" className="mb-6 rounded-full border-primary/30 bg-primary/5 dark:bg-[#09151e]/80 px-4 py-2 text-xs font-semibold text-primary shadow-[0_0_32px_rgba(45,212,191,0.10)] sm:text-sm backdrop-blur-md">
-              <Sparkles className="mr-2 h-4 w-4" /> Prototype dashboard Klaim BPJS · Data simulasi
-            </Badge>
-
-            <h1 className="text-balance text-4xl font-extrabold leading-[1.15] tracking-tight text-foreground sm:text-5xl lg:text-[4.25rem]">
-              <span className="text-primary">Pemantauan dan<br />Validasi Klaim<br /></span>
-              <span className="text-[#d97706] dark:text-[#fde047]">BPJS</span>{" "}
-              dalam<br />Satu Dashboard
-            </h1>
-
-            <p className="mt-5 mb-8 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              BPJSight adalah prototype dashboard untuk membantu pasien dan rumah sakit memantau status klaim, mengecek kelengkapan dokumen, dan mengidentifikasi risiko administratif sejak awal.
-            </p>
-
-            <div id="login-options" className="mt-7 grid w-full max-w-[44rem] gap-4 scroll-mt-24 md:grid-cols-2">
-              <RoleCard
-                icon={User}
-                title="Masuk/Daftar sebagai Pasien"
-                desc="Pantau timeline klaim, status dokumen, riwayat klaim, dan saran tindak lanjut berbasis data contoh."
-                onClick={() => onNavigate("patient")}
-              />
-              <RoleCard
-                icon={Building2}
-                title="Masuk/Daftar sebagai Rumah Sakit"
-                desc="Monitor klaim berisiko, checklist dokumen, dan prioritas review administrasi pada dashboard demo."
-                onClick={() => onNavigate("hospital")}
-              />
+      <main>
+        {/* Hero Banner Section */}
+        <section className="relative overflow-hidden bg-slate-50 border-b border-border">
+          <div className="relative mx-auto max-w-7xl">
+            <div className="relative z-10 lg:w-1/2 py-16 md:py-24 lg:py-28 px-5 md:px-8">
+              <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-primary text-xs font-bold uppercase tracking-wider mb-6 border border-blue-200">Portal Layanan JKN</span>
+              <h1 className="text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-foreground leading-[1.15] mb-6 tracking-tight">
+                Layanan Administrasi Kesehatan <span className="text-primary block mt-2">Dalam Satu Pintu</span>
+              </h1>
+              <p className="text-muted-foreground text-lg mb-8 max-w-xl leading-relaxed">
+                BPJSight memberikan transparansi penuh untuk pemantauan status klaim, verifikasi fasilitas kesehatan, dan layanan administrasi peserta JKN-KIS secara digital.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button size="lg" className="bg-primary hover:bg-blue-900 text-white font-semibold rounded-md shadow-sm h-12 px-6" onClick={() => onNavigate("patient")}>
+                  Portal Pasien JKN
+                </Button>
+                <Button size="lg" variant="outline" className="bg-white border-border text-foreground hover:bg-slate-50 font-semibold rounded-md shadow-sm h-12 px-6" onClick={() => onNavigate("hospital")}>
+                  Portal Faskes & RS
+                </Button>
+              </div>
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[37rem] lg:max-w-none">
-            <HeroVisual />
+          {/* Full-bleed hero image on the right */}
+          <div className="relative lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+            <img 
+              src="/images/hero-card.jpg" 
+              alt="Peserta BPJS menunjukkan Kartu Indonesia Sehat" 
+              className="h-64 w-full object-cover sm:h-72 md:h-96 lg:h-full lg:w-full"
+            />
+            {/* Gradient fade from left to create smooth blend with text area */}
+            <div className="hidden lg:block absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-50 to-transparent"></div>
           </div>
         </section>
 
-        <section id="about" className="mx-auto grid w-full max-w-7xl scroll-mt-24 gap-10 px-5 py-12 md:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-16">
-          <div className="lg:pt-4">
-            <p className="text-sm font-extrabold uppercase tracking-[0.24em] text-primary">Tentang BPJSight</p>
-            <h2 className="mt-4 max-w-xl text-3xl font-extrabold leading-tight tracking-tight text-foreground md:text-5xl">
-              Didesain untuk alur klaim yang mudah dipahami dan mudah diaudit.
-            </h2>
-            <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
-              Prototype ini memperlihatkan alur pasien dan rumah sakit tanpa mengklaim terhubung ke BPJS atau fasilitas kesehatan nyata. Fokusnya adalah validasi dokumen, status klaim, dan penjelasan risiko administratif.
-            </p>
-          </div>
+        {/* Quick Services Section (Layanan Cepat) */}
+        <section className="py-20 bg-white border-b border-border">
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold text-foreground mb-4">Layanan Publik JKN</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto text-lg">Akses layanan administrasi mandiri yang paling sering digunakan oleh peserta dan mitra fasilitas kesehatan secara online.</p>
+            </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {KPI_CARDS.map((card, index) => (
-              <MetricCard key={card.label} {...card} delay={index * 70} />
-            ))}
-          </div>
-        </section>
-
-        <section id="features" className="mx-auto w-full max-w-7xl scroll-mt-24 px-5 py-12 md:px-8 lg:px-10 lg:py-16">
-          <div className="mb-8 max-w-2xl">
-            <p className="text-sm font-extrabold uppercase tracking-[0.24em] text-primary">Fitur utama</p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">Dibangun untuk pasien dan operasional rumah sakit.</h2>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-2">
-            {FEATURES.map((feature) => (
-              <article key={feature.title} className="group rounded-3xl border border-border/50 bg-card shadow-sm p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/25 hover:bg-white/[0.075]">
-                <div className="flex items-start justify-between gap-5">
-                  <div>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/25 bg-gradient-to-br from-cyan-300/25 to-sky-400/15 text-primary shadow-[0_0_34px_rgba(45,212,191,0.20)]">
-                      <feature.icon className="h-6 w-6" aria-hidden="true" />
-                    </div>
-                    <h3 className="mt-5 text-xl font-extrabold text-foreground">{feature.title}</h3>
-                    <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">{feature.desc}</p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {QUICK_SERVICES.map((service, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => onNavigate(service.role)}
+                  className="group cursor-pointer p-6 rounded-lg border border-border bg-white shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:border-primary/30 hover:shadow-md transition-all flex flex-col"
+                >
+                  <div className="h-12 w-12 rounded-lg bg-blue-50 text-primary flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors border border-blue-100 group-hover:border-primary">
+                    <service.icon className="h-6 w-6" />
                   </div>
-                  <ArrowUpRight className="h-5 w-5 shrink-0 text-primary opacity-60 transition group-hover:opacity-100" aria-hidden="true" />
+                  <h3 className="font-bold text-foreground text-lg mb-2">{service.title}</h3>
+                  <p className="text-muted-foreground text-sm flex-1 leading-relaxed">{service.desc}</p>
+                  <div className="mt-6 flex items-center text-primary text-sm font-bold">
+                    Akses Portal <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="contact" className="mx-auto w-full max-w-7xl scroll-mt-24 px-5 pb-10 pt-8 md:px-8 lg:px-10 lg:pb-14">
-          <div className="rounded-3xl border border-border/50 bg-card shadow-sm p-6 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-xl md:p-8">
-            <div className="grid gap-7 lg:grid-cols-[1fr_0.78fr] lg:items-center">
-              <div>
-                <p className="text-sm font-extrabold uppercase tracking-[0.24em] text-primary">Kontak demo</p>
-                <h2 className="mt-3 max-w-2xl text-2xl font-extrabold leading-tight tracking-tight text-foreground md:text-3xl">
-                  Coba alur BPJSight sebagai prototype portfolio.
-                </h2>
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                  BPJSight memperlihatkan alur pasien dan rumah sakit tanpa mengklaim terhubung ke BPJS atau fasilitas kesehatan nyata.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Button onClick={() => scrollToSection("login-options")} className="rounded-full bg-primary px-5 font-bold text-primary-foreground hover:bg-primary/90">
-                    Pilih role login
-                  </Button>
-                </div>
-              </div>
-              <div className="grid gap-3 text-sm text-muted-foreground">
-                <p className="flex items-center gap-3 rounded-2xl border border-border/50 bg-muted px-4 py-3">
-                  <Mail className="h-4 w-4 text-primary" aria-hidden="true" /> support@bpjsight.demo
-                </p>
-                <p className="flex items-center gap-3 rounded-2xl border border-border/50 bg-muted px-4 py-3">
-                  <Phone className="h-4 w-4 text-primary" aria-hidden="true" /> Simulasi kontak layanan
-                </p>
-                <p className="flex items-center gap-3 rounded-2xl border border-border/50 bg-muted px-4 py-3">
-                  <Globe2 className="h-4 w-4 text-primary" aria-hidden="true" /> Prototype untuk alur administrasi klaim kesehatan
-                </p>
-              </div>
+              ))}
             </div>
           </div>
         </section>
-      </main>
 
-      <Footer />
+        {/* Statistics Section (Data & Transparansi) */}
+        <section className="py-20 bg-primary text-white border-t border-b border-primary/20 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.4),transparent_50%)]"></div>
+          <div className="mx-auto max-w-7xl px-5 md:px-8 relative z-10">
+            <div className="text-center mb-12">
+               <h2 className="text-2xl font-bold text-white mb-2">Transparansi Data Nasional</h2>
+               <p className="text-blue-200">Sistem terintegrasi untuk seluruh masyarakat Indonesia</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-12 md:gap-8 divide-y md:divide-y-0 md:divide-x divide-white/20 text-center">
+              {STATS.map((stat, idx) => (
+                <div key={idx} className="pt-8 md:pt-0 px-4">
+                  <stat.icon className="h-10 w-10 mx-auto mb-5 text-secondary" />
+                  <div className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">{stat.value}</div>
+                  <div className="text-blue-100 font-semibold uppercase tracking-widest text-xs">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Footer / Info */}
+        <footer className="bg-slate-50 pt-20 pb-10 border-t border-border text-sm text-muted-foreground">
+          <div className="mx-auto max-w-7xl px-5 md:px-8 grid grid-cols-2 md:grid-cols-5 gap-12 mb-16">
+            <div className="col-span-2">
+              <div className="flex items-center gap-2 mb-6 text-foreground">
+                <Shield className="h-7 w-7 text-primary" />
+                <span className="font-bold text-xl">BPJSight</span>
+              </div>
+              <p className="mb-6 leading-relaxed max-w-md">BPJSight adalah portal prototipe untuk Sistem Informasi Administrasi dan Pemantauan Klaim Kesehatan Terpadu Republik Indonesia.</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-foreground mb-4 uppercase tracking-wider text-xs">Layanan Peserta</h4>
+              <ul className="space-y-3 font-medium">
+                <li><a href="#" className="hover:text-primary transition-colors">Pendaftaran Baru</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Cek Status JKN</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Riwayat Klaim</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Skrining Mandiri</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-foreground mb-4 uppercase tracking-wider text-xs">Fasilitas Kesehatan</h4>
+              <ul className="space-y-3 font-medium">
+                <li><a href="#" className="hover:text-primary transition-colors">Portal V-Claim</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">E-Klaim Terpadu</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Referensi Diagnosa</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Verifikasi Dokumen</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-foreground mb-4 uppercase tracking-wider text-xs">Hubungi Kami</h4>
+              <ul className="space-y-3 font-medium">
+                <li><a href="#" className="hover:text-primary transition-colors flex items-center gap-2"><Phone className="h-4 w-4"/> Care Center 165</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors flex items-center gap-2"><Globe2 className="h-4 w-4"/> PANDAWA</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors flex items-center gap-2"><Mail className="h-4 w-4"/> Lapor Gratifikasi</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="mx-auto max-w-7xl px-5 md:px-8 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="font-medium">&copy; 2026 BPJSight. Prototype Non-Komersial (Hanya untuk keperluan desain).</p>
+            <div className="flex gap-6 font-medium">
+              <a href="#" className="hover:text-primary transition-colors">Kebijakan Privasi</a>
+              <a href="#" className="hover:text-primary transition-colors">Syarat & Ketentuan</a>
+            </div>
+          </div>
+        </footer>
+      </main>
     </div>
   );
 };
 
-interface RoleCardProps {
-  icon: LucideIcon;
-  title: string;
-  desc: string;
-  onClick: () => void;
-}
-
-function RoleCard({ icon: Icon, title, desc, onClick }: RoleCardProps) {
-  return (
-    <div className="flex flex-col justify-between rounded-2xl border border-primary/30 bg-card p-5 shadow-lg backdrop-blur-md transition hover:border-primary/60 hover:shadow-primary/10">
-      <div>
-        <div className="flex items-start gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
-            <Icon className="h-5 w-5" aria-hidden="true" />
-          </div>
-          <h3 className="text-lg font-bold leading-tight text-foreground">{title}</h3>
-        </div>
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-          {desc}
-        </p>
-      </div>
-      <div className="mt-6">
-        <Button onClick={onClick} className="rounded-full bg-primary px-6 font-bold text-primary-foreground hover:bg-primary/90">
-          Mulai <ChevronRight className="ml-1 inline-block h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function HeroVisual() {
-  return (
-    <div className="relative min-h-[36rem] w-full max-w-[40rem] mx-auto overflow-visible flex items-center justify-center p-4">
-      <div
-        className="relative flex items-center justify-center w-full h-full rounded-[2rem] border border-primary/20 bg-card/80 shadow-[0_0_60px_rgba(0,255,255,0.10)] dark:border-cyan-400/20 dark:bg-[#06121E]/80 dark:shadow-[0_0_60px_rgba(0,255,255,0.15)] backdrop-blur-xl"
-        style={{ animation: 'floating 6s ease-in-out infinite' }}
-      >
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] rounded-[2rem] pointer-events-none" />
-        <img
-          src="/images/family-silhouette.png"
-          alt="BPJS Network Dashboard"
-          className="relative z-10 w-full h-full max-h-[32rem] object-contain p-4 drop-shadow-[0_0_25px_rgba(0,255,255,0.25)]"
-        />
-        <div className="absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/10 bg-gradient-to-t from-cyan-900/20 to-transparent pointer-events-none" />
-      </div>
-    </div>
-  );
-}
-
-function MetricCard({ label, value, chart, legend, icon: Icon, delay, className = "" }: KpiCard & { delay: number }) {
-  return (
-    <article className={`rounded-2xl border border-border/50 bg-card shadow-sm p-4 shadow-[0_18px_55px_rgba(0,0,0,0.24)] backdrop-blur-xl ${className}`} style={{ animationDelay: `${delay}ms` }}>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[0.72rem] font-semibold leading-snug text-muted-foreground">{label}</p>
-          <p className="mt-1 text-sm font-extrabold leading-snug text-foreground">{value}</p>
-        </div>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Icon className="h-4 w-4" aria-hidden="true" />
-        </div>
-      </div>
-      <div className="mt-3 grid grid-cols-[0.9fr_1fr] items-center gap-3">
-        <MiniChart type={chart} />
-        <div className="space-y-1.5">
-          {legend.map((item, index) => (
-            <p key={item} className="flex items-center gap-1.5 text-[0.64rem] leading-tight text-muted-foreground">
-              <span className={`h-2 w-2 rounded-full ${index === 0 ? "bg-primary" : index === 1 ? "bg-sky-300" : "bg-lime-200"}`} />
-              {item}
-            </p>
-          ))}
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function MiniChart({ type }: { type: "donut" | "ring" | "area" | "line" }) {
-  if (type === "area") {
-    return (
-      <svg viewBox="0 0 120 80" className="h-20 w-full" aria-hidden="true">
-        <defs>
-          <linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#67e8f9" stopOpacity="0.75" />
-            <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.04" />
-          </linearGradient>
-        </defs>
-        <path d="M8 67 C18 58 23 57 31 60 C40 64 44 44 53 48 C62 53 67 28 75 34 C84 40 89 20 97 26 C105 31 110 18 116 14 L116 74 L8 74 Z" fill="url(#areaGradient)" />
-        <path d="M8 67 C18 58 23 57 31 60 C40 64 44 44 53 48 C62 53 67 28 75 34 C84 40 89 20 97 26 C105 31 110 18 116 14" fill="none" stroke="#67e8f9" strokeWidth="3" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (type === "line") {
-    return (
-      <svg viewBox="0 0 120 80" className="h-20 w-full" aria-hidden="true">
-        {[20, 40, 60].map((y) => <line key={y} x1="5" x2="116" y1={y} y2={y} stroke="rgba(148,163,184,0.18)" />)}
-        <path d="M8 64 C17 37 28 45 36 43 C48 41 48 26 61 31 C73 36 75 16 88 20 C101 24 106 14 116 10" fill="none" stroke="#5eead4" strokeWidth="3" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  const stroke = type === "donut" ? 27 : 20;
-  return (
-    <svg viewBox="0 0 100 100" className="h-20 w-full drop-shadow-[0_0_16px_rgba(45,212,191,0.4)]" aria-hidden="true">
-      <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={stroke} />
-      <circle cx="50" cy="50" r="30" fill="none" stroke="#5eead4" strokeWidth={stroke} strokeDasharray="125 188" strokeLinecap="round" transform="rotate(-90 50 50)" />
-      <circle cx="50" cy="50" r="18" fill="rgba(15,23,42,0.55)" stroke="rgba(255,255,255,0.18)" />
-    </svg>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-8 md:px-8 lg:px-10">
-      <div className="grid gap-8 border-t border-border/50 pt-7 lg:grid-cols-[1.2fr_1.3fr]">
-        <div>
-          <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-            BPJSight adalah mini project yang memperlihatkan alur pasien dan rumah sakit tanpa mengklaim terhubung ke BPJS atau fasilitas kesehatan nyata.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {FOOTER_COLUMNS.map((column) => (
-            <div key={column.title}>
-              <h3 className="text-sm font-extrabold text-foreground">{column.title}</h3>
-              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                {column.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border/50 pt-5 text-xs text-muted-foreground/50">
-        <span>© 2026 BPJSight. All rights reserved.</span>
-        <span>|</span>
-        <span>Privacy Policy</span>
-        <span>|</span>
-        <span>Terms of Service</span>
-      </div>
-    </footer>
-  );
-}
+// Helper component
+const Badge = () => (
+  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-secondary border border-green-200 text-xs font-bold">
+    <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></div> Live
+  </span>
+);
 
 export default LandingHero;
