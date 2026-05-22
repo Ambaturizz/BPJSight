@@ -108,6 +108,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [activeFaqCategory, setActiveFaqCategory] = useState(FAQ_DATA[0].category);
+  const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
 
   const toggleFaq = (key: string) => {
     setOpenFaq(openFaq === key ? null : key);
@@ -145,6 +146,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
           <div className="hidden md:flex gap-3">
             <Button variant="outline" className="border-border hover:bg-slate-50 text-primary font-bold shadow-sm" onClick={() => onNavigate("patient")}>Masuk</Button>
             <Button className="bg-secondary hover:bg-green-700 text-white font-bold shadow-sm" onClick={() => onNavigate("patient-register")}>Pendaftaran</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-sm" onClick={() => setShowDownloadConfirm(true)}>Download Aplikasi</Button>
           </div>
 
           {/* Mobile hamburger */}
@@ -365,6 +367,31 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
             </div>
           </div>
         </footer>
+        {showDownloadConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center animate-in fade-in zoom-in duration-200">
+              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="h-6 w-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">
+                Download Aplikasi BPJSight Khusus Pengguna Pasien?
+              </h3>
+              <p className="text-sm text-slate-500 mb-6">
+                Aplikasi ini akan diunduh ke perangkat Anda.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button variant="outline" className="flex-1 font-bold text-slate-700" onClick={() => setShowDownloadConfirm(false)}>
+                  Tidak
+                </Button>
+                <a href="/bpjsight.apk" download="bpjsight.apk" className="flex-1">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold" onClick={() => setShowDownloadConfirm(false)}>
+                    Ya
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
