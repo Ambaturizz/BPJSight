@@ -131,89 +131,122 @@ const PatientProfile = ({ onBack }: { onBack: () => void }) => {
             >
               {/* CARD FRONT */}
               <div 
-                className="kis-card-front flex flex-col justify-between"
+                className="kis-card-front flex flex-col"
                 style={{
                   position: "absolute",
                   width: "100%",
                   height: "100%",
                   backfaceVisibility: "hidden",
                   WebkitBackfaceVisibility: "hidden",
-                  borderRadius: "16px",
-                  border: "1px solid rgba(29, 69, 128, 0.15)",
-                  boxShadow: "0 10px 25px -5px rgba(29, 69, 128, 0.12)",
-                  background: "linear-gradient(135deg, #00A14B 0%, #00A14B 35%, #1D4580 35%, #1D4580 38%, #ffffff 38%, #ffffff 100%)",
-                  overflow: "hidden"
+                  borderRadius: "14px",
+                  border: "1px solid rgba(0, 161, 75, 0.2)",
+                  boxShadow: "0 10px 30px -10px rgba(0, 161, 75, 0.15)",
+                  backgroundColor: "#ffffff",
+                  overflow: "hidden",
+                  fontFamily: "'Barlow', sans-serif"
                 }}
               >
-                {/* Header text inside front of card */}
-                <div className="flex justify-between items-start px-4 pt-3 text-[10px] font-bold text-white leading-tight">
-                  <div className="flex items-center gap-1.5">
-                    <div className="h-5 w-5 bg-white rounded-full flex items-center justify-center p-0.5 shadow-sm">
-                      <Shield className="h-3 w-3 text-secondary" />
-                    </div>
-                    <span className="tracking-wide">BPJS Kesehatan</span>
-                  </div>
-                  <div className="text-right">
-                    <p className="tracking-wide opacity-95">JAMINAN KESEHATAN NASIONAL</p>
-                    <p className="text-[11px] font-extrabold tracking-widest text-emerald-400">KARTU INDONESIA SEHAT</p>
-                  </div>
+                {/* Top Green Banner */}
+                <div 
+                  className="w-full flex items-center justify-center px-3 text-white relative select-none"
+                  style={{
+                    backgroundColor: "#00A14B",
+                    height: "44px"
+                  }}
+                >
+                  {/* Title text */}
+                  <span className="font-extrabold text-[13.5px] tracking-wide text-center">
+                    Kartu Indonesia Sehat
+                  </span>
                 </div>
 
-                {/* Body Details */}
-                <div className="px-5 pt-8 flex-1 flex flex-col justify-end pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-1 text-slate-800">
-                      <p className="text-[14px] font-extrabold tracking-widest text-primary font-mono leading-none">
-                        {formattedBpjs}
-                      </p>
-                      <p className="text-[12px] font-extrabold tracking-wide uppercase text-slate-900 mt-1 font-mono">
-                        {form.name}
-                      </p>
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[9px] font-semibold text-slate-600 mt-1">
-                        <div>
-                          <span className="text-[8px] text-slate-400 block leading-none">NIK</span>
-                          <span className="font-mono">{form.nik}</span>
-                        </div>
-                        <div>
-                          <span className="text-[8px] text-slate-400 block leading-none">FASKES TINGKAT I</span>
-                          <span className="truncate block max-w-[120px]">Klinik Sehat Demo</span>
-                        </div>
-                        <div className="mt-1">
-                          <span className="text-[8px] text-slate-400 block leading-none">TGL LAHIR</span>
-                          <span>01-Jan-1990</span>
-                        </div>
-                        <div className="mt-1">
-                          <span className="text-[8px] text-slate-400 block leading-none">KELAS RAWAT</span>
-                          <span>Kelas 1</span>
-                        </div>
-                      </div>
-                    </div>
+                {/* White body container with Map Watermark background */}
+                <div className="flex-1 p-3.5 flex flex-col justify-between relative bg-white overflow-hidden">
+                  {/* Indonesia Map Watermark */}
+                  <svg viewBox="0 0 300 100" fill="none" stroke="currentColor" strokeWidth="1" className="absolute inset-0 w-full h-full text-zinc-100 pointer-events-none p-3 select-none opacity-90">
+                    <path d="M15 25 L25 35 L40 50 L35 55 L20 40 L10 25 Z" />
+                    <path d="M45 65 L95 70 L90 75 L40 70 Z" />
+                    <path d="M65 30 L90 25 L100 40 L85 55 L70 50 Z" />
+                    <path d="M110 38 L125 32 L120 42 L135 42 L130 50 L115 50 Z" />
+                    <path d="M170 45 L190 40 L210 50 L215 62 L200 65 L185 58 Z" />
+                    <circle cx="95" cy="72" r="1.5" />
+                    <circle cx="108" cy="73" r="1.5" />
+                    <circle cx="120" cy="74" r="1.5" />
+                    <circle cx="132" cy="74" r="1.5" />
+                    <circle cx="144" cy="73" r="1.5" />
+                    <circle cx="156" cy="62" r="1" />
+                    <circle cx="164" cy="50" r="1" />
+                    <circle cx="152" cy="40" r="1" />
+                  </svg>
 
-                    {/* Golden chip & official JKN watermark */}
-                    <div className="flex flex-col items-end justify-between h-full py-0.5">
-                      <div 
-                        className="h-6 w-8 rounded bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 border border-yellow-600/30 flex flex-col justify-between p-1 overflow-hidden shadow-inner"
-                        style={{ boxShadow: "inset 0 1px 2px rgba(255,255,255,0.4)" }}
-                      >
-                        <div className="grid grid-cols-3 gap-0.5 h-full opacity-60">
-                          <div className="border-r border-b border-yellow-800/30"></div>
-                          <div className="border-r border-b border-yellow-800/30"></div>
-                          <div className="border-b border-yellow-800/30"></div>
-                          <div className="border-r border-yellow-800/30"></div>
-                          <div className="border-r border-yellow-800/30"></div>
-                          <div></div>
-                        </div>
-                      </div>
-                      <Badge className="bg-primary text-white border border-primary/20 text-[8px] font-bold px-1.5 py-0 mt-8">
-                        KIS DIGITAL
-                      </Badge>
+                  {/* Barcode section right under green header */}
+                  <div className="w-full flex flex-col items-center z-10 select-none">
+                    <div className="flex h-5 w-4/5 items-center justify-between bg-white px-0.5">
+                      {Array.from({ length: 72 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="bg-zinc-800 h-4.5"
+                          style={{
+                            width: i % 4 === 0 ? "2.5px" : i % 3 === 0 ? "1px" : i % 5 === 0 ? "3.2px" : "1.5px",
+                            opacity: i % 13 === 0 ? 0 : 1
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Details Section */}
+                  <div className="z-10 pl-1.5 flex-1 flex flex-col justify-center mt-1">
+                    <table className="w-full border-collapse text-[9.5px] leading-[1.3] text-zinc-800">
+                      <tbody>
+                        <tr>
+                          <td className="w-[78px] font-bold text-zinc-500 py-0.5 text-left">Nomor Kartu</td>
+                          <td className="w-[8px] text-zinc-500 py-0.5">:</td>
+                          <td className="font-extrabold text-zinc-950 font-mono tracking-wide py-0.5">{form.bpjs.replace(/\s+/g, "")}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold text-zinc-500 py-0.5 text-left">Nama</td>
+                          <td className="text-zinc-500 py-0.5">:</td>
+                          <td className="font-extrabold text-zinc-900 uppercase tracking-wide py-0.5">{form.name}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold text-zinc-500 py-0.5 text-left valign-top">Alamat</td>
+                          <td className="text-zinc-500 py-0.5 valign-top">:</td>
+                          <td className="text-zinc-700 text-[8.5px] font-semibold leading-tight py-0.5 uppercase">
+                            JL. Makanan Bergizi Gratis
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold text-zinc-500 py-0.5 text-left">Tanggal lahir</td>
+                          <td className="text-zinc-500 py-0.5">:</td>
+                          <td className="text-zinc-800 font-bold py-0.5">
+                            17 Agustus 1945
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold text-zinc-500 py-0.5 text-left">NIK</td>
+                          <td className="text-zinc-500 py-0.5">:</td>
+                          <td className="font-extrabold text-zinc-950 font-mono py-0.5">{form.nik.replace(/\s+/g, "")}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold text-zinc-500 py-0.5 text-left">Faskes Tingkat I</td>
+                          <td className="text-zinc-500 py-0.5">:</td>
+                          <td className="text-zinc-800 font-bold py-0.5">RS MBG</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Tiny Syarat dan Ketentuan footer */}
+                  <div className="z-10 mt-1.5 border-t border-zinc-150 pt-1.5 text-[6.5px] text-zinc-400 font-bold leading-normal select-none">
+                    <div className="flex gap-x-2 justify-between">
+                      <span>1. Kartu Peserta harap dibawa ketika berobat.</span>
+                      <span>2. Apabila hilang/rusak, lapor ke BPJS Kesehatan.</span>
                     </div>
                   </div>
                 </div>
-
-                {/* Bottom decorative bar */}
-                <div className="h-1.5 w-full bg-secondary"></div>
               </div>
+
 
               {/* CARD BACK */}
               <div 
