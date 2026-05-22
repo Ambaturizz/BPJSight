@@ -162,6 +162,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
             <a href="#layanan" onClick={() => { scrollToSection("layanan"); setMobileNavOpen(false); }} className="block py-2 font-semibold text-foreground hover:text-primary">Layanan Peserta</a>
             <a href="#data-jkn" onClick={() => { scrollToSection("data-jkn"); setMobileNavOpen(false); }} className="block py-2 font-semibold text-foreground hover:text-primary">Data JKN</a>
             <a href="#faq" onClick={() => { scrollToSection("faq"); setMobileNavOpen(false); }} className="block py-2 font-semibold text-foreground hover:text-primary">FAQ</a>
+            <button onClick={() => { setShowDownloadConfirm(true); setMobileNavOpen(false); }} className="block w-full text-left py-2 font-semibold text-foreground hover:text-primary">Download Aplikasi</button>
             <div className="flex gap-3 pt-3 border-t border-border">
               <Button variant="outline" className="flex-1 text-primary font-bold" onClick={() => { onNavigate("patient"); setMobileNavOpen(false); }}>Masuk</Button>
               <Button className="flex-1 bg-secondary text-white font-bold" onClick={() => { onNavigate("patient-register"); setMobileNavOpen(false); }}>Daftar</Button>
