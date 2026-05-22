@@ -145,8 +145,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
 
           <div className="hidden md:flex gap-3">
             <Button variant="outline" className="border-border hover:bg-slate-50 text-primary font-bold shadow-sm" onClick={() => onNavigate("patient")}>Masuk</Button>
-            <Button className="bg-secondary hover:bg-green-700 text-white font-bold shadow-sm" onClick={() => onNavigate("patient-register")}>Pendaftaran</Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-sm" onClick={() => setShowDownloadConfirm(true)}>Download Aplikasi</Button>
+            <Button className="bg-green-600 hover:bg-white-700 text-white font-bold shadow-sm" onClick={() => setShowDownloadConfirm(true)}>Download Aplikasi</Button>
           </div>
 
           {/* Mobile hamburger */}
@@ -165,7 +164,6 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
             <button onClick={() => { setShowDownloadConfirm(true); setMobileNavOpen(false); }} className="block w-full text-left py-2 font-semibold text-foreground hover:text-primary">Download Aplikasi</button>
             <div className="flex gap-3 pt-3 border-t border-border">
               <Button variant="outline" className="flex-1 text-primary font-bold" onClick={() => { onNavigate("patient"); setMobileNavOpen(false); }}>Masuk</Button>
-              <Button className="flex-1 bg-secondary text-white font-bold" onClick={() => { onNavigate("patient-register"); setMobileNavOpen(false); }}>Daftar</Button>
             </div>
           </div>
         )}
