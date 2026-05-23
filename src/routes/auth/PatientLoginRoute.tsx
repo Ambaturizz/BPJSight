@@ -53,6 +53,7 @@ export default function PatientLoginRoute() {
   const queryParams = new URLSearchParams(location.search);
   const registerFromQuery = queryParams.get("register") === "true";
   const [isRegistering, setIsRegistering] = useState(registerFromQuery);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   useEffect(() => {
     setIsRegistering(registerFromQuery);
@@ -223,7 +224,7 @@ export default function PatientLoginRoute() {
             </Button>
 
             <p className="mt-4 text-xs text-center text-muted-foreground leading-relaxed">
-              Dengan masuk atau mendaftar, Anda menyetujui <a href="/" className="text-primary hover:underline font-semibold">Syarat & Ketentuan</a> dan <a href="/" className="text-primary hover:underline font-semibold">Kebijakan Privasi</a> BPJSight.
+              Dengan masuk atau mendaftar, Anda menyetujui <a href="#syarat" onClick={(e) => { e.preventDefault(); setShowPrivacyModal(true); }} className="text-primary hover:underline font-semibold">Syarat & Ketentuan</a> dan <a href="#privasi" onClick={(e) => { e.preventDefault(); setShowPrivacyModal(true); }} className="text-primary hover:underline font-semibold">Kebijakan Privasi</a> BPJSight.
             </p>
           </form>
 
@@ -236,6 +237,34 @@ export default function PatientLoginRoute() {
         </Card>
         </div>
       </div>
+      {showPrivacyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 text-left animate-in fade-in zoom-in duration-200">
+            <h3 className="text-xl font-bold text-slate-900 mb-4 border-b pb-2">
+              Syarat, Ketentuan & Kebijakan Privasi
+            </h3>
+            <div className="text-sm text-slate-700 space-y-4 mb-6">
+              <div>
+                <strong className="text-slate-900 block mb-1">Privasi & Keamanan Data</strong>
+                <p>Kami menjamin kerahasiaan data pribadi dan riwayat kesehatan (rekam medis) Anda. Data hanya diproses untuk memfasilitasi layanan kesehatan Anda dan tidak akan dibagikan kepada pihak ketiga tanpa persetujuan eksplisit Anda, kecuali diwajibkan oleh hukum.</p>
+              </div>
+              <div>
+                <strong className="text-slate-900 block mb-1">Sangkalan Medis (Medical Disclaimer)</strong>
+                <p>Layanan telemedicine, artikel, dan informasi pada aplikasi ini bertujuan sebagai pendamping, <strong>bukan pengganti</strong> konsultasi medis tatap muka, diagnosis pasti, atau tindakan medis langsung. Dalam kondisi kegawatdaruratan, segera kunjungi fasilitas kesehatan terdekat.</p>
+              </div>
+              <div>
+                <strong className="text-slate-900 block mb-1">Tanggung Jawab Pengguna</strong>
+                <p>Anda wajib memberikan informasi medis dan data diri yang akurat serta jujur demi ketepatan penanganan. Anda juga bertanggung jawab penuh menjaga kerahasiaan kredensial akun dan tidak menyalahgunakan aplikasi.</p>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button type="button" className="bg-primary hover:bg-primary/90 text-white font-bold px-6" onClick={() => setShowPrivacyModal(false)}>
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }
