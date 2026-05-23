@@ -221,6 +221,10 @@ export default function PatientLoginRoute() {
                 "Masuk"
               )}
             </Button>
+
+            <p className="mt-4 text-xs text-center text-muted-foreground leading-relaxed">
+              Dengan masuk atau mendaftar, Anda menyetujui <a href="/" className="text-primary hover:underline font-semibold">Syarat & Ketentuan</a> dan <a href="/" className="text-primary hover:underline font-semibold">Kebijakan Privasi</a> BPJSight.
+            </p>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">

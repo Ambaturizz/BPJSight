@@ -109,6 +109,7 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [activeFaqCategory, setActiveFaqCategory] = useState(FAQ_DATA[0].category);
   const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const toggleFaq = (key: string) => {
     setOpenFaq(openFaq === key ? null : key);
@@ -361,8 +362,8 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
           <div className="mx-auto max-w-7xl px-5 md:px-8 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="font-medium">&copy; 2026 BPJSight. Prototype Non-Komersial (Hanya untuk keperluan desain).</p>
             <div className="flex gap-6 font-medium">
-              <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection("faq"); }} className="hover:text-primary transition-colors">Kebijakan Privasi</a>
-              <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection("faq"); }} className="hover:text-primary transition-colors">Syarat & Ketentuan</a>
+              <a href="#privasi" onClick={(e) => { e.preventDefault(); setShowPrivacyModal(true); }} className="hover:text-primary transition-colors">Kebijakan Privasi</a>
+              <a href="#syarat" onClick={(e) => { e.preventDefault(); setShowPrivacyModal(true); }} className="hover:text-primary transition-colors">Syarat & Ketentuan</a>
             </div>
           </div>
         </footer>
@@ -387,6 +388,34 @@ const LandingHero = ({ onNavigate }: LandingHeroProps) => {
                     Ya
                   </Button>
                 </a>
+              </div>
+            </div>
+          </div>
+        )}
+        {showPrivacyModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 text-left animate-in fade-in zoom-in duration-200">
+              <h3 className="text-xl font-bold text-slate-900 mb-4 border-b pb-2">
+                Syarat, Ketentuan & Kebijakan Privasi
+              </h3>
+              <div className="text-sm text-slate-700 space-y-4 mb-6">
+                <div>
+                  <strong className="text-slate-900 block mb-1">Privasi & Keamanan Data</strong>
+                  <p>Kami menjamin kerahasiaan data pribadi dan riwayat kesehatan (rekam medis) Anda. Data hanya diproses untuk memfasilitasi layanan kesehatan Anda dan tidak akan dibagikan kepada pihak ketiga tanpa persetujuan eksplisit Anda, kecuali diwajibkan oleh hukum.</p>
+                </div>
+                <div>
+                  <strong className="text-slate-900 block mb-1">Sangkalan Medis (Medical Disclaimer)</strong>
+                  <p>Layanan telemedicine, artikel, dan informasi pada aplikasi ini bertujuan sebagai pendamping, <strong>bukan pengganti</strong> konsultasi medis tatap muka, diagnosis pasti, atau tindakan medis langsung. Dalam kondisi kegawatdaruratan, segera kunjungi fasilitas kesehatan terdekat.</p>
+                </div>
+                <div>
+                  <strong className="text-slate-900 block mb-1">Tanggung Jawab Pengguna</strong>
+                  <p>Anda wajib memberikan informasi medis dan data diri yang akurat serta jujur demi ketepatan penanganan. Anda juga bertanggung jawab penuh menjaga kerahasiaan kredensial akun dan tidak menyalahgunakan aplikasi.</p>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button className="bg-primary hover:bg-primary/90 text-white font-bold px-6" onClick={() => setShowPrivacyModal(false)}>
+                  Tutup
+                </Button>
               </div>
             </div>
           </div>
